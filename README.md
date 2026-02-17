@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/public/spark-logo.svg" alt="Lokul Logo" width="120" height="120">
+<img src="https://raw.githubusercontent.com/pouryaak/lokul/main/public/lokul.png" alt="Lokul Logo" width="120" height="120">
 
 # 🔥 Lokul
 
@@ -23,7 +23,7 @@ No servers. No tracking. Works offline.
 <img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/demo.gif" alt="Lokul Demo" width="800">
 
 **💡 Replace demo.gif above with your actual demo showing:**  
-*Chat working → Disconnect WiFi → Still works perfectly*
+_Chat working → Disconnect WiFi → Still works perfectly_
 
 ---
 
@@ -46,6 +46,7 @@ Every question costs you $20/month.
 <td width="50%" valign="top">
 
 ### 🔒 **Completely Private**
+
 Your conversations **never leave your device**.  
 Not encrypted. Not anonymized.  
 Just... **never sent**.
@@ -58,6 +59,7 @@ No AI can train on your prompts.
 <td width="50%" valign="top">
 
 ### ✈️ **Works Offline**
+
 Download once, use forever.
 
 Write on flights. Code at the beach.  
@@ -71,6 +73,7 @@ Work in basements. Study in libraries.
 <td width="50%" valign="top">
 
 ### 💰 **Free Forever**
+
 No subscriptions. No API costs.  
 No hidden fees.
 
@@ -82,6 +85,7 @@ The code is free.
 <td width="50%" valign="top">
 
 ### 🔓 **Open Source**
+
 Every line of code is public.  
 Audit it yourself. Fork it. Modify it.
 
@@ -118,7 +122,7 @@ https://trylokul.com
 
 <img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/online-demo.gif" alt="Online Demo" width="600">
 
-*Normal chat, everything works smoothly*
+_Normal chat, everything works smoothly_
 
 ---
 
@@ -126,7 +130,7 @@ https://trylokul.com
 
 <img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/offline-demo.gif" alt="Offline Demo" width="600">
 
-*Still works perfectly. Zero internet.*
+_Still works perfectly. Zero internet._
 
 ---
 
@@ -140,18 +144,18 @@ https://trylokul.com
 
 <div align="center">
 
-| Feature | Description |
-|---------|-------------|
-| 🤖 **Multiple AI Models** | Choose between Quick (80MB), Smart (2.8GB), or Genius (6.4GB) |
-| 💬 **ChatGPT-Style Interface** | Familiar, clean, fast - just start chatting |
-| 📦 **Everything Local** | Models, conversations, settings - all on your device |
-| 🔄 **Works Offline** | After first download, internet is optional |
-| 🎨 **Clean UX** | No clutter, just AI assistance |
-| 🛡️ **Privacy First** | Zero data collection, zero analytics |
-| ⚡ **GPU Accelerated** | Uses WebGPU for instant responses |
-| 💾 **Auto-Save** | Never lose a conversation |
-| 🎭 **Memory System** | Remembers context across long chats |
-| 📱 **Progressive Web App** | Add to home screen, works like a native app |
+| Feature                        | Description                                                   |
+| ------------------------------ | ------------------------------------------------------------- |
+| 🤖 **Multiple AI Models**      | Choose between Quick (80MB), Smart (2.8GB), or Genius (6.4GB) |
+| 💬 **ChatGPT-Style Interface** | Familiar, clean, fast - just start chatting                   |
+| 📦 **Everything Local**        | Models, conversations, settings - all on your device          |
+| 🔄 **Works Offline**           | After first download, internet is optional                    |
+| 🎨 **Clean UX**                | No clutter, just AI assistance                                |
+| 🛡️ **Privacy First**           | Zero data collection, zero analytics                          |
+| ⚡ **GPU Accelerated**         | Uses WebGPU for instant responses                             |
+| 💾 **Auto-Save**               | Never lose a conversation                                     |
+| 🎭 **Memory System**           | Remembers context across long chats                           |
+| 📱 **Progressive Web App**     | Add to home screen, works like a native app                   |
 
 </div>
 
@@ -161,15 +165,15 @@ https://trylokul.com
 
 <div align="center">
 
-| Feature | ChatGPT Plus | Lokul |
-|---------|--------------|-------|
-| **Privacy** | ❌ Cloud (your data on their servers) | ✅ **100% Local** (never leaves your device) |
-| **Offline** | ❌ No (needs internet) | ✅ **Yes** (works on airplanes) |
-| **Cost** | ❌ $20/month ($240/year) | ✅ **Free** ($0 forever) |
-| **Speed** | ⚠️ Network latency | ✅ **Instant** (runs on your GPU) |
-| **Open Source** | ❌ No (black box) | ✅ **Yes** (audit it yourself) |
-| **Data Training** | ❌ Your data trains their AI | ✅ **Never** (stays local) |
-| **Downtime** | ⚠️ Can go offline | ✅ **Never** (no server to crash) |
+| Feature           | ChatGPT Plus                          | Lokul                                        |
+| ----------------- | ------------------------------------- | -------------------------------------------- |
+| **Privacy**       | ❌ Cloud (your data on their servers) | ✅ **100% Local** (never leaves your device) |
+| **Offline**       | ❌ No (needs internet)                | ✅ **Yes** (works on airplanes)              |
+| **Cost**          | ❌ $20/month ($240/year)              | ✅ **Free** ($0 forever)                     |
+| **Speed**         | ⚠️ Network latency                    | ✅ **Instant** (runs on your GPU)            |
+| **Open Source**   | ❌ No (black box)                     | ✅ **Yes** (audit it yourself)               |
+| **Data Training** | ❌ Your data trains their AI          | ✅ **Never** (stays local)                   |
+| **Downtime**      | ⚠️ Can go offline                     | ✅ **Never** (no server to crash)            |
 
 </div>
 
@@ -186,7 +190,7 @@ graph LR
     C --> D[🎮 Run on Your GPU]
     D --> E[💬 Chat Offline]
     E --> F[🔒 Everything Stays Local]
-    
+
     style A fill:#FF6B35,stroke:#FFB84D,stroke-width:2px,color:#fff
     style B fill:#FF8C42,stroke:#FFB84D,stroke-width:2px,color:#fff
     style C fill:#FFB84D,stroke:#FF6B35,stroke-width:2px,color:#fff
@@ -206,6 +210,7 @@ graph LR
 5. **✈️ Offline Ready** - Works without internet after first load
 
 **Tech Stack:**
+
 - [WebGPU](https://www.w3.org/TR/webgpu/) for GPU acceleration
 - [WebLLM](https://github.com/mlc-ai/web-llm) for model inference
 - [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) for blazing-fast UI
@@ -259,15 +264,19 @@ npm run preview
 <div align="center">
 
 ### Light Mode
+
 <img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/screenshot-light.png" alt="Light Mode" width="700">
 
 ### Dark Mode
+
 <img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/screenshot-dark.png" alt="Dark Mode" width="700">
 
 ### Model Selector
+
 <img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/screenshot-models.png" alt="Model Selector" width="700">
 
 ### Performance Panel
+
 <img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/screenshot-performance.png" alt="Performance" width="700">
 
 </div>
@@ -277,6 +286,7 @@ npm run preview
 ## 🗺️ Roadmap
 
 ### ✅ v1.0 (Current)
+
 - [x] ChatGPT-style interface
 - [x] Multiple AI models (Quick/Smart/Genius)
 - [x] Works 100% offline
@@ -285,6 +295,7 @@ npm run preview
 - [x] Auto-save conversations
 
 ### 🚧 v1.1 (Coming Soon)
+
 - [ ] Search conversations
 - [ ] Better markdown rendering
 - [ ] Keyboard shortcuts
@@ -292,12 +303,14 @@ npm run preview
 - [ ] Mobile optimization
 
 ### 🔮 v1.5 (Planned)
+
 - [ ] Document upload (PDF support)
 - [ ] Custom system prompts
 - [ ] Conversation folders
 - [ ] Advanced memory management
 
 ### 🌟 v2.0 (Future)
+
 - [ ] Personal AIs (custom personas)
 - [ ] Project workspaces
 - [ ] Image understanding
@@ -444,6 +457,7 @@ Honest answer: It depends.
 - **Genius Mode**: Approaching ChatGPT 4 quality
 
 The gap is closing fast. And unlike ChatGPT:
+
 - ✅ Works offline
 - ✅ Costs $0
 - ✅ Doesn't train on your data
@@ -454,6 +468,7 @@ The gap is closing fast. And unlike ChatGPT:
 <summary><b>Will this work on my device?</b></summary>
 
 If you have:
+
 - Chrome 113+ or Edge 113+
 - 4GB+ available RAM
 - A modern graphics card (even integrated)
@@ -486,6 +501,7 @@ Plus, we're open source. Audit the code yourself.
 Yes! 100% legal.
 
 The models we use are open source and licensed for commercial use:
+
 - Phi (Microsoft - MIT License)
 - Llama (Meta - Llama License)
 - Mistral (Mistral AI - Apache 2.0)
@@ -514,7 +530,7 @@ If you find Lokul useful, consider:
 
 ### Built with ❤️ for Privacy
 
-**Made by [@YOUR-USERNAME](https://github.com/YOUR-USERNAME)**
+**Made by [Pourya Ak](https://github.com/pouryaak)**
 
 If you believe AI should be private, give us a star ⭐
 
