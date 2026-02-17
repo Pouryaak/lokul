@@ -9,18 +9,18 @@
 **ChatGPT-quality AI running 100% in your browser.**  
 No servers. No tracking. Works offline.
 
-[![GitHub stars](https://img.shields.io/github/stars/YOUR-USERNAME/lokul?style=for-the-badge&logo=github&color=FF6B35)](https://github.com/YOUR-USERNAME/lokul/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/pouryaak/lokul?style=for-the-badge&logo=github&color=FF6B35)](https://github.com/pouryaak/lokul/stargazers)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge&logo=opensourceinitiative&logoColor=white&color=FF6B35)](LICENSE)
-[![Made with Love](https://img.shields.io/badge/made%20with-❤️-red?style=for-the-badge&color=FFB84D)](https://github.com/YOUR-USERNAME/lokul)
+[![Made with Love](https://img.shields.io/badge/made%20with-❤️-red?style=for-the-badge&color=FFB84D)](https://github.com/pouryaak/lokul)
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![WebGPU](https://img.shields.io/badge/WebGPU-326CE5?style=for-the-badge&logo=googlechrome&logoColor=white)](https://www.w3.org/TR/webgpu/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 
-[**Try Demo →**](https://trylokul.com) • [Documentation](https://docs.trylokul.com) • [Discord](https://discord.gg/lokul) • [Twitter](https://twitter.com/YOUR-USERNAME)
+[**Try Demo →**](https://trylokul.com) • [Documentation](https://docs.trylokul.com) • [Discord](https://discord.gg/lokul) • [Twitter](https://twitter.com/pouryaak)
 
-<img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/demo.gif" alt="Lokul Demo" width="800">
+<img src="https://raw.githubusercontent.com/pouryaak/lokul/main/docs/demo.gif" alt="Lokul Demo" width="800">
 
 **💡 Replace demo.gif above with your actual demo showing:**  
 _Chat working → Disconnect WiFi → Still works perfectly_
@@ -120,7 +120,7 @@ https://trylokul.com
 
 ### 📶 With Internet
 
-<img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/online-demo.gif" alt="Online Demo" width="600">
+<img src="https://raw.githubusercontent.com/pouryaak/lokul/main/docs/online-demo.gif" alt="Online Demo" width="600">
 
 _Normal chat, everything works smoothly_
 
@@ -128,7 +128,7 @@ _Normal chat, everything works smoothly_
 
 ### ✈️ Airplane Mode ON
 
-<img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/offline-demo.gif" alt="Offline Demo" width="600">
+<img src="https://raw.githubusercontent.com/pouryaak/lokul/main/docs/offline-demo.gif" alt="Offline Demo" width="600">
 
 _Still works perfectly. Zero internet._
 
@@ -233,7 +233,7 @@ Chrome 113+ or Edge 113+ (for WebGPU support)
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR-USERNAME/lokul.git
+git clone https://github.com/pouryaak/lokul.git
 
 # Navigate to directory
 cd lokul
@@ -265,19 +265,19 @@ npm run preview
 
 ### Light Mode
 
-<img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/screenshot-light.png" alt="Light Mode" width="700">
+<img src="https://raw.githubusercontent.com/pouryaak/lokul/main/docs/screenshot-light.png" alt="Light Mode" width="700">
 
 ### Dark Mode
 
-<img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/screenshot-dark.png" alt="Dark Mode" width="700">
+<img src="https://raw.githubusercontent.com/pouryaak/lokul/main/docs/screenshot-dark.png" alt="Dark Mode" width="700">
 
 ### Model Selector
 
-<img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/screenshot-models.png" alt="Model Selector" width="700">
+<img src="https://raw.githubusercontent.com/pouryaak/lokul/main/docs/screenshot-models.png" alt="Model Selector" width="700">
 
 ### Performance Panel
 
-<img src="https://raw.githubusercontent.com/YOUR-USERNAME/lokul/main/docs/screenshot-performance.png" alt="Performance" width="700">
+<img src="https://raw.githubusercontent.com/pouryaak/lokul/main/docs/screenshot-performance.png" alt="Performance" width="700">
 
 </div>
 
@@ -316,7 +316,7 @@ npm run preview
 - [ ] Image understanding
 - [ ] Voice input/output
 
-[View Full Roadmap →](https://github.com/YOUR-USERNAME/lokul/issues)
+[View Full Roadmap →](https://github.com/pouryaak/lokul/issues)
 
 ---
 
@@ -343,7 +343,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ### Good First Issues
 
-Looking for a place to start? Check out our [good first issues](https://github.com/YOUR-USERNAME/lokul/labels/good%20first%20issue).
+Looking for a place to start? Check out our [good first issues](https://github.com/pouryaak/lokul/labels/good%20first%20issue).
 
 ---
 
@@ -351,9 +351,9 @@ Looking for a place to start? Check out our [good first issues](https://github.c
 
 Found a bug? Have an idea? We want to hear it!
 
-- 🐛 [Report a Bug](https://github.com/YOUR-USERNAME/lokul/issues/new?template=bug_report.md)
-- ✨ [Request a Feature](https://github.com/YOUR-USERNAME/lokul/issues/new?template=feature_request.md)
-- 💬 [Join Discussion](https://github.com/YOUR-USERNAME/lokul/discussions)
+- 🐛 [Report a Bug](https://github.com/pouryaak/lokul/issues/new?template=bug_report.md)
+- ✨ [Request a Feature](https://github.com/pouryaak/lokul/issues/new?template=feature_request.md)
+- 💬 [Join Discussion](https://github.com/pouryaak/lokul/discussions)
 
 ---
 
@@ -374,8 +374,8 @@ Join our growing community:
 <div align="center">
 
 [![Discord](https://img.shields.io/discord/YOUR-DISCORD-ID?color=7289da&label=Discord&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/lokul)
-[![Twitter](https://img.shields.io/twitter/follow/YOUR-USERNAME?color=1DA1F2&logo=twitter&style=for-the-badge&logoColor=white)](https://twitter.com/YOUR-USERNAME)
-[![GitHub Discussions](https://img.shields.io/github/discussions/YOUR-USERNAME/lokul?color=FF6B35&logo=github&style=for-the-badge)](https://github.com/YOUR-USERNAME/lokul/discussions)
+[![Twitter](https://img.shields.io/twitter/follow/pouryaak?color=1DA1F2&logo=twitter&style=for-the-badge&logoColor=white)](https://twitter.com/pouryaak)
+[![GitHub Discussions](https://img.shields.io/github/discussions/pouryaak/lokul?color=FF6B35&logo=github&style=for-the-badge)](https://github.com/pouryaak/lokul/discussions)
 
 </div>
 
@@ -408,7 +408,7 @@ MIT License - You can do whatever you want with this code!
 
 <div align="center">
 
-[![Star History Chart](https://api.star-history.com/svg?repos=YOUR-USERNAME/lokul&type=Date)](https://star-history.com/#YOUR-USERNAME/lokul&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=Pouryaak/lokul&type=Date)](https://star-history.com/#Pouryaak/lokul&Date)
 
 </div>
 

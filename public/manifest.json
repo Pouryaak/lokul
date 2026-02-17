@@ -1,6 +1,16 @@
 {
   "name": "Lokul",
   "short_name": "Lokul",
+  "description": "Privacy-first AI chat that runs 100% in your browser",
   "start_url": "/",
-  "display": "standalone"
+  "display": "standalone",
+  "background_color": "#FF6B35",
+  "theme_color": "#FF6B35",
+  "icons": [
+    {
+      "src": "/spark-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
 }

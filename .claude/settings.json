@@ -1,0 +1,30 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.kimi.com/coding/",
+    "ANTHROPIC_AUTH_TOKEN": "sk-kimi-AVcpGUJhD17PU49oPDSwUxnJzWq7WgBmcAWSpkrJPwUfrIPtdi1ObfR3eAIlVBOw",
+    "ANTHROPIC_MODEL": "kimi-for-coding",
+    "ANTHROPIC_SMALL_FAST_MODEL": "kimi-for-coding",
+    "API_TIMEOUT_MS": "3000000"
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "context7@claude-plugins-official": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/gsd-check-update.js"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "node .claude/hooks/gsd-statusline.js"
+  }
+}
