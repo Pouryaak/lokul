@@ -49,7 +49,13 @@
 6. Downloaded models persist across browser sessions (cached in IndexedDB)
 7. Settings (theme, default model) persist across sessions
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Type definitions, Dexie storage layer, settings persistence, WebGPU detection
+- [ ] 01-02-PLAN.md — Web Worker for AI inference, model configurations, inference manager, model store
+- [ ] 01-03-PLAN.md — First-run experience: landing page, WebGPU errors, loading progress UI
+- [ ] 01-04-PLAN.md — PWA/Service Worker, offline indicator, performance panel, health monitoring
 
 ---
 
