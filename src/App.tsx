@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Activity } from "lucide-react";
 import { StatusIndicator } from "./components/performance/StatusIndicator";
 import { PerformancePanel } from "./components/performance/PerformancePanel";
-import { Button } from "./components/ui/button";
+import { Button } from "./components/ui/Button";
 
 /**
  * App component - Main application entry point
@@ -28,7 +28,7 @@ export function App() {
       <div className="fixed top-4 right-4 z-40">
         <Button
           variant="outline"
-          size="icon"
+          size="sm"
           onClick={() => setShowPerformancePanel(!showPerformancePanel)}
           aria-label={showPerformancePanel ? "Hide performance panel" : "Show performance panel"}
           aria-pressed={showPerformancePanel}

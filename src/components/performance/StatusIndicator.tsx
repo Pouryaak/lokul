@@ -11,7 +11,8 @@
  */
 
 import { useEffect, useState } from "react";
-import { Loader2, CloudCheck, WifiOff } from "lucide-react";
+import { Loader2, CheckCircle2, WifiOff } from "lucide-react";
+// @ts-expect-error - virtual:pwa-register/react doesn't have types
 import { useRegisterSW } from "virtual:pwa-register/react";
 
 /**
@@ -44,14 +45,13 @@ export function StatusIndicator({ className = "" }: StatusIndicatorProps) {
 
   // Use vite-plugin-pwa's SW registration hook
   const { offlineReady } = useRegisterSW({
-    onRegisteredSW(swUrl, r) {
+    onRegisteredSW(_swUrl: string, r: ServiceWorkerRegistration | undefined) {
       if (r) {
         // Service Worker is registered
         setStatus("offline-ready");
       }
     },
-    onRegisterError(error) {
-      console.error("SW registration error:", error);
+    onRegisterError(_error: Error) {
       setStatus("online-required");
     },
   });
@@ -107,7 +107,7 @@ export function StatusIndicator({ className = "" }: StatusIndicatorProps) {
         className={`fixed left-4 bottom-4 z-50 flex items-center gap-2 px-3 py-2 rounded-full bg-green-50 text-green-700 text-sm shadow-lg border border-green-200 ${className}`}
         title="App cached for offline use"
       >
-        <CloudCheck className="h-4 w-4" />
+        <CheckCircle2 className="h-4 w-4" />
         <span>Works Offline</span>
         {!isOnline && (
           <span className="ml-1 text-xs opacity-75">(Offline Mode)</span>
