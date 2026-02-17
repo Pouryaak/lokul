@@ -11,7 +11,7 @@
 **Secondary:**
 - HTML5 - PWA manifest and base template
 - CSS3 - Tailwind CSS processing
-- SVG - Logo and icon assets (`/Users/poak/Documents/personal-project/Lokul/public/spark-logo.svg`)
+- SVG - Logo and icon assets (`/Users/poak/Documents/personal-project/Lokul/public/lokul-logo.png`)
 
 ## Runtime
 

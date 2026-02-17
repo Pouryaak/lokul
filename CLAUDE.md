@@ -74,7 +74,7 @@ This document provides guidelines, best practices, and context for building Loku
 ```
 lokul/
 ├── public/
-│   ├── spark-logo.svg              # App logo
+│   ├── lokul-logo.png              # App logo
 │   └── manifest.json               # PWA manifest
 │
 ├── src/

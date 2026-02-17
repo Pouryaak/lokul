@@ -116,7 +116,7 @@ export function FooterSection() {
             <div className="mb-4 flex items-center gap-2">
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-[#FF6B35]/30 blur-lg" />
-                <img src="/spark-logo.svg" alt="" className="relative h-8 w-8" />
+                <img src="/lokul-logo.png" alt="" className="relative h-8 w-8" />
               </div>
               <span className="text-xl font-bold text-white">Lokul</span>
             </div>

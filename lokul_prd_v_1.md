@@ -682,7 +682,7 @@ npm run type-check    # TypeScript type checking
 ```txt
 lokul/
 ├── public/
-│   ├── spark-logo.svg
+│   ├── lokul-logo.png
 │   └── manifest.json
 ├── src/
 │   ├── components/

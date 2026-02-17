@@ -19,7 +19,7 @@
 - **Cancelable:** Yes, user can cancel Quick Mode load and try again later
 
 ### Visual Elements
-- **Logo:** Spark/flame icon (already in public/spark-logo.svg)
+- **Logo:** Spark/flame icon (already in public/lokul-logo.png)
 - **Animation:** Subtle pulsing loader, not spinner (feels more modern)
 - **Background:** Soft gradient with optional particle/grid animation (WebGPU-themed)
 - **Typography:** Clean sans-serif, large heading, smaller explanatory text

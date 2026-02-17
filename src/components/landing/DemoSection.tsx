@@ -5,9 +5,9 @@
  * Shows a mock browser window with chat interface.
  */
 
-import { useState, useEffect } from "react";
-import { Wifi, WifiOff, Zap, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { MessageCircle, Wifi, WifiOff, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 
 /**
  * Demo message type
@@ -137,7 +137,7 @@ export function DemoSection() {
                   >
                     {message.role === "ai" && (
                       <div className="mb-1 flex items-center gap-2">
-                        <img src="/spark-logo.svg" alt="" className="h-4 w-4" />
+                        <img src="/lokul-logo.png" alt="" className="h-4 w-4" />
                         <span className="text-xs font-medium text-gray-500">Lokul</span>
                       </div>
                     )}

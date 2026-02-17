@@ -8,7 +8,7 @@
 /Users/poak/Documents/personal-project/Lokul/
 ├── public/                     # Static assets
 │   ├── lokul-logo.png          # App logo (PNG)
-│   ├── spark-logo.svg          # App logo (SVG)
+│   ├── lokul-logo.png          # App logo (SVG)
 │   └── manifest.json           # PWA manifest
 │
 ├── src/
@@ -50,7 +50,7 @@
 **public/:**
 - Purpose: Static assets served directly
 - Contains: Images, logos, PWA manifest, HTML entry
-- Key files: `manifest.json`, `spark-logo.svg`
+- Key files: `manifest.json`, `lokul-logo.png`
 - Generated: No
 - Committed: Yes
 

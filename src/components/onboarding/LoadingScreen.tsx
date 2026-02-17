@@ -4,12 +4,12 @@
  * Full-screen overlay showing download progress with time estimates.
  */
 
-import { useEffect, useState } from "react";
-import { X, Clock, Lightbulb, Check } from "lucide-react";
-import { Progress } from "@/components/ui/Progress";
-import { formatBytes, formatTimeEstimate } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { Progress } from "@/components/ui/Progress";
 import type { DownloadProgress } from "@/lib/ai/inference";
+import { formatBytes, formatTimeEstimate } from "@/lib/utils";
+import { Check, Clock, Lightbulb, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 /**
  * Props for LoadingScreen
@@ -94,7 +94,7 @@ export function LoadingScreen({
           <div className="mb-8 flex justify-center">
             <div className="relative">
               <div className="absolute inset-0 rounded-full bg-red-500/20 blur-3xl" />
-              <img src="/spark-logo.svg" alt="" className="relative h-20 w-20" />
+              <img src="/lokul-logo.png" alt="" className="relative h-20 w-20" />
             </div>
           </div>
 
@@ -159,7 +159,7 @@ export function LoadingScreen({
         <div className="mb-8 flex justify-center">
           <div className="relative">
             <div className="absolute inset-0 animate-pulse rounded-full bg-[#FF6B35]/20 blur-3xl" />
-            <img src="/spark-logo.svg" alt="" className="relative h-20 w-20" />
+            <img src="/lokul-logo.png" alt="" className="relative h-20 w-20" />
           </div>
         </div>
 

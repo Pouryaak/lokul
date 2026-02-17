@@ -125,7 +125,7 @@ export function App() {
           <div className="mb-6 flex justify-center">
             <div className="relative">
               <div className="absolute inset-0 rounded-full bg-[#FF6B35]/20 blur-3xl" />
-              <img src="/spark-logo.svg" alt="" className="relative h-16 w-16" />
+              <img src="/lokul-logo.png" alt="" className="relative h-16 w-16" />
             </div>
           </div>
           <h1 className="text-foreground mb-4 text-3xl font-bold">Ready to chat!</h1>
@@ -180,29 +180,6 @@ export function App() {
       <TestimonialsSection />
       <FinalCTASection onStart={handleStart} />
       <FooterSection />
-
-      {/* Performance Toggle Button - Top Right */}
-      <div className="fixed top-4 right-4 z-40">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowPerformancePanel(!showPerformancePanel)}
-          aria-label={showPerformancePanel ? "Hide performance panel" : "Show performance panel"}
-          aria-pressed={showPerformancePanel}
-        >
-          <Activity className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Performance Panel - Right Side */}
-      {showPerformancePanel && (
-        <div className="fixed top-16 right-4 z-40">
-          <PerformancePanel onClose={() => setShowPerformancePanel(false)} />
-        </div>
-      )}
-
-      {/* Status Indicator - Bottom Left */}
-      <StatusIndicator />
     </div>
   );
 }

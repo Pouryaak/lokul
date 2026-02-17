@@ -8,7 +8,7 @@
   "theme_color": "#FF6B35",
   "icons": [
     {
-      "src": "/spark-logo.svg",
+      "src": "/lokul-logo.png",
       "sizes": "any",
       "type": "image/svg+xml"
     }
