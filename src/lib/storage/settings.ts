@@ -6,14 +6,14 @@
  */
 
 import { db } from "./db";
-import type { Settings, SettingsRecord } from "./db";
-import type { Settings as SettingsType } from "@/types/index";
+import type { SettingsRecord } from "./db";
+import type { Settings } from "@/types/index";
 
 /**
  * Default settings for new installations.
  * These values are used when no settings exist in storage.
  */
-export const defaultSettings: SettingsType = {
+export const defaultSettings: Settings = {
   theme: "system",
   defaultModel: "phi-2",
   hasCompletedSetup: false,
@@ -41,7 +41,7 @@ const SETTINGS_ID = "app" as const;
  * console.log(settings.theme); // "system" | "light" | "dark"
  * ```
  */
-export async function getSettings(): Promise<SettingsType> {
+export async function getSettings(): Promise<Settings> {
   try {
     const record = await db.settings.get(SETTINGS_ID);
 
@@ -56,8 +56,6 @@ export async function getSettings(): Promise<SettingsType> {
       ...record,
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-
     if (import.meta.env.DEV) {
       console.error("[Settings] Failed to load settings:", error);
     }
@@ -90,7 +88,7 @@ export async function getSettings(): Promise<SettingsType> {
  * ```
  */
 export async function saveSettings(
-  settings: Partial<SettingsType>,
+  settings: Partial<Settings>,
 ): Promise<void> {
   try {
     // Get existing settings to merge
@@ -109,12 +107,11 @@ export async function saveSettings(
       console.log("[Settings] Settings saved:", record);
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-
     if (import.meta.env.DEV) {
       console.error("[Settings] Failed to save settings:", error);
     }
 
+    const message = error instanceof Error ? error.message : "Unknown error";
     throw new Error(`Failed to save settings: ${message}`);
   }
 }
@@ -187,7 +184,7 @@ export async function setDefaultModel(modelId: string): Promise<void> {
  *
  * @returns Promise resolving to theme value
  */
-export async function getTheme(): Promise<SettingsType["theme"]> {
+export async function getTheme(): Promise<Settings["theme"]> {
   const settings = await getSettings();
   return settings.theme;
 }
@@ -197,6 +194,6 @@ export async function getTheme(): Promise<SettingsType["theme"]> {
  *
  * @param theme - Theme to set ("light", "dark", or "system")
  */
-export async function setTheme(theme: SettingsType["theme"]): Promise<void> {
+export async function setTheme(theme: Settings["theme"]): Promise<void> {
   await saveSettings({ theme });
 }
