@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/pouryaak/lokul/main/public/lokul.png" alt="Lokul Logo" width="120" height="120">
+<img src="https://raw.githubusercontent.com/pouryaak/lokul/main/public/lokul-logo.png" alt="Lokul Logo" width="120" height="120">
 
 # 🔥 Lokul
 
