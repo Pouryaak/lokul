@@ -29,16 +29,14 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
   return (
     <section
       id="final-cta"
-      className="py-20 md:py-32 bg-gradient-to-br from-[#FF6B35] to-[#FFB84D]"
+      className="bg-gradient-to-br from-[#FF6B35] to-[#FFB84D] py-20 md:py-32"
     >
-      <div className="max-w-4xl mx-auto px-4 text-center">
+      <div className="mx-auto max-w-[860px] px-4 text-center">
         {/* Header */}
-        <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
-          Ready to Own Your AI?
-        </h2>
+        <h2 className="mb-6 text-5xl font-bold text-white md:text-6xl">Ready to Own Your AI?</h2>
 
         {/* Subheader */}
-        <p className="text-xl md:text-2xl text-white/80 mb-10">
+        <p className="mb-10 text-xl text-white/80 md:text-2xl">
           No email. No credit card. No commitment.
           <br />
           Just better AI. In 30 seconds.
@@ -57,30 +55,28 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
         </div>
 
         {/* Trust Indicators */}
-        <div className="flex flex-wrap items-center justify-center gap-6 text-white/90 mb-8">
+        <div className="mb-8 flex flex-wrap items-center justify-center gap-6 text-white/90">
           <span className="flex items-center gap-2">
-            <Check className="w-5 h-5" />
+            <Check className="h-5 w-5" />
             Takes 30 seconds
           </span>
           <span className="flex items-center gap-2">
-            <Check className="w-5 h-5" />
+            <Check className="h-5 w-5" />
             Works in your browser
           </span>
           <span className="flex items-center gap-2">
-            <Check className="w-5 h-5" />
+            <Check className="h-5 w-5" />
             Free forever
           </span>
         </div>
 
         {/* Social Proof */}
-        <p className="text-white/70 mb-4">
-          12,847 developers are already using Lokul.
-        </p>
+        <p className="mb-4 text-white/70">12,847 developers are already using Lokul.</p>
 
         {/* Link to testimonials */}
         <button
           onClick={scrollToTestimonials}
-          className="text-white/80 hover:text-white underline underline-offset-4 transition-colors"
+          className="cursor-pointer text-white/80 underline underline-offset-4 transition-colors hover:text-white"
         >
           See what they're saying →
         </button>

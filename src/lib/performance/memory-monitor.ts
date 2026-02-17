@@ -118,10 +118,7 @@ export function formatMemory(mb: number): string {
  * formatMemoryDetail(512, null);  // "512 MB used"
  * ```
  */
-export function formatMemoryDetail(
-  usedMB: number,
-  totalMB: number | null,
-): string {
+export function formatMemoryDetail(usedMB: number, totalMB: number | null): string {
   const used = formatMemory(usedMB);
 
   if (totalMB === null) {
@@ -145,10 +142,7 @@ export function formatMemoryDetail(
  * getMemoryPercentage(512, null);  // null
  * ```
  */
-export function getMemoryPercentage(
-  usedMB: number,
-  totalMB: number | null,
-): number | null {
+export function getMemoryPercentage(usedMB: number, totalMB: number | null): number | null {
   if (totalMB === null || totalMB === 0) {
     return null;
   }

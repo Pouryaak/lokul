@@ -1,23 +1,23 @@
-import { useState, useEffect, useCallback } from "react";
 import { Activity } from "lucide-react";
-import { StatusIndicator } from "./components/performance/StatusIndicator";
-import { PerformancePanel } from "./components/performance/PerformancePanel";
-import { Button } from "./components/ui/Button";
-import { HeroSection } from "./components/landing/HeroSection";
-import { ProblemSolutionSection } from "./components/landing/ProblemSolutionSection";
-import { DemoSection } from "./components/landing/DemoSection";
-import { HowItWorksSection } from "./components/landing/HowItWorksSection";
+import { useCallback, useEffect, useState } from "react";
 import { ComparisonSection } from "./components/landing/ComparisonSection";
-import { UseCasesSection } from "./components/landing/UseCasesSection";
-import { TechnicalTrustSection } from "./components/landing/TechnicalTrustSection";
+import { DemoSection } from "./components/landing/DemoSection";
 import { FAQSection } from "./components/landing/FAQSection";
-import { TestimonialsSection } from "./components/landing/TestimonialsSection";
 import { FinalCTASection } from "./components/landing/FinalCTASection";
 import { FooterSection } from "./components/landing/FooterSection";
+import { HeroSection } from "./components/landing/HeroSection";
+import { HowItWorksSection } from "./components/landing/HowItWorksSection";
+import { ProblemSolutionSection } from "./components/landing/ProblemSolutionSection";
+import { TechnicalTrustSection } from "./components/landing/TechnicalTrustSection";
+import { TestimonialsSection } from "./components/landing/TestimonialsSection";
+import { UseCasesSection } from "./components/landing/UseCasesSection";
 import { LoadingScreen } from "./components/onboarding/LoadingScreen";
-import { useSettingsStore, selectHasCompletedSetup } from "./store/settingsStore";
-import { useModelStore } from "./store/modelStore";
+import { PerformancePanel } from "./components/performance/PerformancePanel";
+import { StatusIndicator } from "./components/performance/StatusIndicator";
+import { Button } from "./components/ui/Button";
 import { QUICK_MODEL } from "./lib/ai/models";
+import { useModelStore } from "./store/modelStore";
+import { selectHasCompletedSetup, useSettingsStore } from "./store/settingsStore";
 
 /**
  * App states
@@ -119,28 +119,18 @@ export function App() {
   // Chat screen (placeholder)
   if (appState === "chat") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center relative">
+      <div className="bg-background relative flex min-h-screen items-center justify-center">
         {/* Main Content */}
-        <div className="text-center max-w-md">
+        <div className="max-w-md text-center">
           <div className="mb-6 flex justify-center">
             <div className="relative">
-              <div className="absolute inset-0 bg-[#FF6B35]/20 blur-3xl rounded-full" />
-              <img
-                src="/spark-logo.svg"
-                alt=""
-                className="relative w-16 h-16"
-              />
+              <div className="absolute inset-0 rounded-full bg-[#FF6B35]/20 blur-3xl" />
+              <img src="/spark-logo.svg" alt="" className="relative h-16 w-16" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-4">
-            Ready to chat!
-          </h1>
-          <p className="text-muted-foreground mb-6">
-            {currentModel?.name} is loaded and ready.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Chat interface coming in the next phase.
-          </p>
+          <h1 className="text-foreground mb-4 text-3xl font-bold">Ready to chat!</h1>
+          <p className="text-muted-foreground mb-6">{currentModel?.name} is loaded and ready.</p>
+          <p className="text-muted-foreground text-sm">Chat interface coming in the next phase.</p>
           <button
             onClick={() => setAppState("landing")}
             className="mt-6 text-[#FF6B35] hover:underline"
@@ -177,7 +167,7 @@ export function App() {
 
   // Landing page with all sections
   return (
-    <div className="min-h-screen bg-white relative">
+    <div className="relative min-h-screen bg-white">
       {/* Landing Page Sections */}
       <HeroSection onStart={handleStart} />
       <ProblemSolutionSection />

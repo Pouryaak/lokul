@@ -38,17 +38,28 @@ This codebase follows strict conventions defined in `CLAUDE.md`. As the project 
 ## Code Style
 
 **Formatting:**
-- Use Prettier for consistent formatting
+- Use Prettier for consistent formatting (configured in `.prettierrc`)
 - 2 spaces for indentation
-- Single quotes for strings
-- Trailing commas required
-- Max line length: 80-100 characters
+- Double quotes for strings (configured)
+- Trailing commas required (ES5 style)
+- Max line length: 100 characters
+- Auto-format on save via VS Code settings
+- Tailwind CSS class sorting via `prettier-plugin-tailwindcss`
 
 **Linting:**
-- ESLint with TypeScript rules
+- ESLint v9 with flat config (`eslint.config.js`)
+- TypeScript ESLint rules
+- React Hooks rules (exhaustive-deps, rules-of-hooks)
+- React Refresh validation
 - No unused variables allowed
 - Explicit return types on exported functions
-- No console.log in production code
+- No console.log (allowed: info, warn, error for development)
+
+**VS Code Workspace:**
+- Shared settings in `.vscode/settings.json`
+- Recommended extensions in `.vscode/extensions.json`
+- Auto-fix on save enabled
+- Import organization on save
 
 **Import Organization:**
 1. React imports
@@ -259,13 +270,20 @@ export class ErrorBoundary extends Component<Props, State> {
 **Patterns:**
 - Use `console.error` for errors (development only)
 - Use `console.warn` for warnings
-- No console.log in production code
+- Use `console.info` for informational logs (allowed by ESLint)
+- No `console.log` in production code (ESLint warning)
 - Check `import.meta.env.DEV` before logging
 
 ```typescript
 if (import.meta.env.DEV) {
-  console.error('Failed to send message:', error);
+  console.error('[Chat] Failed to send message:', error);
+  console.info('[Chat] Message sent successfully');
 }
+```
+
+**ESLint Rule:**
+```javascript
+"no-console": ["warn", { allow: ["info", "warn", "error"] }]
 ```
 
 ## Comments

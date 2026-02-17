@@ -70,11 +70,7 @@ export const GENIUS_MODEL: ModelConfig = {
 /**
  * All available models in order of capability
  */
-export const MODELS: ModelConfig[] = [
-  QUICK_MODEL,
-  SMART_MODEL,
-  GENIUS_MODEL,
-];
+export const MODELS: ModelConfig[] = [QUICK_MODEL, SMART_MODEL, GENIUS_MODEL];
 
 /**
  * Get a model configuration by its ID
@@ -99,10 +95,7 @@ export function getDefaultModel(): ModelConfig {
  * @param speedMbps - Estimated download speed in Mbps (default: 10)
  * @returns Estimated time in seconds
  */
-export function getEstimatedDownloadTime(
-  model: ModelConfig,
-  speedMbps: number = 10,
-): number {
+export function getEstimatedDownloadTime(model: ModelConfig, speedMbps: number = 10): number {
   // Convert MB to Mb and divide by speed
   const sizeMb = model.sizeMB * 8;
   return Math.ceil(sizeMb / speedMbps);

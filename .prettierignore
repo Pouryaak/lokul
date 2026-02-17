@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dev-dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Editor/OS files
+.DS_Store
+.idea/
+
+# Logs
+*.log
+
+# TypeScript
+*.tsbuildinfo
+
+# GSD / Planning directories
+.claude/
+.planning/
+
+# Workers
+*.worker.ts

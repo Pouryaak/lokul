@@ -2,32 +2,32 @@
 
 @theme {
   /* Primary brand color - warm orange */
-  --color-primary: #FF6B35;
-  --color-primary-foreground: #FFFFFF;
+  --color-primary: #ff6b35;
+  --color-primary-foreground: #ffffff;
 
   /* Background colors */
-  --color-background: #FFF8F0;
-  --color-foreground: #1A1A1A;
+  --color-background: #fff8f0;
+  --color-foreground: #1a1a1a;
 
   /* Card and secondary backgrounds */
-  --color-card: #FFFFFF;
-  --color-card-foreground: #1A1A1A;
-  --color-muted: #F5F0EB;
-  --color-muted-foreground: #6B6B6B;
+  --color-card: #ffffff;
+  --color-card-foreground: #1a1a1a;
+  --color-muted: #f5f0eb;
+  --color-muted-foreground: #6b6b6b;
 
   /* Accent colors */
-  --color-accent: #FFF0E6;
-  --color-accent-foreground: #1A1A1A;
+  --color-accent: #fff0e6;
+  --color-accent-foreground: #1a1a1a;
 
   /* Status colors */
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-destructive: #EF4444;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-destructive: #ef4444;
 
   /* Border and input */
-  --color-border: #E5E0DB;
-  --color-input: #E5E0DB;
-  --color-ring: #FF6B35;
+  --color-border: #e5e0db;
+  --color-input: #e5e0db;
+  --color-ring: #ff6b35;
 
   /* Border radius */
   --radius-sm: 0.375rem;
@@ -39,14 +39,14 @@
 /* Dark mode theme */
 @layer base {
   .dark {
-    --color-background: #0F0F0F;
-    --color-foreground: #FFFFFF;
-    --color-card: #1A1A1A;
-    --color-card-foreground: #FFFFFF;
+    --color-background: #0f0f0f;
+    --color-foreground: #ffffff;
+    --color-card: #1a1a1a;
+    --color-card-foreground: #ffffff;
     --color-muted: #262626;
-    --color-muted-foreground: #A3A3A3;
+    --color-muted-foreground: #a3a3a3;
     --color-accent: #262626;
-    --color-accent-foreground: #FFFFFF;
+    --color-accent-foreground: #ffffff;
     --color-border: #333333;
     --color-input: #333333;
   }
@@ -61,7 +61,13 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family:
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
   }
 }
 

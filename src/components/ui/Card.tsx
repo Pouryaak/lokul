@@ -31,19 +31,14 @@ export interface CardProps {
  * </Card>
  * ```
  */
-export function Card({
-  children,
-  className,
-  accent = false,
-  hover = false,
-}: CardProps) {
+export function Card({ children, className, accent = false, hover = false }: CardProps) {
   return (
     <div
       className={cn(
         "relative overflow-hidden rounded-xl bg-white p-6 shadow-md",
         accent && "border-t-4 border-t-[#FF6B35]",
         hover && "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg",
-        className,
+        className
       )}
     >
       {children}
@@ -63,11 +58,7 @@ export interface CardHeaderProps {
  * Card header section
  */
 export function CardHeader({ children, className }: CardHeaderProps) {
-  return (
-    <div className={cn("mb-4", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("mb-4", className)}>{children}</div>;
 }
 
 /**
@@ -82,11 +73,7 @@ export interface CardTitleProps {
  * Card title styling
  */
 export function CardTitle({ children, className }: CardTitleProps) {
-  return (
-    <h3 className={cn("text-xl font-semibold text-[#1A1A1A]", className)}>
-      {children}
-    </h3>
-  );
+  return <h3 className={cn("text-xl font-semibold text-[#1A1A1A]", className)}>{children}</h3>;
 }
 
 /**
@@ -101,11 +88,7 @@ export interface CardContentProps {
  * Card content section
  */
 export function CardContent({ children, className }: CardContentProps) {
-  return (
-    <div className={cn("text-gray-600", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("text-gray-600", className)}>{children}</div>;
 }
 
 /**
@@ -120,9 +103,5 @@ export interface CardFooterProps {
  * Card footer section
  */
 export function CardFooter({ children, className }: CardFooterProps) {
-  return (
-    <div className={cn("mt-4 pt-4 border-t border-gray-100", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("mt-4 border-t border-gray-100 pt-4", className)}>{children}</div>;
 }

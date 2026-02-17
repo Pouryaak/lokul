@@ -63,12 +63,24 @@
 - Web Workers - For AI inference offloading (`/Users/poak/Documents/personal-project/Lokul/src/workers/inference.worker.ts`)
 - Service Workers - PWA and offline support
 
-## Configuration
+## Development Tooling
+
+**Linting & Formatting:**
+- ESLint 9 - JavaScript/TypeScript linting with flat config (`eslint.config.js`)
+  - TypeScript ESLint plugin for type-aware rules
+  - React Hooks plugin (rules-of-hooks, exhaustive-deps)
+  - React Refresh plugin for Fast Refresh validation
+- Prettier 3 - Code formatting with Tailwind CSS plugin
+- VS Code workspace settings (`.vscode/settings.json`)
+  - Auto-format on save
+  - ESLint auto-fix on save
+  - Import organization on save
 
 **Build Configuration:**
-- `/Users/poak/Documents/personal-project/Lokul/vite.config.ts` - Vite build configuration (currently scaffolded)
-- `/Users/poak/Documents/personal-project/Lokul/tailwind.config.ts` - Tailwind CSS configuration (currently scaffolded)
-- No tsconfig.json detected in root (may be using Vite's defaults)
+- `/Users/poak/Documents/personal-project/Lokul/vite.config.ts` - Vite build configuration
+- `/Users/poak/Documents/personal-project/Lokul/tsconfig.json` - TypeScript configuration
+- `/Users/poak/Documents/personal-project/Lokul/eslint.config.js` - ESLint flat config
+- `/Users/poak/Documents/personal-project/Lokul/.prettierrc` - Prettier configuration
 
 **Environment:**
 - `/Users/poak/Documents/personal-project/Lokul/.env.example` - Environment variables template (scaffolded, empty)

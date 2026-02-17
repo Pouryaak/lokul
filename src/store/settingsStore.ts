@@ -7,12 +7,7 @@
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import {
-  getSettings,
-  saveSettings,
-  resetSettings,
-  defaultSettings,
-} from "@/lib/storage/settings";
+import { getSettings, saveSettings, resetSettings, defaultSettings } from "@/lib/storage/settings";
 import type { Settings, Theme } from "@/types/index";
 
 /**
@@ -92,11 +87,10 @@ export const useSettingsStore = create<SettingsState>()(
           set({ settings, isLoading: false });
 
           if (import.meta.env.DEV) {
-            console.log("[SettingsStore] Settings loaded:", settings);
+            console.info("[SettingsStore] Settings loaded:", settings);
           }
         } catch (error) {
-          const message =
-            error instanceof Error ? error.message : "Failed to load settings";
+          const message = error instanceof Error ? error.message : "Failed to load settings";
 
           if (import.meta.env.DEV) {
             console.error("[SettingsStore] Failed to load settings:", error);
@@ -121,14 +115,13 @@ export const useSettingsStore = create<SettingsState>()(
           await saveSettings(partial);
 
           if (import.meta.env.DEV) {
-            console.log("[SettingsStore] Settings updated:", partial);
+            console.info("[SettingsStore] Settings updated:", partial);
           }
         } catch (error) {
           // Revert on error
           set({ settings: currentSettings });
 
-          const message =
-            error instanceof Error ? error.message : "Failed to save settings";
+          const message = error instanceof Error ? error.message : "Failed to save settings";
 
           if (import.meta.env.DEV) {
             console.error("[SettingsStore] Failed to save settings:", error);
@@ -151,11 +144,10 @@ export const useSettingsStore = create<SettingsState>()(
           set({ settings, isLoading: false });
 
           if (import.meta.env.DEV) {
-            console.log("[SettingsStore] Settings reset to defaults");
+            console.info("[SettingsStore] Settings reset to defaults");
           }
         } catch (error) {
-          const message =
-            error instanceof Error ? error.message : "Failed to reset settings";
+          const message = error instanceof Error ? error.message : "Failed to reset settings";
 
           if (import.meta.env.DEV) {
             console.error("[SettingsStore] Failed to reset settings:", error);
@@ -194,8 +186,8 @@ export const useSettingsStore = create<SettingsState>()(
         set({ error: null });
       },
     }),
-    { name: "SettingsStore" },
-  ),
+    { name: "SettingsStore" }
+  )
 );
 
 /**
@@ -211,14 +203,12 @@ export const selectTheme = (state: SettingsState) => state.settings.theme;
 /**
  * Get just the default model setting
  */
-export const selectDefaultModel = (state: SettingsState) =>
-  state.settings.defaultModel;
+export const selectDefaultModel = (state: SettingsState) => state.settings.defaultModel;
 
 /**
  * Get just the hasCompletedSetup flag
  */
-export const selectHasCompletedSetup = (state: SettingsState) =>
-  state.settings.hasCompletedSetup;
+export const selectHasCompletedSetup = (state: SettingsState) => state.settings.hasCompletedSetup;
 
 /**
  * Get loading state

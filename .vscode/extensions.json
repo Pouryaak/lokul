@@ -1,0 +1,26 @@
+{
+  "recommendations": [
+    // Language support
+    "ms-vscode.vscode-typescript-next",
+
+    // Linting and formatting
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+
+    // Tailwind CSS
+    "bradlc.vscode-tailwindcss",
+
+    // React
+    "dsznajder.es7-react-js-snippets",
+
+    // Git
+    "eamodio.gitlens",
+
+    // Useful utilities
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "usernamehw.errorlens",
+    "streetsidesoftware.code-spell-checker"
+  ],
+  "unwantedRecommendations": ["hookyqr.beautify", "dbaeumer.jshint"]
+}

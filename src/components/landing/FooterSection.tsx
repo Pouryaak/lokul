@@ -73,17 +73,17 @@ interface SocialLink {
  */
 const socialLinks: SocialLink[] = [
   {
-    icon: <Github className="w-5 h-5" />,
+    icon: <Github className="h-5 w-5" />,
     href: "https://github.com/lokul/lokul",
     label: "GitHub",
   },
   {
-    icon: <MessageCircle className="w-5 h-5" />,
+    icon: <MessageCircle className="h-5 w-5" />,
     href: "https://discord.gg/lokul",
     label: "Discord",
   },
   {
-    icon: <Twitter className="w-5 h-5" />,
+    icon: <Twitter className="h-5 w-5" />,
     href: "https://twitter.com/lokulapp",
     label: "Twitter",
   },
@@ -107,31 +107,25 @@ export function FooterSection() {
   };
 
   return (
-    <footer className="bg-[#1A1A1A] border-t border-gray-800">
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+    <footer className="border-t border-gray-800 bg-[#1A1A1A]">
+      <div className="mx-auto max-w-[860px] px-4 py-16">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
           {/* Brand Column */}
           <div className="md:col-span-1">
             {/* Logo */}
-            <div className="flex items-center gap-2 mb-4">
+            <div className="mb-4 flex items-center gap-2">
               <div className="relative">
-                <div className="absolute inset-0 bg-[#FF6B35]/30 blur-lg rounded-full" />
-                <img
-                  src="/spark-logo.svg"
-                  alt=""
-                  className="relative w-8 h-8"
-                />
+                <div className="absolute inset-0 rounded-full bg-[#FF6B35]/30 blur-lg" />
+                <img src="/spark-logo.svg" alt="" className="relative h-8 w-8" />
               </div>
               <span className="text-xl font-bold text-white">Lokul</span>
             </div>
 
             {/* Tagline */}
-            <p className="text-gray-400 mb-4">
-              Your AI. Your browser. Your privacy.
-            </p>
+            <p className="mb-4 text-gray-400">Your AI. Your browser. Your privacy.</p>
 
             {/* Description */}
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="mb-6 text-sm text-gray-500">
               ChatGPT-quality AI that runs 100% in your browser.
             </p>
 
@@ -146,13 +140,13 @@ export function FooterSection() {
           {/* Link Columns */}
           {footerColumns.map((column, index) => (
             <div key={index}>
-              <h3 className="text-white font-semibold mb-4">{column.title}</h3>
+              <h3 className="mb-4 font-semibold text-white">{column.title}</h3>
               <ul className="space-y-3">
                 {column.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
                     <button
                       onClick={() => handleLinkClick(link)}
-                      className="text-gray-400 hover:text-[#FF6B35] transition-colors text-left"
+                      className="cursor-pointer text-left text-gray-400 transition-colors hover:text-[#FF6B35]"
                     >
                       {link.label}
                     </button>
@@ -164,8 +158,8 @@ export function FooterSection() {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-12 border-t border-gray-800 pt-8">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             {/* Social Links */}
             <div className="flex items-center gap-4">
               {socialLinks.map((social, index) => (
@@ -174,7 +168,7 @@ export function FooterSection() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-[#FF6B35] transition-colors"
+                  className="text-gray-400 transition-colors hover:text-[#FF6B35]"
                   aria-label={social.label}
                 >
                   {social.icon}
@@ -192,7 +186,7 @@ export function FooterSection() {
               href="https://github.com/lokul/lokul"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-gray-400 hover:text-[#FF6B35] transition-colors"
+              className="flex items-center gap-2 text-gray-400 transition-colors hover:text-[#FF6B35]"
             >
               <span>★</span>
               Star us on GitHub

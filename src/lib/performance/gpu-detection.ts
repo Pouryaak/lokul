@@ -7,7 +7,12 @@
  * No fallbacks or polyfills - WebGPU is strictly required.
  */
 
-import type { GPUInfo, GPUDeviceDetails, RecommendedBrowser, BrowserCompatibility } from "@/types/index";
+import type {
+  GPUInfo,
+  GPUDeviceDetails,
+  RecommendedBrowser,
+  BrowserCompatibility,
+} from "@/types/index";
 
 /**
  * Minimum browser versions for WebGPU support
@@ -111,9 +116,11 @@ export async function getGPUInfo(): Promise<GPUInfo> {
     const details: GPUDeviceDetails = {
       vendor: adapterInfo?.vendor || undefined,
       architecture: adapterInfo?.architecture || undefined,
-      isDiscrete: adapterInfo?.vendor?.toLowerCase().includes("nvidia") ||
-                  adapterInfo?.vendor?.toLowerCase().includes("amd") ||
-                  adapterInfo?.vendor?.toLowerCase().includes("intel") || false,
+      isDiscrete:
+        adapterInfo?.vendor?.toLowerCase().includes("nvidia") ||
+        adapterInfo?.vendor?.toLowerCase().includes("amd") ||
+        adapterInfo?.vendor?.toLowerCase().includes("intel") ||
+        false,
     };
 
     return {
@@ -274,7 +281,9 @@ export function getBrowserCompatibility(): BrowserCompatibility {
 
     const version = parseInt(firefoxMatch[1], 10);
     if (version < MIN_FIREFOX_VERSION) {
-      issues.push(`Firefox version ${version} does not support WebGPU. Nightly ${MIN_FIREFOX_VERSION}+ required.`);
+      issues.push(
+        `Firefox version ${version} does not support WebGPU. Nightly ${MIN_FIREFOX_VERSION}+ required.`
+      );
     }
   }
 

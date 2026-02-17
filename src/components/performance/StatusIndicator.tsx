@@ -66,11 +66,13 @@ export function StatusIndicator({ className = "" }: StatusIndicatorProps) {
 
     // Check if SW is already registered
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.ready.then(() => {
-        setStatus("offline-ready");
-      }).catch(() => {
-        setStatus("online-required");
-      });
+      navigator.serviceWorker.ready
+        .then(() => {
+          setStatus("offline-ready");
+        })
+        .catch(() => {
+          setStatus("online-required");
+        });
     } else {
       setStatus("online-required");
     }
@@ -92,7 +94,7 @@ export function StatusIndicator({ className = "" }: StatusIndicatorProps) {
   if (status === "checking") {
     return (
       <div
-        className={`fixed left-4 bottom-4 z-50 flex items-center gap-2 px-3 py-2 rounded-full bg-muted text-muted-foreground text-sm shadow-lg ${className}`}
+        className={`bg-muted text-muted-foreground fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full px-3 py-2 text-sm shadow-lg ${className}`}
         title="Verifying offline capability"
       >
         <Loader2 className="h-4 w-4 animate-spin" />
@@ -104,14 +106,12 @@ export function StatusIndicator({ className = "" }: StatusIndicatorProps) {
   if (status === "offline-ready") {
     return (
       <div
-        className={`fixed left-4 bottom-4 z-50 flex items-center gap-2 px-3 py-2 rounded-full bg-green-50 text-green-700 text-sm shadow-lg border border-green-200 ${className}`}
+        className={`fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700 shadow-lg ${className}`}
         title="App cached for offline use"
       >
         <CheckCircle2 className="h-4 w-4" />
         <span>Works Offline</span>
-        {!isOnline && (
-          <span className="ml-1 text-xs opacity-75">(Offline Mode)</span>
-        )}
+        {!isOnline && <span className="ml-1 text-xs opacity-75">(Offline Mode)</span>}
       </div>
     );
   }
@@ -119,7 +119,7 @@ export function StatusIndicator({ className = "" }: StatusIndicatorProps) {
   // online-required status
   return (
     <div
-      className={`fixed left-4 bottom-4 z-50 flex items-center gap-2 px-3 py-2 rounded-full bg-amber-50 text-amber-700 text-sm shadow-lg border border-amber-200 ${className}`}
+      className={`fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700 shadow-lg ${className}`}
       title="First-time setup needs internet"
     >
       <WifiOff className="h-4 w-4" />

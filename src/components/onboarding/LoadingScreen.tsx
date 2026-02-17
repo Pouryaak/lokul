@@ -6,7 +6,8 @@
 
 import { useEffect, useState } from "react";
 import { X, Clock, Lightbulb, Check } from "lucide-react";
-import { Progress, formatBytes, formatTimeEstimate } from "@/components/ui/Progress";
+import { Progress } from "@/components/ui/Progress";
+import { formatBytes, formatTimeEstimate } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import type { DownloadProgress } from "@/lib/ai/inference";
 
@@ -87,28 +88,22 @@ export function LoadingScreen({
   // Error state
   if (error) {
     return (
-      <div className="fixed inset-0 z-50 bg-white flex items-center justify-center p-4">
-        <div className="max-w-md w-full text-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white p-4">
+        <div className="w-full max-w-md text-center">
           {/* Logo */}
           <div className="mb-8 flex justify-center">
             <div className="relative">
-              <div className="absolute inset-0 bg-red-500/20 blur-3xl rounded-full" />
-              <img
-                src="/spark-logo.svg"
-                alt=""
-                className="relative w-20 h-20"
-              />
+              <div className="absolute inset-0 rounded-full bg-red-500/20 blur-3xl" />
+              <img src="/spark-logo.svg" alt="" className="relative h-20 w-20" />
             </div>
           </div>
 
           {/* Error Message */}
-          <h2 className="text-2xl font-bold text-red-600 mb-4">
-            Download Failed
-          </h2>
-          <p className="text-gray-600 mb-8">{error}</p>
+          <h2 className="mb-4 text-2xl font-bold text-red-600">Download Failed</h2>
+          <p className="mb-8 text-gray-600">{error}</p>
 
           {/* Actions */}
-          <div className="flex gap-4 justify-center">
+          <div className="flex justify-center gap-4">
             <Button variant="primary" onClick={() => window.location.reload()}>
               Try Again
             </Button>
@@ -124,30 +119,24 @@ export function LoadingScreen({
   // Completion state
   if (showComplete) {
     return (
-      <div className="fixed inset-0 z-50 bg-white flex items-center justify-center p-4">
-        <div className="max-w-md w-full text-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white p-4">
+        <div className="w-full max-w-md text-center">
           {/* Logo */}
           <div className="mb-8 flex justify-center">
             <div className="relative">
-              <div className="absolute inset-0 bg-green-500/20 blur-3xl rounded-full animate-pulse" />
-              <div className="relative w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
-                <Check className="w-10 h-10 text-green-600" />
+              <div className="absolute inset-0 animate-pulse rounded-full bg-green-500/20 blur-3xl" />
+              <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
+                <Check className="h-10 w-10 text-green-600" />
               </div>
             </div>
           </div>
 
           {/* Success Message */}
-          <h2 className="text-2xl font-bold text-[#1A1A1A] mb-4">
-            {modelName} Ready!
-          </h2>
-          <p className="text-gray-600 mb-8">
-            Downloaded and cached. Now works completely offline.
-          </p>
+          <h2 className="mb-4 text-2xl font-bold text-[#1A1A1A]">{modelName} Ready!</h2>
+          <p className="mb-8 text-gray-600">Downloaded and cached. Now works completely offline.</p>
 
           {/* Auto-dismiss message */}
-          <p className="text-sm text-gray-400">
-            Starting in a few seconds...
-          </p>
+          <p className="text-sm text-gray-400">Starting in a few seconds...</p>
         </div>
       </div>
     );
@@ -155,31 +144,27 @@ export function LoadingScreen({
 
   // Loading state
   return (
-    <div className="fixed inset-0 z-50 bg-white flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white p-4">
+      <div className="w-full max-w-md">
         {/* Close button */}
         <button
           onClick={onCancel}
-          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute top-4 right-4 p-2 text-gray-400 transition-colors hover:text-gray-600"
           aria-label="Cancel"
         >
-          <X className="w-6 h-6" />
+          <X className="h-6 w-6" />
         </button>
 
         {/* Logo */}
         <div className="mb-8 flex justify-center">
           <div className="relative">
-            <div className="absolute inset-0 bg-[#FF6B35]/20 blur-3xl rounded-full animate-pulse" />
-            <img
-              src="/spark-logo.svg"
-              alt=""
-              className="relative w-20 h-20"
-            />
+            <div className="absolute inset-0 animate-pulse rounded-full bg-[#FF6B35]/20 blur-3xl" />
+            <img src="/spark-logo.svg" alt="" className="relative h-20 w-20" />
           </div>
         </div>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-center text-[#1A1A1A] mb-2">
+        <h2 className="mb-2 text-center text-2xl font-bold text-[#1A1A1A]">
           Downloading {modelName}
         </h2>
 
@@ -197,16 +182,16 @@ export function LoadingScreen({
 
         {/* Time estimate */}
         {estimatedTime !== null && estimatedTime > 0 && (
-          <div className="flex items-center justify-center gap-2 text-gray-500 mb-4">
-            <Clock className="w-4 h-4" />
+          <div className="mb-4 flex items-center justify-center gap-2 text-gray-500">
+            <Clock className="h-4 w-4" />
             <span>{formatTimeEstimate(estimatedTime)}</span>
           </div>
         )}
 
         {/* Helpful tip */}
-        <div className="bg-blue-50 rounded-lg p-4 mb-6">
+        <div className="mb-6 rounded-lg bg-blue-50 p-4">
           <div className="flex items-start gap-3">
-            <Lightbulb className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+            <Lightbulb className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-500" />
             <p className="text-sm text-blue-700">
               You can keep chatting. We'll switch automatically when ready.
             </p>

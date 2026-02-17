@@ -1,0 +1,76 @@
+{
+  // Editor settings
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.rulers": [100],
+  "editor.wordWrap": "off",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+
+  // TypeScript settings
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+
+  // ESLint settings
+  "eslint.enable": true,
+  "eslint.format.enable": true,
+  "eslint.run": "onType",
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+
+  // Prettier settings
+  "prettier.enable": true,
+  "prettier.configPath": ".prettierrc",
+
+  // File settings
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.git": true
+  },
+
+  // Search settings
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/*.lock": true
+  },
+
+  // Tailwind CSS settings
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "tailwindCSS.classAttributes": ["class", "className", "ngClass", ".*ClassName", ".*Styles"],
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "['\"`]([^'\"`]*)['\"`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+
+  // Editor behavior
+  "editor.suggestSelection": "first",
+  "editor.suggest.insertMode": "replace",
+  "editor.linkedEditing": true,
+  "editor.stickyScroll.enabled": true,
+
+  // Git settings
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+
+  // Workbench settings
+  "workbench.editor.enablePreview": false,
+  "workbench.tree.indent": 4
+}

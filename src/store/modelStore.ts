@@ -7,15 +7,8 @@
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import {
-  inferenceManager,
-  type DownloadProgress,
-} from "@/lib/ai/inference";
-import {
-  MODELS,
-  getModelById,
-  type ModelConfig,
-} from "@/lib/ai/models";
+import { inferenceManager, type DownloadProgress } from "@/lib/ai/inference";
+import { MODELS, getModelById, type ModelConfig } from "@/lib/ai/models";
 
 /**
  * Loading step states for model initialization
@@ -117,8 +110,7 @@ export const useModelStore = create<ModelState>()(
             downloadProgress: null,
           });
         } catch (err) {
-          const errorMessage =
-            err instanceof Error ? err.message : "Failed to load model";
+          const errorMessage = err instanceof Error ? err.message : "Failed to load model";
 
           set({
             error: errorMessage,
@@ -166,8 +158,8 @@ export const useModelStore = create<ModelState>()(
         set({ error: null });
       },
     }),
-    { name: "ModelStore" },
-  ),
+    { name: "ModelStore" }
+  )
 );
 
 /**
@@ -176,33 +168,28 @@ export const useModelStore = create<ModelState>()(
  */
 
 /** Get current model config */
-export const useCurrentModel = () =>
-  useModelStore((state) => state.currentModel);
+export const useCurrentModel = () => useModelStore((state) => state.currentModel);
 
 /** Get loading state */
 export const useIsLoading = () => useModelStore((state) => state.isLoading);
 
 /** Get download progress */
-export const useDownloadProgress = () =>
-  useModelStore((state) => state.downloadProgress);
+export const useDownloadProgress = () => useModelStore((state) => state.downloadProgress);
 
 /** Get loading step */
-export const useLoadingStep = () =>
-  useModelStore((state) => state.loadingStep);
+export const useLoadingStep = () => useModelStore((state) => state.loadingStep);
 
 /** Get error message */
 export const useModelError = () => useModelStore((state) => state.error);
 
 /** Get available models */
-export const useAvailableModels = () =>
-  useModelStore((state) => state.availableModels);
+export const useAvailableModels = () => useModelStore((state) => state.availableModels);
 
 /** Get loadModel action */
 export const useLoadModel = () => useModelStore((state) => state.loadModel);
 
 /** Get cancelDownload action */
-export const useCancelDownload = () =>
-  useModelStore((state) => state.cancelDownload);
+export const useCancelDownload = () => useModelStore((state) => state.cancelDownload);
 
 /** Get resetModel action */
 export const useResetModel = () => useModelStore((state) => state.resetModel);

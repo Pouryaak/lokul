@@ -88,7 +88,7 @@ export async function initializeDatabase(): Promise<void> {
     await db.open();
 
     if (import.meta.env.DEV) {
-      console.log("[LokulDB] Database initialized successfully");
+      console.info("[LokulDB] Database initialized successfully");
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

@@ -56,7 +56,7 @@ export class InferenceManager {
    */
   async initialize(
     modelId: string,
-    onProgress?: (progress: DownloadProgress) => void,
+    onProgress?: (progress: DownloadProgress) => void
   ): Promise<void> {
     const model = getModelById(modelId);
     if (!model) {
@@ -72,10 +72,9 @@ export class InferenceManager {
 
     try {
       // Create Web Worker for inference
-      this.worker = new Worker(
-        new URL("../../workers/inference.worker.ts", import.meta.url),
-        { type: "module" },
-      );
+      this.worker = new Worker(new URL("../../workers/inference.worker.ts", import.meta.url), {
+        type: "module",
+      });
 
       // Create WebLLM engine with progress callback
       this.engine = await CreateWebWorkerMLCEngine(this.worker, modelId, {

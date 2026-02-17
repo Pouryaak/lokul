@@ -22,7 +22,7 @@ interface ProofPoint {
  */
 const proofPoints: ProofPoint[] = [
   {
-    icon: <GitBranch className="w-8 h-8 text-[#FF6B35]" />,
+    icon: <GitBranch className="h-8 w-8 text-[#FF6B35]" />,
     title: "All Code is Public",
     points: [
       "Every line of code is on GitHub.",
@@ -31,11 +31,10 @@ const proofPoints: ProofPoint[] = [
       "What you see is what you get.",
     ],
     buttonText: "View Source Code →",
-    buttonAction: () =>
-      window.open("https://github.com/lokul/lokul", "_blank"),
+    buttonAction: () => window.open("https://github.com/lokul/lokul", "_blank"),
   },
   {
-    icon: <WifiOff className="w-8 h-8 text-[#FF6B35]" />,
+    icon: <WifiOff className="h-8 w-8 text-[#FF6B35]" />,
     title: "Test It Yourself",
     points: [
       "1. Open browser dev tools",
@@ -53,7 +52,7 @@ const proofPoints: ProofPoint[] = [
     },
   },
   {
-    icon: <Cpu className="w-8 h-8 text-[#FF6B35]" />,
+    icon: <Cpu className="h-8 w-8 text-[#FF6B35]" />,
     title: "Can't Send Data (By Design)",
     points: [
       "There's no server to send data to.",
@@ -63,8 +62,7 @@ const proofPoints: ProofPoint[] = [
       "It's not about trust. It's about math.",
     ],
     buttonText: "Read Technical Docs →",
-    buttonAction: () =>
-      window.open("https://docs.lokul.app", "_blank"),
+    buttonAction: () => window.open("https://docs.lokul.app", "_blank"),
   },
 ];
 
@@ -73,38 +71,36 @@ const proofPoints: ProofPoint[] = [
  */
 export function TechnicalTrustSection() {
   return (
-    <section className="py-20 md:py-32 bg-[#1A1A1A]">
-      <div className="max-w-6xl mx-auto px-4">
+    <section className="bg-[#1A1A1A] py-20 md:py-32">
+      <div className="mx-auto max-w-[860px] px-4">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+        <div className="mb-16 text-center">
+          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
             "How Do I Know It's Really Private?"
           </h2>
-          <p className="text-xl text-gray-400">
-            Fair question. Here's the proof:
-          </p>
+          <p className="text-xl text-gray-400">Fair question. Here's the proof:</p>
         </div>
 
         {/* Proof Points Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div className="mb-16 grid grid-cols-1 gap-8 md:grid-cols-3">
           {proofPoints.map((proof, index) => (
             <div
               key={index}
-              className="bg-[#262626] rounded-xl p-8 border border-gray-700 hover:border-[#FF6B35]/50 transition-colors"
+              className="rounded-xl border border-gray-700 bg-[#262626] p-8 transition-colors hover:border-[#FF6B35]/50"
             >
               {/* Icon */}
               <div className="mb-4">{proof.icon}</div>
 
               {/* Title */}
-              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <Check className="w-5 h-5 text-green-500" />
+              <h3 className="mb-4 flex items-center gap-2 text-xl font-bold text-white">
+                <Check className="h-5 w-5 text-green-500" />
                 {proof.title}
               </h3>
 
               {/* Points */}
-              <ul className="space-y-2 mb-6">
+              <ul className="mb-6 space-y-2">
                 {proof.points.map((point, pIndex) => (
-                  <li key={pIndex} className="text-gray-400 text-sm">
+                  <li key={pIndex} className="text-sm text-gray-400">
                     {point}
                   </li>
                 ))}
@@ -113,7 +109,7 @@ export function TechnicalTrustSection() {
               {/* Button */}
               <button
                 onClick={proof.buttonAction}
-                className="text-white border border-[#FF6B35] px-4 py-2 rounded-lg hover:bg-[#FF6B35]/10 transition-colors text-sm"
+                className="cursor-pointer rounded-lg border border-[#FF6B35] px-4 py-2 text-sm text-white transition-colors hover:bg-[#FF6B35]/10"
               >
                 {proof.buttonText}
               </button>
@@ -122,15 +118,13 @@ export function TechnicalTrustSection() {
         </div>
 
         {/* Bottom Section */}
-        <div className="text-center border-t border-gray-700 pt-12">
-          <p className="text-gray-400 mb-6">
+        <div className="border-t border-gray-700 pt-12 text-center">
+          <p className="mb-6 text-gray-400">
             Still skeptical? Good. That's the right attitude for privacy.
           </p>
           <button
-            onClick={() =>
-              window.open("https://discord.gg/lokul", "_blank")
-            }
-            className="text-[#FF6B35] border border-[#FF6B35] px-6 py-3 rounded-lg hover:bg-[#FF6B35]/10 transition-colors"
+            onClick={() => window.open("https://discord.gg/lokul", "_blank")}
+            className="cursor-pointer rounded-lg border border-[#FF6B35] px-6 py-3 text-[#FF6B35] transition-colors hover:bg-[#FF6B35]/10"
           >
             Join Our Discord - Ask us anything
           </button>

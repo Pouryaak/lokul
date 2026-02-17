@@ -142,10 +142,7 @@ export function getPerformanceMetrics(): PerformanceMetrics {
  * @param memoryInfo - Memory information from getMemoryInfo()
  * @returns Health status for memory specifically
  */
-function getMemoryHealthStatus(memoryInfo: {
-  used: number;
-  total: number | null;
-}): SystemHealth {
+function getMemoryHealthStatus(memoryInfo: { used: number; total: number | null }): SystemHealth {
   const { used, total } = memoryInfo;
 
   // Check absolute thresholds

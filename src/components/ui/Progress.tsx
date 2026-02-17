@@ -59,12 +59,7 @@ export function Progress({
   return (
     <div className={cn("w-full", className)}>
       {/* Progress bar container */}
-      <div
-        className={cn(
-          "w-full overflow-hidden rounded-full bg-gray-200",
-          sizeClasses[size],
-        )}
-      >
+      <div className={cn("w-full overflow-hidden rounded-full bg-gray-200", sizeClasses[size])}>
         {/* Progress fill */}
         <div
           className="h-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#FFB84D] transition-all duration-300 ease-out"
@@ -76,9 +71,7 @@ export function Progress({
       {(showLabel || currentSize || totalSize || stepLabel) && (
         <div className="mt-2 flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
-            {stepLabel && (
-              <span className="text-gray-600">{stepLabel}</span>
-            )}
+            {stepLabel && <span className="text-gray-600">{stepLabel}</span>}
           </div>
           <div className="flex items-center gap-2 text-gray-500">
             {currentSize && totalSize && (
@@ -87,9 +80,7 @@ export function Progress({
               </span>
             )}
             {showLabel && (
-              <span className="font-medium text-[#FF6B35]">
-                {Math.round(percentage)}%
-              </span>
+              <span className="font-medium text-[#FF6B35]">{Math.round(percentage)}%</span>
             )}
           </div>
         </div>
@@ -98,36 +89,4 @@ export function Progress({
   );
 }
 
-/**
- * Format bytes to human-readable string
- *
- * @param bytes - Number of bytes
- * @returns Formatted string (e.g., "1.8GB")
- */
-export function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0 B";
-
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-}
-
-/**
- * Format seconds to human-readable time estimate
- *
- * @param seconds - Number of seconds
- * @returns Formatted string (e.g., "About 3 minutes remaining")
- */
-export function formatTimeEstimate(seconds: number): string {
-  if (seconds < 60) {
-    return `About ${Math.ceil(seconds)} seconds remaining`;
-  }
-  if (seconds < 3600) {
-    const minutes = Math.ceil(seconds / 60);
-    return `About ${minutes} minute${minutes > 1 ? "s" : ""} remaining`;
-  }
-  const hours = Math.ceil(seconds / 3600);
-  return `About ${hours} hour${hours > 1 ? "s" : ""} remaining`;
-}
+// Utility functions moved to @/lib/utils

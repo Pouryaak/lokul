@@ -6,7 +6,7 @@
 
 ### Your AI. Your browser. Your privacy.
 
-**ChatGPT-quality AI running 100% in your browser.**  
+**ChatGPT-quality AI running 100% in your browser.**
 No servers. No tracking. Works offline.
 
 [![GitHub stars](https://img.shields.io/github/stars/pouryaak/lokul?style=for-the-badge&logo=github&color=FF6B35)](https://github.com/pouryaak/lokul/stargazers)
@@ -22,15 +22,15 @@ No servers. No tracking. Works offline.
 
 <img src="https://raw.githubusercontent.com/pouryaak/lokul/main/docs/demo.gif" alt="Lokul Demo" width="800">
 
-**💡 Replace demo.gif above with your actual demo showing:**  
+**💡 Replace demo.gif above with your actual demo showing:**
 _Chat working → Disconnect WiFi → Still works perfectly_
 
 ---
 
 ### 🎯 The Problem
 
-Every conversation with ChatGPT trains their models.  
-Every prompt with Claude lives on Anthropic's servers.  
+Every conversation with ChatGPT trains their models.
+Every prompt with Claude lives on Anthropic's servers.
 Every question costs you $20/month.
 
 **We think AI should be different.**
@@ -47,12 +47,12 @@ Every question costs you $20/month.
 
 ### 🔒 **Completely Private**
 
-Your conversations **never leave your device**.  
-Not encrypted. Not anonymized.  
+Your conversations **never leave your device**.
+Not encrypted. Not anonymized.
 Just... **never sent**.
 
-No company can see your data.  
-No AI can train on your prompts.  
+No company can see your data.
+No AI can train on your prompts.
 **True privacy by architecture.**
 
 </td>
@@ -62,7 +62,7 @@ No AI can train on your prompts.
 
 Download once, use forever.
 
-Write on flights. Code at the beach.  
+Write on flights. Code at the beach.
 Work in basements. Study in libraries.
 
 **No internet? No problem.**
@@ -74,11 +74,11 @@ Work in basements. Study in libraries.
 
 ### 💰 **Free Forever**
 
-No subscriptions. No API costs.  
+No subscriptions. No API costs.
 No hidden fees.
 
-The models are free.  
-The code is free.  
+The models are free.
+The code is free.
 **Zero cost. Forever.**
 
 </td>
@@ -86,10 +86,10 @@ The code is free.
 
 ### 🔓 **Open Source**
 
-Every line of code is public.  
+Every line of code is public.
 Audit it yourself. Fork it. Modify it.
 
-**No trust required.**  
+**No trust required.**
 Verify everything.
 
 </td>

@@ -107,32 +107,28 @@ export function PerformancePanel({ className = "", onClose }: PerformancePanelPr
   const healthColors = getHealthColorClasses(data.health);
 
   return (
-    <div
-      className={`bg-card border rounded-lg shadow-lg p-4 w-72 ${className}`}
-    >
+    <div className={`bg-card w-72 rounded-lg border p-4 shadow-lg ${className}`}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Activity className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold text-card-foreground">Performance</h3>
+          <Activity className="text-primary h-5 w-5" />
+          <h3 className="text-card-foreground font-semibold">Performance</h3>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className="p-1 hover:bg-muted rounded-md transition-colors"
+            className="hover:bg-muted rounded-md p-1 transition-colors"
             aria-label="Close performance panel"
           >
-            <X className="h-4 w-4 text-muted-foreground" />
+            <X className="text-muted-foreground h-4 w-4" />
           </button>
         )}
       </div>
 
       {/* Health Indicator */}
-      <div className={`mb-4 p-2 rounded-md border ${healthColors.bg} ${healthColors.border}`}>
+      <div className={`mb-4 rounded-md border p-2 ${healthColors.bg} ${healthColors.border}`}>
         <div className="flex items-center justify-between">
-          <span className={`text-sm font-medium ${healthColors.text}`}>
-            System Health
-          </span>
+          <span className={`text-sm font-medium ${healthColors.text}`}>System Health</span>
           <span className={`text-sm font-semibold ${healthColors.text}`}>
             {getHealthLabel(data.health)}
           </span>
@@ -143,29 +139,27 @@ export function PerformancePanel({ className = "", onClose }: PerformancePanelPr
       <div className="space-y-3">
         {/* GPU Status */}
         <div className="flex items-start gap-3">
-          <Cpu className="h-4 w-4 text-muted-foreground mt-0.5" />
-          <div className="flex-1 min-w-0">
-            <div className="text-sm text-muted-foreground">GPU Status</div>
+          <Cpu className="text-muted-foreground mt-0.5 h-4 w-4" />
+          <div className="min-w-0 flex-1">
+            <div className="text-muted-foreground text-sm">GPU Status</div>
             <div className="flex items-center gap-2">
               <GPUStatusIcon status={data.gpuStatus} />
-              <span className="text-sm font-medium text-card-foreground">
+              <span className="text-card-foreground text-sm font-medium">
                 {getGPUStatusLabel(data.gpuStatus)}
               </span>
             </div>
             {data.gpuName && data.gpuName !== "WebGPU Available" && (
-              <div className="text-xs text-muted-foreground truncate mt-0.5">
-                {data.gpuName}
-              </div>
+              <div className="text-muted-foreground mt-0.5 truncate text-xs">{data.gpuName}</div>
             )}
           </div>
         </div>
 
         {/* Memory Usage */}
         <div className="flex items-start gap-3">
-          <HardDrive className="h-4 w-4 text-muted-foreground mt-0.5" />
-          <div className="flex-1 min-w-0">
-            <div className="text-sm text-muted-foreground">Memory</div>
-            <div className="text-sm font-medium text-card-foreground font-mono">
+          <HardDrive className="text-muted-foreground mt-0.5 h-4 w-4" />
+          <div className="min-w-0 flex-1">
+            <div className="text-muted-foreground text-sm">Memory</div>
+            <div className="text-card-foreground font-mono text-sm font-medium">
               {formatMemoryDetail(data.memoryUsedMB, data.memoryTotalMB)}
             </div>
             {data.memoryTotalMB !== null && (
@@ -176,7 +170,7 @@ export function PerformancePanel({ className = "", onClose }: PerformancePanelPr
       </div>
 
       {/* Footer */}
-      <div className="mt-4 pt-3 border-t text-xs text-muted-foreground text-center">
+      <div className="text-muted-foreground mt-4 border-t pt-3 text-center text-xs">
         Updates every 5 seconds
       </div>
     </div>
@@ -211,15 +205,13 @@ function MemoryBar({ used, total }: { used: number; total: number }) {
 
   return (
     <div className="mt-1.5">
-      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+      <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
         <div
           className={`h-full ${barColor} transition-all duration-500`}
           style={{ width: `${percentage}%` }}
         />
       </div>
-      <div className="text-xs text-muted-foreground mt-0.5">
-        {percentage}% used
-      </div>
+      <div className="text-muted-foreground mt-0.5 text-xs">{percentage}% used</div>
     </div>
   );
 }

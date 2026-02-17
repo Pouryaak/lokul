@@ -5,8 +5,7 @@
  * Settings are merged with defaults to ensure all fields are present.
  */
 
-import { db } from "./db";
-import type { SettingsRecord } from "./db";
+import { db, type SettingsRecord } from "./db";
 import type { Settings } from "@/types/index";
 
 /**
@@ -87,9 +86,7 @@ export async function getSettings(): Promise<Settings> {
  * });
  * ```
  */
-export async function saveSettings(
-  settings: Partial<Settings>,
-): Promise<void> {
+export async function saveSettings(settings: Partial<Settings>): Promise<void> {
   try {
     // Get existing settings to merge
     const existing = await db.settings.get(SETTINGS_ID);
@@ -104,7 +101,7 @@ export async function saveSettings(
     await db.settings.put(record);
 
     if (import.meta.env.DEV) {
-      console.log("[Settings] Settings saved:", record);
+      console.info("[Settings] Settings saved:", record);
     }
   } catch (error) {
     if (import.meta.env.DEV) {
@@ -133,7 +130,7 @@ export async function resetSettings(): Promise<void> {
     await db.settings.put(record);
 
     if (import.meta.env.DEV) {
-      console.log("[Settings] Settings reset to defaults");
+      console.info("[Settings] Settings reset to defaults");
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

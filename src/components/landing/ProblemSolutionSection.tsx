@@ -79,71 +79,66 @@ export function ProblemSolutionSection() {
   };
 
   return (
-    <section
-      id="problem-solution"
-      className="w-full border-t border-orange-200"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 min-h-[600px]">
+    <section id="problem-solution" className="w-full border-t border-orange-200">
+      <div className="grid min-h-[600px] grid-cols-1 md:grid-cols-2">
         {/* Left Side - Pain Points (Dark) */}
-        <div className="bg-[#1A1A1A] p-8 md:p-12 lg:p-16 flex flex-col justify-center">
-          <h2 className="text-4xl font-bold text-white mb-10">
-            Tired of This?
-          </h2>
+        <div className="flex flex-col items-center justify-center bg-[#1A1A1A] p-8 md:p-12 lg:p-16">
+          <div className="w-full max-w-[430px]">
+            <h2 className="mb-10 text-4xl font-bold text-white">Tired of This?</h2>
 
-          <div className="space-y-6">
-            {painPoints.map((point, index) => (
-              <div key={index} className="flex gap-4">
-                <div className="flex-shrink-0 mt-1">
-                  <XCircle className="w-6 h-6 text-red-500" />
+            <div className="space-y-6">
+              {painPoints.map((point, index) => (
+                <div key={index} className="flex gap-4">
+                  <div className="mt-1 flex-shrink-0">
+                    <XCircle className="h-6 w-6 text-red-500" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">{point.headline}</h3>
+                    <p className="mt-1 text-sm text-gray-400">{point.subtext}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg text-white">
-                    {point.headline}
-                  </h3>
-                  <p className="text-sm text-gray-400 mt-1">{point.subtext}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Right Side - Solutions (Light) */}
-        <div className="bg-[#FFF8F0] p-8 md:p-12 lg:p-16 flex flex-col justify-center">
-          <h2 className="text-4xl font-bold text-[#1A1A1A] mb-10">
-            <span className="underline decoration-[#FF6B35] decoration-4 underline-offset-4">
-              Try This Instead
-            </span>
-          </h2>
+        <div className="flex flex-col items-center justify-center bg-[#FFF8F0] p-8 md:p-12 lg:p-16">
+          <div className="w-full max-w-[430px]">
+            <h2 className="mb-10 text-4xl font-bold text-[#1A1A1A]">
+              <span className="underline decoration-[#FF6B35] decoration-4 underline-offset-4">
+                Try This Instead
+              </span>
+            </h2>
 
-          <div className="space-y-6">
-            {solutions.map((solution, index) => (
-              <div key={index} className="flex gap-4">
-                <div className="flex-shrink-0 mt-1">
-                  <CheckCircle className="w-6 h-6 text-[#FF6B35]" />
+            <div className="space-y-6">
+              {solutions.map((solution, index) => (
+                <div key={index} className="flex gap-4">
+                  <div className="mt-1 flex-shrink-0">
+                    <CheckCircle className="h-6 w-6 text-[#FF6B35]" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#1A1A1A]">{solution.headline}</h3>
+                    <p className="mt-1 text-sm text-gray-600">{solution.subtext}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg text-[#1A1A1A]">
-                    {solution.headline}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {solution.subtext}
-                  </p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Bottom CTA */}
-      <div className="bg-white py-8 text-center border-t border-orange-100">
-        <button
-          onClick={scrollToDemo}
-          className="inline-flex items-center gap-2 text-[#FF6B35] font-medium hover:text-[#FF6B35]/80 transition-colors"
-        >
-          See It In Action
-          <ArrowDown className="w-4 h-4" />
-        </button>
+      <div className="border-t border-orange-100 bg-white py-8">
+        <div className="mx-auto max-w-[860px] px-4 text-center">
+          <button
+            onClick={scrollToDemo}
+            className="inline-flex cursor-pointer items-center gap-2 font-medium text-[#FF6B35] transition-colors hover:text-[#FF6B35]/80"
+          >
+            See It In Action
+            <ArrowDown className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     </section>
   );

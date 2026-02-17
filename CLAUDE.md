@@ -291,7 +291,7 @@ type ModelType = "quick" | "smart" | "genius";
 export function buildContext(
   conversation: Conversation,
   memory: MemoryFacts,
-  maxTokens: number = 6000,
+  maxTokens: number = 6000
 ): ContextMessage[] {
   // 1. Validation
   if (!conversation || conversation.messages.length === 0) {
@@ -308,10 +308,7 @@ export function buildContext(
   const availableTokens = maxTokens - SYSTEM_TOKENS - MEMORY_TOKENS;
 
   // 4. Get recent messages
-  const recentMessages = getRecentMessages(
-    conversation.messages,
-    availableTokens,
-  );
+  const recentMessages = getRecentMessages(conversation.messages, availableTokens);
 
   // 5. Combine and return
   return [
@@ -322,10 +319,7 @@ export function buildContext(
 }
 
 // Helper functions (extracted for clarity)
-function getRecentMessages(
-  messages: Message[],
-  maxTokens: number,
-): ContextMessage[] {
+function getRecentMessages(messages: Message[], maxTokens: number): ContextMessage[] {
   // Implementation
 }
 
@@ -392,7 +386,7 @@ export function useChat(conversationId?: string) {
         setIsLoading(false);
       }
     },
-    [addMessage],
+    [addMessage]
   );
 
   // 4. Effects
@@ -463,10 +457,10 @@ export const useChatStore = create<ChatState>()(
           // Only persist certain fields
           messages: state.messages,
         }),
-      },
+      }
     ),
-    { name: "ChatStore" }, // DevTools name
-  ),
+    { name: "ChatStore" } // DevTools name
+  )
 );
 ```
 
@@ -533,15 +527,11 @@ export const db = new LokulDatabase();
 // CRUD operations (in separate files)
 
 // conversations.ts
-export async function saveConversation(
-  conversation: Conversation,
-): Promise<void> {
+export async function saveConversation(conversation: Conversation): Promise<void> {
   await db.conversations.put(conversation);
 }
 
-export async function getConversation(
-  id: string,
-): Promise<Conversation | undefined> {
+export async function getConversation(id: string): Promise<Conversation | undefined> {
   return await db.conversations.get(id);
 }
 
@@ -606,9 +596,7 @@ async function handleInit(payload: { model: string }) {
   self.postMessage({ type: "INIT_COMPLETE" });
 }
 
-async function handleGenerate(payload: {
-  messages: Array<{ role: string; content: string }>;
-}) {
+async function handleGenerate(payload: { messages: Array<{ role: string; content: string }> }) {
   if (!engine) {
     throw new Error("Engine not initialized");
   }
@@ -805,8 +793,7 @@ async function sendMessage(content: string) {
     }
 
     // User-friendly error
-    const message =
-      error instanceof Error ? error.message : "Failed to send message";
+    const message = error instanceof Error ? error.message : "Failed to send message";
 
     // Re-throw or handle
     throw new Error(message);
@@ -945,7 +932,7 @@ function ChatInterface() {
     (id: string) => {
       deleteMessage(id);
     },
-    [deleteMessage],
+    [deleteMessage]
   );
 
   return <MessageList messages={sortedMessages} onDelete={handleDelete} />;
@@ -961,9 +948,7 @@ function MessageList({ messages }: MessageListProps) {
   return (
     <Virtuoso
       data={messages}
-      itemContent={(index, message) => (
-        <Message key={message.id} message={message} />
-      )}
+      itemContent={(index, message) => <Message key={message.id} message={message} />}
       followOutput="auto"
     />
   );
@@ -1078,13 +1063,82 @@ const isActive = true;
  * const response = await sendMessage('Hello!', { stream: true });
  * ```
  */
-export async function sendMessage(
-  content: string,
-  options?: MessageOptions,
-): Promise<string> {
+export async function sendMessage(content: string, options?: MessageOptions): Promise<string> {
   // Implementation
 }
 ````
+
+---
+
+## 🔧 Development Environment Setup
+
+### **VS Code Configuration**
+
+The project includes shared VS Code settings for consistent development:
+
+**`.vscode/settings.json`**
+
+- Auto-format on save with Prettier
+- ESLint auto-fix on save
+- Import organization on save
+- Tailwind CSS IntelliSense
+- Editor rulers at 100 characters
+
+**`.vscode/extensions.json`**
+
+Recommended extensions:
+
+- `dbaeumer.vscode-eslint` - ESLint integration
+- `esbenp.prettier-vscode` - Prettier formatting
+- `bradlc.vscode-tailwindcss` - Tailwind CSS support
+- `eamodio.gitlens` - Git integration
+- `usernamehw.errorlens` - Inline error display
+
+### **ESLint Configuration**
+
+Uses ESLint v9 with flat config format (`eslint.config.js`):
+
+**Enabled Rules:**
+
+- TypeScript recommended rules
+- React Hooks rules (exhaustive-deps, rules-of-hooks)
+- React Refresh validation
+- No console.log (allowed: info, warn, error)
+- No duplicate imports
+- Prefer const
+- No explicit any (warning)
+
+**Commands:**
+
+```bash
+npm run lint      # Check for lint errors
+npm run lint:fix  # Fix auto-fixable issues
+```
+
+### **Prettier Configuration**
+
+**`.prettierrc`:**
+
+- Semi-colons: enabled
+- Single quotes: disabled (use double)
+- Tab width: 2 spaces
+- Trailing comma: ES5
+- Print width: 100
+- Plugins: `prettier-plugin-tailwindcss`
+
+**Commands:**
+
+```bash
+npm run format       # Format all files
+npm run format:check # Check formatting without changes
+```
+
+### **IDE Setup for New Contributors**
+
+1. Install recommended VS Code extensions (prompted on open)
+2. Restart VS Code after first install
+3. Format on save is automatically enabled
+4. ESLint will show errors inline and auto-fix on save
 
 ---
 

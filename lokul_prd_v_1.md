@@ -1,21 +1,21 @@
 # LOKUL — Product Requirements Document (PRD)
 
-**Version:** 1.0  \
-**Date:** February 17, 2026  \
-**Status:** Pre-Development  \
-**Product:** Lokul — *Your AI. Locally.*
+**Version:** 1.0 \
+**Date:** February 17, 2026 \
+**Status:** Pre-Development \
+**Product:** Lokul — _Your AI. Locally._
 
 ---
 
 ## 📋 Executive Summary
 
-**What we’re building:**  \
+**What we’re building:** \
 A ChatGPT-quality AI chat interface that runs **100% in the browser** using **WebGPU**. **Zero servers**, complete privacy, works offline.
 
-**Why it matters:**  \
+**Why it matters:** \
 Every AI chat tool sends your data to the cloud. We don’t. Lokul is browser-based, privacy-first AI with a consumer-grade UX.
 
-**Success metric:**  \
+**Success metric:** \
 **10,000+ GitHub stars** in the first 6 months.
 
 ---
@@ -23,6 +23,7 @@ Every AI chat tool sends your data to the cloud. We don’t. Lokul is browser-ba
 ## 🎯 Product Vision
 
 ### The Problem
+
 - ChatGPT, Claude, Gemini require cloud servers
 - Conversations can be logged and used for training
 - $20/month subscriptions add up
@@ -30,6 +31,7 @@ Every AI chat tool sends your data to the cloud. We don’t. Lokul is browser-ba
 - Privacy-conscious users have no good options
 
 ### Our Solution
+
 - AI models run in your browser via WebGPU
 - All data stays on your device
 - Free forever (no API costs)
@@ -37,6 +39,7 @@ Every AI chat tool sends your data to the cloud. We don’t. Lokul is browser-ba
 - Open source = verifiable privacy
 
 ### Not Building (v1)
+
 - ❌ Desktop app (browser-only)
 - ❌ Mobile app (web only for now)
 - ❌ Cloud sync (defeats the purpose)
@@ -48,6 +51,7 @@ Every AI chat tool sends your data to the cloud. We don’t. Lokul is browser-ba
 ## 👥 Target Users
 
 ### Primary Audience (v1)
+
 1. **Privacy-Conscious Professionals**
    - Developers, writers, researchers
    - Don’t trust cloud AI with sensitive work
@@ -65,6 +69,7 @@ Every AI chat tool sends your data to the cloud. We don’t. Lokul is browser-ba
    - Want to verify code themselves
 
 ### Secondary Audience (v2+)
+
 - Enterprise (self-hosted)
 - Educational institutions
 - Countries where ChatGPT is blocked
@@ -75,13 +80,14 @@ Every AI chat tool sends your data to the cloud. We don’t. Lokul is browser-ba
 
 ### Feature 1: Chat Interface
 
-**What:**  \
+**What:** \
 Clean, ChatGPT-style chat interface with streaming responses.
 
-**User Story:**  \
+**User Story:** \
 “As a user, I want to chat with AI just like ChatGPT, so I can get immediate value without learning a new UI.”
 
 **Requirements:**
+
 - Single conversation view (no multi-chat in v1)
 - Message input box with auto-resize
 - Streaming text responses (word-by-word)
@@ -92,12 +98,14 @@ Clean, ChatGPT-style chat interface with streaming responses.
 - Syntax highlighting for code
 
 **Technical Notes:**
+
 - React for UI
 - Stream tokens from WebLLM (via Worker)
 - Render markdown with `react-markdown` + `remark-gfm`
 - Syntax highlighting with Shiki (preferred) or rehype-highlight (fallback)
 
 **Success Criteria:**
+
 - Feels as fast as ChatGPT
 - No UI lag during streaming
 - Code blocks render properly
@@ -106,21 +114,23 @@ Clean, ChatGPT-style chat interface with streaming responses.
 
 ### Feature 2: Model Management
 
-**What:**  \
+**What:** \
 Simple model switcher with 3 tiers: **Quick**, **Smart**, **Genius**.
 
-**User Story:**  \
+**User Story:** \
 “As a user, I want to choose between speed and intelligence, without dealing with technical model names.”
 
 **Requirements:**
 
 **Quick Mode**
+
 - Model: Phi-2 2.7B (2-bit quantized, ~80MB)
 - Auto-loads on first visit
 - Load time: 3–5 seconds
 - Label: “⚡ Quick — Fast responses”
 
 **Smart Mode**
+
 - Model: Llama 3.2 3B (4-bit quantized, ~2.8GB)
 - Optional download
 - Load time: first download 5–10 min, cached = instant
@@ -128,6 +138,7 @@ Simple model switcher with 3 tiers: **Quick**, **Smart**, **Genius**.
 - Recommended default
 
 **Genius Mode**
+
 - Model: Mistral 7B (4-bit quantized, ~6.4GB)
 - Optional download
 - Load time: first download 10–15 min, cached = instant
@@ -135,6 +146,7 @@ Simple model switcher with 3 tiers: **Quick**, **Smart**, **Genius**.
 - For power users
 
 **UI Elements**
+
 - Dropdown in header to switch models
 - Show current mode always visible
 - Download progress with percentage + time estimate
@@ -142,12 +154,14 @@ Simple model switcher with 3 tiers: **Quick**, **Smart**, **Genius**.
 - Clear storage requirements for each
 
 **Technical Notes:**
+
 - Use WebLLM model registry
 - Cache model assets in Cache Storage and/or IndexedDB
 - Background download (non-blocking)
 - Service Worker supports offline usage after download
 
 **Success Criteria:**
+
 - Model switch is seamless (no page reload)
 - Download progress is accurate
 - Users understand tradeoffs
@@ -156,15 +170,16 @@ Simple model switcher with 3 tiers: **Quick**, **Smart**, **Genius**.
 
 ### Feature 3: Performance Monitoring
 
-**What:**  \
+**What:** \
 Real-time system stats visible to the user.
 
-**User Story:**  \
+**User Story:** \
 “As a user, I want to know how my device is handling the AI, so I can switch models if needed.”
 
 **Requirements:**
 
 **Always Visible (Collapsible Panel)**
+
 - Memory usage (MB / total available)
 - GPU status (Active / Inactive / Not supported)
 - Last response time (ms)
@@ -172,22 +187,26 @@ Real-time system stats visible to the user.
 - Current mode/model
 
 **Visual Indicators**
+
 - 🟢 Green: Optimal (< 50% memory, GPU active)
 - 🟡 Yellow: Good (50–75% memory)
 - 🔴 Red: Struggling (> 75% memory)
 
 **Proactive Warnings**
+
 - If memory > 75%: suggest switching to Quick
 - If no GPU: show “Running on CPU (slower)”
 - If browser not supported: show clear error
 
 **Technical Notes:**
+
 - Performance API for timings
 - WebGPU detection for capability status
 - Measure tokens/sec from streamed output timestamps
 - Store peak usage per session
 
 **Success Criteria:**
+
 - Users understand why it’s slow
 - Clear warnings prevent crashes
 - Performance data is accurate
@@ -196,13 +215,14 @@ Real-time system stats visible to the user.
 
 ### Feature 4: Local Storage & Persistence
 
-**What:**  \
+**What:** \
 All conversations saved locally, accessible offline.
 
-**User Story:**  \
+**User Story:** \
 “As a user, I want my conversations saved automatically, without them ever touching a server.”
 
 **Requirements:**
+
 - Auto-save every message
 - Conversation history sidebar (simple list)
 - Search conversations (later v1.5)
@@ -214,6 +234,7 @@ All conversations saved locally, accessible offline.
 - Clear all data button
 
 **Data Structure (example)**
+
 ```js
 {
   conversations: [
@@ -238,16 +259,19 @@ All conversations saved locally, accessible offline.
 ```
 
 **Storage**
+
 - IndexedDB (conversations, memory)
 - localStorage (settings, small data)
 - Service Worker cache (models, assets)
 
 **Technical Notes**
+
 - Dexie.js for IndexedDB wrapper
 - Auto-generate conversation titles
 - Optional compression for long chats (lz-string)
 
 **Success Criteria**
+
 - Data persists across sessions
 - Export/import works perfectly
 - No data loss
@@ -256,36 +280,41 @@ All conversations saved locally, accessible offline.
 
 ### Feature 5: Offline Mode
 
-**What:**  \
+**What:** \
 Full functionality after first load, even without internet.
 
-**User Story:**  \
+**User Story:** \
 “As a user, I want to use Lokul on a plane or in places with bad internet.”
 
 **Requirements:**
+
 - Service Worker caches everything
 - “Offline Ready” badge when cached
 - Works without internet after first visit
 - Clear indicator: “✅ Works Offline” or “⚠️ Online Required”
 
 **What’s Cached:**
+
 - HTML/CSS/JS bundles
 - Downloaded models
 - UI assets, fonts, icons
 - Conversations (IndexedDB)
 
 **What Requires Internet:**
+
 - First-time model downloads
 - App updates
 - Nothing else
 
 **Technical Notes:**
+
 - `vite-plugin-pwa` (Workbox under the hood)
 - Cache-first for assets
 - Stale-while-revalidate for updates
 - Model files downloaded via an explicit “Model Download Manager” to avoid silent multi-GB caching
 
 **Success Criteria:**
+
 - Can chat with airplane mode on
 - Badge accurately shows offline status
 - No confusion about what works offline
@@ -294,13 +323,14 @@ Full functionality after first load, even without internet.
 
 ### Feature 6: Conversation Memory & Context Management
 
-**What:**  \
+**What:** \
 An intelligent memory system that retains user context across long conversations without hitting token limits.
 
-**User Story:**  \
+**User Story:** \
 “As a user, I want the AI to remember what I told it earlier in the conversation, even after 50+ messages, so I don’t have to repeat myself.”
 
 **The Problem**
+
 - Local models have limited context windows (2K–8K tokens)
 - Users expect “infinite memory”
 - Naive approaches forget or crash
@@ -308,16 +338,19 @@ An intelligent memory system that retains user context across long conversations
 **Our Solution (OpenClaw-inspired): Three-tier memory + auto-compaction**
 
 **Memory Tier 1: Core Facts (Persistent)**
+
 - Key info about the user (name, goals, preferences, project context)
 - Stored in IndexedDB, never deleted
 - Always loaded (lightweight, ~200 tokens)
 
 **Memory Tier 2: Daily Context**
+
 - Running log of today’s session
 - Reset daily/per-session
 - Medium priority (~300 tokens)
 
 **Memory Tier 3: Recent Messages**
+
 - Last 20–40 message pairs (depends on model)
 - Full fidelity conversation
 - Oldest messages compressed when limit approached
@@ -325,6 +358,7 @@ An intelligent memory system that retains user context across long conversations
 **Requirements**
 
 **Fact Extraction (v1)**
+
 - Regex/pattern-matching for common facts:
   - Name
   - Learning goals
@@ -334,6 +368,7 @@ An intelligent memory system that retains user context across long conversations
 - No extra AI calls required in v1
 
 **Context Building**
+
 ```
 [System Prompt] (~100 tokens)
 [Core Facts] (~200 tokens)
@@ -343,15 +378,17 @@ An intelligent memory system that retains user context across long conversations
 ```
 
 **Auto-Compaction**
+
 - Triggers at ~80% of model limit
 - Pre-compaction flush:
-  1) Ask model to extract key facts
-  2) Save to Core Memory
-  3) Silent turn (user doesn’t see)
+  1. Ask model to extract key facts
+  2. Save to Core Memory
+  3. Silent turn (user doesn’t see)
 - Summarize older messages
 - Notify: “Conversation compressed”
 
 **User-Facing Memory Panel**
+
 - View what Lokul remembers
 - Edit facts
 - Clear memory
@@ -364,7 +401,9 @@ An intelligent memory system that retains user context across long conversations
 | Genius (Mistral) | 8,192 | 600 | ~40 |
 
 **Technical Notes**
+
 - IndexedDB schema
+
 ```js
 {
   corememory: { userName, goals: [], preferences: [], projects: [], customFacts: [] },
@@ -372,10 +411,12 @@ An intelligent memory system that retains user context across long conversations
   conversations: { id, messages: [], summary, tokenCount }
 }
 ```
+
 - Token estimation: ~0.75 words per token (approx)
 - Store token counts per message to avoid recalculation
 
 **Success Criteria**
+
 - Remembers key user facts after 50+ messages
 - No context limit crashes
 - Auto-compaction completes in < 3 seconds
@@ -386,15 +427,16 @@ An intelligent memory system that retains user context across long conversations
 
 ### Feature 7: First-Run Experience (CRITICAL)
 
-**What:**  \
+**What:** \
 Smooth onboarding that gets users to their first message in < 60 seconds.
 
-**User Story:**  \
+**User Story:** \
 “As a first-time user, I want to start chatting immediately, without friction.”
 
 **Flow**
 
 **Step 1: Landing (0s)**
+
 ```
 ┌─────────────────────────────────┐
 │   🔥 Lokul                      │
@@ -407,6 +449,7 @@ Smooth onboarding that gets users to their first message in < 60 seconds.
 ```
 
 **Step 2: Setup (5–30s)**
+
 ```
 ┌─────────────────────────────────┐
 │   Setting up Lokul...           │
@@ -423,6 +466,7 @@ Smooth onboarding that gets users to their first message in < 60 seconds.
 ```
 
 **Step 3: Ready (30s)**
+
 ```
 ┌─────────────────────────────────┐
 │   ✓ Lokul is ready!             │
@@ -436,16 +480,19 @@ Smooth onboarding that gets users to their first message in < 60 seconds.
 ```
 
 **Step 4: Chat**
+
 - Immediately usable
 - Tooltip: “💡 Upgrade to Smart Mode for better answers”
 - Dismissible banner: “Download Smart Mode (2.8GB) for better quality”
 
 **Technical Notes**
+
 - Preload Quick Mode in background
 - Show honest setup steps (build trust)
 - Set realistic time expectations
 
 **Success Criteria**
+
 - < 10% bounce during loading
 - Users successfully send first message
 - 30%+ download Smart Mode
@@ -455,34 +502,38 @@ Smooth onboarding that gets users to their first message in < 60 seconds.
 ## 🎨 Design Specifications
 
 ### Color System
+
 **Light Mode**
+
 ```css
---primary: #FF6B35;
---secondary: #FFB84D;
---accent: #FF8C42;
---background: #FFF8F0;
---surface: #FFFFFF;
---text-primary: #1A1A1A;
+--primary: #ff6b35;
+--secondary: #ffb84d;
+--accent: #ff8c42;
+--background: #fff8f0;
+--surface: #ffffff;
+--text-primary: #1a1a1a;
 --text-secondary: #666666;
---border: #E5E5E5;
+--border: #e5e5e5;
 ```
 
 **Dark Mode**
+
 ```css
---primary: #FF6B35;
---secondary: #FFB84D;
---accent: #FF8C42;
---background: #0F0F0F;
---surface: #1A1A1A;
---text-primary: #FFFFFF;
---text-secondary: #A0A0A0;
---border: #2A2A2A;
+--primary: #ff6b35;
+--secondary: #ffb84d;
+--accent: #ff8c42;
+--background: #0f0f0f;
+--surface: #1a1a1a;
+--text-primary: #ffffff;
+--text-secondary: #a0a0a0;
+--border: #2a2a2a;
 ```
 
 ### Typography
+
 ```css
---font-main: 'Inter', -apple-system, system-ui, sans-serif;
---font-code: 'JetBrains Mono', 'Courier New', monospace;
+--font-main: "Inter", -apple-system, system-ui, sans-serif;
+--font-code: "JetBrains Mono", "Courier New", monospace;
 
 --text-xs: 12px;
 --text-sm: 14px;
@@ -494,6 +545,7 @@ Smooth onboarding that gets users to their first message in < 60 seconds.
 ```
 
 ### Spacing
+
 ```css
 --space-1: 4px;
 --space-2: 8px;
@@ -505,6 +557,7 @@ Smooth onboarding that gets users to their first message in < 60 seconds.
 ```
 
 ### Border Radius
+
 ```css
 --radius-sm: 8px;
 --radius-md: 12px;
@@ -513,11 +566,12 @@ Smooth onboarding that gets users to their first message in < 60 seconds.
 ```
 
 ### Shadows
+
 ```css
---shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
---shadow-md: 0 4px 6px rgba(0,0,0,0.07);
---shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
---shadow-glow: 0 0 20px rgba(255,107,53,0.3);
+--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+--shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+--shadow-glow: 0 0 20px rgba(255, 107, 53, 0.3);
 ```
 
 ---
@@ -527,12 +581,14 @@ Smooth onboarding that gets users to their first message in < 60 seconds.
 ### Tech Stack
 
 **Frontend**
+
 - Vite
 - React 18
 - TypeScript
 - react-router-dom
 
 **UI System**
+
 - Tailwind CSS
 - shadcn/ui (Radix UI)
 - lucide-react
@@ -544,45 +600,85 @@ Smooth onboarding that gets users to their first message in < 60 seconds.
 - react-virtuoso (virtualized message list)
 
 **Chat Rendering**
+
 - react-markdown
 - remark-gfm
 - Shiki (preferred) or rehype-highlight (fallback)
 - react-textarea-autosize
 
 **State Management**
+
 - Zustand
 - zod (schema validation/migrations)
 - immer (optional)
 
 **Storage**
+
 - IndexedDB
 - Dexie.js
 - localStorage
 - lz-string (optional compression)
 
 **Offline/PWA**
+
 - vite-plugin-pwa (Workbox)
 
 **AI Inference**
+
 - WebLLM (@mlc-ai/web-llm)
 - WebGPU
 - Web Workers
 - Comlink
 
 **Performance Metrics**
+
 - web-vitals
 - Performance API (timings)
 
 **Error Tracking (optional)**
+
 - Sentry (@sentry/react)
 
 **Deployment**
+
 - Vercel
 - Optional later: separate CDN/bucket for model assets
 
 ---
 
+### Development Tooling
+
+**Code Quality**
+
+- ESLint 9 (flat config) with TypeScript, React Hooks, and React Refresh rules
+- Prettier 3 with Tailwind CSS plugin for class sorting
+- VS Code workspace settings for auto-format on save
+- VS Code extensions recommendations for consistent IDE setup
+
+**VS Code Workspace Setup**
+
+Shared settings in `.vscode/settings.json`:
+
+- Auto-format on save with Prettier
+- ESLint auto-fix on save
+- Import organization on save
+- 100-character ruler
+- LF line endings
+
+**NPM Scripts**
+
+```bash
+npm run lint          # Check ESLint rules
+npm run lint:fix      # Fix ESLint issues
+npm run format        # Format all files with Prettier
+npm run format:check  # Check formatting without changes
+npm run type-check    # TypeScript type checking
+```
+
+---
+
 ### File Structure (proposed)
+
 ```txt
 lokul/
 ├── public/
@@ -619,24 +715,29 @@ lokul/
 ## 📊 Success Metrics
 
 ### Primary KPIs (v1)
+
 **GitHub Stars**
+
 - Week 1: 500
 - Month 1: 2,000
 - Month 3: 5,000
 - Month 6: 10,000
 
 **User Engagement**
+
 - 70%+ first message completion rate
 - 40%+ download Smart Mode
 - 50%+ return within 7 days
 - < 5% crash rate
 
 **Memory Performance**
+
 - Memory persistence: 100% (no data loss)
 - Compaction success rate: > 99%
 - Fact extraction accuracy: > 80% (v1), > 95% (v2)
 
 **Technical Performance**
+
 - < 30 seconds first load (Quick Mode)
 - < 3 seconds average response time (target)
 - < 100ms UI lag during streaming
@@ -647,6 +748,7 @@ lokul/
 ## 🚀 Launch Plan
 
 ### Pre-Launch (Week -1)
+
 - Name decided (Lokul)
 - Design system defined
 - Domain purchased (trylokul.com)
@@ -656,28 +758,35 @@ lokul/
 - Demo GIF recorded
 
 ### Launch Week (Week 0)
+
 **Monday**
+
 - Deploy v1 to trylokul.com
 - Open source on GitHub
 - Finalize README with screenshots
 
 **Tuesday 9 AM PT**
+
 - Post on Hacker News: “Lokul — ChatGPT that runs 100% in your browser”
 - Monitor comments, respond quickly
 
 **Wednesday**
+
 - Post on Reddit (r/selfhosted, r/LocalLLaMA, r/privacy)
 - Twitter thread showing offline mode
 
 **Thursday**
+
 - Launch on Product Hunt
 - Email tech journalists
 
 **Friday**
+
 - Post on Dev.to
 - Share in Discord communities
 
 ### Post-Launch (Week 1–4)
+
 - Daily: respond to GitHub issues
 - Weekly: ship bug fixes
 - Biweekly: add requested features
@@ -688,6 +797,7 @@ lokul/
 ## 🛣️ Roadmap
 
 ### v1.0 (MVP) — Week 0–3
+
 - ✅ Chat interface
 - ✅ Model switching (3 tiers)
 - ✅ Performance monitoring
@@ -696,6 +806,7 @@ lokul/
 - ✅ First-run experience
 
 ### v1.1 (Polish) — Week 4–6
+
 - Search conversations
 - Better markdown rendering
 - Keyboard shortcuts
@@ -703,12 +814,14 @@ lokul/
 - Mobile responsive (basic)
 
 ### v1.5 (Power Features) — Week 8–12
+
 - Document upload (PDF)
 - Multi-turn context improvements
 - Conversation folders
 - Custom system prompts
 
 ### v2.0 (Advanced) — Month 4–6
+
 - Personal AIs (custom personas)
 - Project workspaces
 - Image understanding (multi-modal)
@@ -718,20 +831,21 @@ lokul/
 
 ## ❗ Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| WebGPU not supported | High | Fallback to CPU/WASM where possible, clear requirements |
-| Model too large (bounce) | High | Start with tiny Quick Mode, progressive enhancement |
-| Performance issues | Medium | Proactive warnings, switch suggestion to Quick Mode |
-| Browser crashes | High | Memory monitoring, kill-switch, robust error handling |
-| Competition launches first | Medium | Speed > perfection, ship fast |
-| Users don’t trust privacy | Medium | Open source, clear privacy promise |
+| Risk                       | Impact | Mitigation                                              |
+| -------------------------- | ------ | ------------------------------------------------------- |
+| WebGPU not supported       | High   | Fallback to CPU/WASM where possible, clear requirements |
+| Model too large (bounce)   | High   | Start with tiny Quick Mode, progressive enhancement     |
+| Performance issues         | Medium | Proactive warnings, switch suggestion to Quick Mode     |
+| Browser crashes            | High   | Memory monitoring, kill-switch, robust error handling   |
+| Competition launches first | Medium | Speed > perfection, ship fast                           |
+| Users don’t trust privacy  | Medium | Open source, clear privacy promise                      |
 
 ---
 
 ## ✅ Definition of Done (v1)
 
 v1 is complete when:
+
 - All core features implemented
 - Works on Chrome 120+ and Edge 120+
 - No critical bugs
@@ -741,4 +855,3 @@ v1 is complete when:
 - Deployed to trylokul.com
 - GitHub repo public
 - Successfully chat with Quick Mode in < 60 seconds from landing
-

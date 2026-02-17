@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
  */
 const buttonVariants = cva(
   // Base styles
-  "inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
@@ -23,8 +23,7 @@ const buttonVariants = cva(
           "bg-white text-[#FF6B35] border-2 border-[#FF6B35] hover:bg-[#FFF8F0] hover:-translate-y-0.5",
         outline:
           "border-2 border-[#FF6B35] bg-transparent text-[#FF6B35] hover:bg-[#FFF8F0] hover:-translate-y-0.5",
-        ghost:
-          "bg-transparent text-[#FF6B35] hover:bg-[#FFF8F0] hover:-translate-y-0.5",
+        ghost: "bg-transparent text-[#FF6B35] hover:bg-[#FFF8F0] hover:-translate-y-0.5",
         white:
           "bg-white text-[#FF6B35] shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1",
       },
@@ -40,15 +39,14 @@ const buttonVariants = cva(
       variant: "primary",
       size: "md",
     },
-  },
+  }
 );
 
 /**
  * Props for the Button component
  */
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   /** Whether the button is in a loading state */
   loading?: boolean;
   /** Loading text to display (defaults to children) */

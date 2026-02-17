@@ -19,7 +19,13 @@ pnpm-debug.log*
 # Editor/OS files
 .DS_Store
 .idea/
-.vscode/
+
+# VS Code - allow shared settings but ignore local/personal
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
 
 # TypeScript
 *.tsbuildinfo

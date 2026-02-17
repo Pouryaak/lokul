@@ -5,8 +5,6 @@
  * and WebGPU detection with browser compatibility warnings.
  */
 
-import { useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import {
   checkWebGPUSupport,
@@ -14,6 +12,8 @@ import {
   getUnsupportedBrowserMessage,
 } from "@/lib/performance/gpu-detection";
 import type { GPUInfo, RecommendedBrowser } from "@/types/index";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
 
 /**
  * Props for HeroSection
@@ -45,42 +45,40 @@ export function HeroSection({ onStart }: HeroSectionProps) {
   };
 
   return (
-    <section className="relative min-h-screen bg-gradient-to-b from-[#FFF8F0] to-[#FFF0E6] flex flex-col items-center justify-center px-4 py-20">
+    <section className="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#FFF8F0] to-[#FFF0E6] px-4 py-20">
       {/* Animated ember particles (subtle background effect) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#FF6B35]/20 rounded-full animate-pulse" />
-        <div className="absolute top-1/3 right-1/3 w-3 h-3 bg-[#FFB84D]/20 rounded-full animate-pulse delay-300" />
-        <div className="absolute bottom-1/3 left-1/3 w-2 h-2 bg-[#FF6B35]/20 rounded-full animate-pulse delay-700" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 h-2 w-2 animate-pulse rounded-full bg-[#FF6B35]/20" />
+        <div className="absolute top-1/3 right-1/3 h-3 w-3 animate-pulse rounded-full bg-[#FFB84D]/20 delay-300" />
+        <div className="absolute bottom-1/3 left-1/3 h-2 w-2 animate-pulse rounded-full bg-[#FF6B35]/20 delay-700" />
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 text-center max-w-4xl mx-auto">
+      <div className="relative z-10 mx-auto max-w-[860px] text-center">
         {/* Spark Logo with pulsing glow */}
         <div className="mb-8 flex justify-center">
           <div className="relative">
             {/* Glow effect */}
-            <div className="absolute inset-0 bg-[#FF6B35]/30 blur-3xl rounded-full animate-pulse" />
+            <div className="absolute inset-0 animate-pulse rounded-full bg-[#FF6B35]/30 blur-3xl" />
             {/* Logo */}
             <img
-              src="/spark-logo.svg"
+              src="/lokul-logo.png"
               alt="Lokul"
-              className="relative w-24 h-24 md:w-32 md:h-32 drop-shadow-lg"
+              className="relative h-25 w-25 drop-shadow-lg md:h-50 md:w-50"
             />
           </div>
         </div>
 
         {/* Headline */}
-        <h1 className="text-6xl md:text-7xl font-bold text-[#1A1A1A] mb-4 tracking-tight">
-          Lokul
-        </h1>
+        <h1 className="mb-4 text-6xl font-bold tracking-tight text-[#1A1A1A] md:text-7xl">Lokul</h1>
 
         {/* Subheadline */}
-        <p className="text-2xl md:text-3xl font-medium text-gray-600 mb-6">
+        <p className="mb-6 text-2xl font-medium text-gray-600 md:text-3xl">
           Your AI. Your browser. Your privacy.
         </p>
 
         {/* Description */}
-        <p className="text-xl text-[#1A1A1A] leading-relaxed mb-10 max-w-2xl mx-auto">
+        <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-[#1A1A1A]">
           ChatGPT-quality AI running 100% in your browser.
           <br />
           No servers. No tracking. Works offline.
@@ -88,21 +86,19 @@ export function HeroSection({ onStart }: HeroSectionProps) {
 
         {/* WebGPU Error State */}
         {gpuInfo && !gpuInfo.supported ? (
-          <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 mb-8 max-w-xl mx-auto">
-            <h3 className="text-red-600 font-semibold text-lg mb-2">
+          <div className="mx-auto mb-8 max-w-xl rounded-xl border-2 border-red-200 bg-red-50 p-6">
+            <h3 className="mb-2 text-lg font-semibold text-red-600">
               Your browser doesn&apos;t support WebGPU
             </h3>
-            <p className="text-red-500 mb-4">
-              {getUnsupportedBrowserMessage()}
-            </p>
-            <div className="flex flex-wrap gap-3 justify-center">
+            <p className="mb-4 text-red-500">{getUnsupportedBrowserMessage()}</p>
+            <div className="flex flex-wrap justify-center gap-3">
               {browsers.map((browser) => (
                 <a
                   key={browser.name}
                   href={browser.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-4 py-2 bg-white border border-red-200 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                  className="inline-flex items-center rounded-lg border border-red-200 bg-white px-4 py-2 text-red-600 transition-colors hover:bg-red-50"
                 >
                   Download {browser.name}
                 </a>
@@ -113,18 +109,13 @@ export function HeroSection({ onStart }: HeroSectionProps) {
           <>
             {/* Primary CTA */}
             <div className="mb-6">
-              <Button
-                variant="primary"
-                size="xl"
-                onClick={onStart}
-                className="text-lg"
-              >
+              <Button variant="primary" size="xl" onClick={onStart} className="text-lg">
                 Start Chatting - Free
               </Button>
             </div>
 
             {/* Trust Indicators */}
-            <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500 mb-8">
+            <div className="mb-8 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500">
               <span className="flex items-center gap-1">
                 <span className="text-[#FF6B35]">&#10003;</span>
                 No account needed
@@ -140,19 +131,17 @@ export function HeroSection({ onStart }: HeroSectionProps) {
             </div>
 
             {/* Social Proof */}
-            <p className="text-sm text-gray-400 mb-12">
-              &#9733; 12,847 developers trust Lokul
-            </p>
+            <p className="mb-12 text-sm text-gray-400">&#9733; 12,847 developers trust Lokul</p>
           </>
         )}
 
         {/* Scroll indicator */}
         <button
           onClick={scrollToNext}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[#FF6B35] animate-bounce cursor-pointer hover:text-[#FF6B35]/80 transition-colors"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer text-[#FF6B35] transition-colors hover:text-[#FF6B35]/80"
           aria-label="Scroll to learn more"
         >
-          <ChevronDown className="w-8 h-8" />
+          <ChevronDown className="h-8 w-8" />
         </button>
       </div>
     </section>
