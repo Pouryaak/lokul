@@ -1,197 +1,154 @@
 /**
- * Model Store - Reactive state management for AI models
+ * Model Store - reactive model state for React components.
  *
- * Manages model loading state, download progress, and error handling.
- * Integrates with inferenceManager for actual model operations.
+ * Delegates lifecycle operations to modelEngine and mirrors engine
+ * state through Zustand for component subscriptions.
  */
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { inferenceManager, type DownloadProgress } from "@/lib/ai/inference";
+import { modelEngine } from "@/lib/ai/model-engine";
+import type { DownloadProgress } from "@/lib/ai/inference";
 import { MODELS, getModelById, type ModelConfig } from "@/lib/ai/models";
 
-/**
- * Loading step states for model initialization
- */
 type LoadingStep = "idle" | "downloading" | "compiling" | "ready" | "error";
 
-/**
- * Model state interface
- */
 interface ModelState {
-  // State
-  /** Currently loaded/active model */
   currentModel: ModelConfig | null;
-  /** Whether a model is being loaded */
   isLoading: boolean;
-  /** Current download progress (null if not downloading) */
   downloadProgress: DownloadProgress | null;
-  /** Current loading step */
   loadingStep: LoadingStep;
-  /** Error message if loading failed */
   error: string | null;
-  /** List of all available models */
   availableModels: ModelConfig[];
-
-  // Actions
-  /** Load a model by ID */
   loadModel: (modelId: string) => Promise<void>;
-  /** Cancel ongoing download */
   cancelDownload: () => void;
-  /** Unload current model and reset state */
   resetModel: () => void;
-  /** Clear error state */
   clearError: () => void;
 }
 
-/**
- * Model store with Zustand
- *
- * Initial state:
- * - No model loaded (null)
- * - Loading step: idle
- * - Available models: all configured models
- */
+function toLoadingStep(progress: DownloadProgress | null): LoadingStep {
+  if (!progress) {
+    return "downloading";
+  }
+
+  if (progress.step === "compiling") {
+    return "compiling";
+  }
+
+  if (progress.step === "ready") {
+    return "ready";
+  }
+
+  return "downloading";
+}
+
 export const useModelStore = create<ModelState>()(
   devtools(
-    (set, _get) => ({
-      // Initial state
-      currentModel: null,
-      isLoading: false,
-      downloadProgress: null,
-      loadingStep: "idle",
-      error: null,
-      availableModels: MODELS,
+    (set, get) => {
+      modelEngine.subscribe((engineState) => {
+        const progress = get().downloadProgress;
 
-      /**
-       * Load a model by ID
-       * Handles the full loading lifecycle with progress tracking
-       */
-      loadModel: async (modelId: string) => {
-        const model = getModelById(modelId);
-        if (!model) {
+        if (engineState.kind === "idle") {
           set({
-            error: `Model not found: ${modelId}`,
-            loadingStep: "error",
+            currentModel: null,
+            isLoading: false,
+            loadingStep: "idle",
+            downloadProgress: null,
+            error: null,
           });
           return;
         }
 
-        // Reset state and start loading
-        set({
-          isLoading: true,
-          loadingStep: "downloading",
-          downloadProgress: null,
-          error: null,
-          currentModel: null,
-        });
-
-        try {
-          await inferenceManager.initialize(modelId, (progress) => {
-            // Map progress step to loading step
-            let loadingStep: LoadingStep = "downloading";
-            if (progress.step === "compiling") {
-              loadingStep = "compiling";
-            } else if (progress.step === "ready") {
-              loadingStep = "ready";
-            }
-
-            set({
-              downloadProgress: progress,
-              loadingStep,
-            });
-          });
-
-          // Model loaded successfully
+        if (engineState.kind === "loading") {
           set({
-            currentModel: model,
+            currentModel: null,
+            isLoading: true,
+            loadingStep: toLoadingStep(progress),
+            error: null,
+          });
+          return;
+        }
+
+        if (engineState.kind === "ready") {
+          set({
+            currentModel: engineState.model,
             isLoading: false,
             loadingStep: "ready",
             downloadProgress: null,
+            error: null,
           });
-        } catch (err) {
-          const errorName = err instanceof Error ? err.name : "Error";
-          const errorMessage = err instanceof Error ? err.message : "Unknown error";
-          const fullErrorMessage = `Failed to load model '${modelId}': [${errorName}] ${errorMessage}`;
-
-          set({
-            error: fullErrorMessage,
-            isLoading: false,
-            loadingStep: "error",
-            downloadProgress: null,
-          });
+          return;
         }
-      },
-
-      /**
-       * Cancel ongoing download
-       * Terminates the worker and resets state
-       */
-      cancelDownload: () => {
-        inferenceManager.terminate();
 
         set({
           isLoading: false,
-          loadingStep: "idle",
-          downloadProgress: null,
-          error: null,
+          loadingStep: "error",
+          error: engineState.error,
         });
-      },
+      });
 
-      /**
-       * Unload current model and reset to idle state
-       */
-      resetModel: () => {
-        inferenceManager.terminate();
-
+      modelEngine.setProgressCallback((progress) => {
         set({
-          currentModel: null,
-          isLoading: false,
-          loadingStep: "idle",
-          downloadProgress: null,
-          error: null,
+          downloadProgress: progress,
+          loadingStep: toLoadingStep(progress),
         });
-      },
+      });
 
-      /**
-       * Clear error state
-       */
-      clearError: () => {
-        set({ error: null });
-      },
-    }),
+      return {
+        currentModel: null,
+        isLoading: false,
+        downloadProgress: null,
+        loadingStep: "idle",
+        error: null,
+        availableModels: MODELS,
+
+        loadModel: async (modelId: string) => {
+          const model = getModelById(modelId);
+          if (!model) {
+            set({
+              error: `Model not found: ${modelId}`,
+              loadingStep: "error",
+              isLoading: false,
+            });
+            return;
+          }
+
+          try {
+            await modelEngine.loadModel(modelId);
+          } catch (err) {
+            if (import.meta.env.DEV) {
+              console.error("[ModelStore] Load failed:", err);
+            }
+          }
+        },
+
+        cancelDownload: () => {
+          modelEngine.unload();
+        },
+
+        resetModel: () => {
+          modelEngine.unload();
+        },
+
+        clearError: () => {
+          set({ error: null });
+
+          if (modelEngine.getState().kind === "error") {
+            modelEngine.unload();
+          }
+        },
+      };
+    },
     { name: "ModelStore" }
   )
 );
 
-/**
- * Selector hooks for common state slices
- * These prevent unnecessary re-renders by selecting specific state
- */
-
-/** Get current model config */
 export const useCurrentModel = () => useModelStore((state) => state.currentModel);
-
-/** Get loading state */
 export const useIsLoading = () => useModelStore((state) => state.isLoading);
-
-/** Get download progress */
 export const useDownloadProgress = () => useModelStore((state) => state.downloadProgress);
-
-/** Get loading step */
 export const useLoadingStep = () => useModelStore((state) => state.loadingStep);
-
-/** Get error message */
 export const useModelError = () => useModelStore((state) => state.error);
-
-/** Get available models */
 export const useAvailableModels = () => useModelStore((state) => state.availableModels);
-
-/** Get loadModel action */
 export const useLoadModel = () => useModelStore((state) => state.loadModel);
-
-/** Get cancelDownload action */
 export const useCancelDownload = () => useModelStore((state) => state.cancelDownload);
-
-/** Get resetModel action */
 export const useResetModel = () => useModelStore((state) => state.resetModel);
