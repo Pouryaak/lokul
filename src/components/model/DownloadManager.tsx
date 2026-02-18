@@ -23,12 +23,15 @@ function getStatusClass(status: DownloadLifecycle): string {
 }
 
 export function DownloadManager() {
-  const [isOpen, setIsOpen] = useState(false);
   const [confirmModelId, setConfirmModelId] = useState<string | null>(null);
 
+  const isOpen = useConversationModelStore((state) => state.isDownloadManagerOpen);
+  const openDownloadManager = useConversationModelStore((state) => state.openDownloadManager);
+  const closeDownloadManager = useConversationModelStore((state) => state.closeDownloadManager);
   const lifecycleByModel = useConversationModelStore((state) => state.downloadLifecycleByModel);
-  const loadModel = useModelStore((state) => state.loadModel);
-  const cancelDownload = useModelStore((state) => state.cancelDownload);
+  const loadingModelId = useConversationModelStore((state) => state.loadingModelId);
+  const retryModelDownload = useConversationModelStore((state) => state.retryModelDownload);
+  const cancelModelDownload = useConversationModelStore((state) => state.cancelModelDownload);
   const downloadProgress = useModelStore((state) => state.downloadProgress);
 
   const rows = useMemo(() => {
@@ -63,7 +66,7 @@ export function DownloadManager() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setIsOpen((value) => !value)}
+          onClick={() => (isOpen ? closeDownloadManager() : openDownloadManager())}
           aria-expanded={isOpen}
           aria-label="Toggle download manager"
           className="gap-2"
@@ -78,7 +81,7 @@ export function DownloadManager() {
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm font-semibold text-gray-900">Download Manager</p>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={closeDownloadManager}
                 className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                 aria-label="Close download manager"
               >
@@ -134,7 +137,7 @@ export function DownloadManager() {
                       <div className="mt-2 flex items-center gap-2">
                         {canRetry ? (
                           <button
-                            onClick={() => void loadModel(row.id)}
+                            onClick={() => void retryModelDownload(row.id)}
                             className="inline-flex items-center gap-1 text-xs font-medium text-[#FF6B35] hover:text-[#FF6B35]/80"
                           >
                             <RefreshCw className="h-3 w-3" />
@@ -164,11 +167,17 @@ export function DownloadManager() {
         isOpen={Boolean(confirmModelId)}
         onClose={() => setConfirmModelId(null)}
         onConfirm={() => {
-          cancelDownload();
+          if (confirmModelId) {
+            cancelModelDownload(confirmModelId);
+          }
           setConfirmModelId(null);
         }}
         title="Cancel model download?"
-        description="This will stop the active download and keep your current chat available."
+        description={
+          loadingModelId === confirmModelId
+            ? "This will stop the active download and keep your current chat available."
+            : "This will remove the queued model download request."
+        }
         confirmText="Cancel download"
         cancelText="Keep downloading"
         variant="warning"

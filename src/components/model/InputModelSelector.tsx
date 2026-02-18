@@ -1,5 +1,6 @@
 import { Cpu } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { toast } from "sonner";
 import { MODELS } from "@/lib/ai/models";
 import { useConversationModelStore } from "@/store/conversationModelStore";
 import { useModelStore } from "@/store/modelStore";
@@ -41,14 +42,34 @@ function getModelStateLabel(
 }
 
 export function InputModelSelector({ conversationId }: InputModelSelectorProps) {
-  const loadModel = useModelStore((state) => state.loadModel);
   const currentModel = useModelStore((state) => state.currentModel);
+  const requestModelForActiveConversation = useConversationModelStore(
+    (state) => state.requestModelForActiveConversation
+  );
+  const openDownloadManager = useConversationModelStore((state) => state.openDownloadManager);
+  const getActiveModelForConversation = useConversationModelStore(
+    (state) => state.getActiveModelForConversation
+  );
   const requestedModelId = useConversationModelStore((state) =>
     state.getRequestedModelForConversation(conversationId)
   );
   const lifecycleByModel = useConversationModelStore((state) => state.downloadLifecycleByModel);
+  const activeModelId = getActiveModelForConversation(conversationId);
+  const previousActiveModelRef = useRef(activeModelId);
 
-  const selectedModelId = requestedModelId || currentModel?.id || MODELS[0]?.id || "";
+  useEffect(() => {
+    if (activeModelId !== previousActiveModelRef.current && activeModelId === requestedModelId) {
+      const activeModel = MODELS.find((model) => model.id === activeModelId);
+      if (activeModel) {
+        toast.success(`Switched to ${activeModel.name}`);
+      }
+    }
+
+    previousActiveModelRef.current = activeModelId;
+  }, [activeModelId, requestedModelId]);
+
+  const selectedModelId =
+    requestedModelId || activeModelId || currentModel?.id || MODELS[0]?.id || "";
 
   const activeBadge = useMemo(() => {
     if (!selectedModelId) {
@@ -70,7 +91,17 @@ export function InputModelSelector({ conversationId }: InputModelSelectorProps) 
 
   return (
     <div className="flex items-center gap-2">
-      <Select value={selectedModelId} onValueChange={(modelId) => void loadModel(modelId)}>
+      <Select
+        value={selectedModelId}
+        onValueChange={(modelId) => {
+          const status = lifecycleByModel[modelId];
+          if (status !== "Ready") {
+            openDownloadManager();
+          }
+
+          void requestModelForActiveConversation(modelId);
+        }}
+      >
         <SelectTrigger className="h-8 min-w-[180px] rounded-lg border-gray-200 text-xs">
           <div className="flex items-center gap-2">
             <Cpu className="h-3.5 w-3.5 text-gray-500" />
@@ -82,7 +113,7 @@ export function InputModelSelector({ conversationId }: InputModelSelectorProps) 
             const stateLabel = getModelStateLabel(
               model.id,
               requestedModelId,
-              currentModel?.id ?? null,
+              activeModelId,
               lifecycleByModel[model.id]
             );
 

@@ -90,12 +90,19 @@ export const useModelStore = create<ModelState>()(
         }
 
         if (engineState.kind === "ready") {
-          set({
-            currentModel: engineState.model,
-            isLoading: false,
-            loadingStep: "ready",
-            downloadProgress: null,
-            error: null,
+          set((state) => {
+            const shouldActivate = useConversationModelStore
+              .getState()
+              .shouldActivateLoadedModel(engineState.model.id);
+
+            return {
+              currentModel:
+                shouldActivate || !state.currentModel ? engineState.model : state.currentModel,
+              isLoading: false,
+              loadingStep: "ready",
+              downloadProgress: null,
+              error: null,
+            };
           });
           return;
         }

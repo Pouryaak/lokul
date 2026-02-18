@@ -15,11 +15,13 @@ export type DownloadLifecycle =
 interface ConversationModelState {
   activeConversationId: string | null;
   requestedModelByConversation: Record<string, string>;
+  activeModelByConversation: Record<string, string>;
   engineLoadedModelId: string | null;
   downloadLifecycleByModel: Record<string, DownloadLifecycle>;
   queue: string[];
   loadingModelId: string | null;
   queueRunning: boolean;
+  isDownloadManagerOpen: boolean;
 }
 
 interface ConversationModelActions {
@@ -27,9 +29,15 @@ interface ConversationModelActions {
   hydrateConversation: (conversationId: string, modelId: string) => Promise<void>;
   requestModelForActiveConversation: (modelId: string) => Promise<void>;
   requestModelForConversation: (conversationId: string, modelId: string) => Promise<void>;
+  cancelModelDownload: (modelId: string) => void;
+  retryModelDownload: (modelId: string) => Promise<void>;
+  openDownloadManager: () => void;
+  closeDownloadManager: () => void;
   syncEngineState: (engineState: ModelLoadingState) => void;
   syncDownloadProgress: (progressStep: string) => void;
   getRequestedModelForConversation: (conversationId: string) => string;
+  getActiveModelForConversation: (conversationId: string) => string;
+  shouldActivateLoadedModel: (modelId: string) => boolean;
 }
 
 type ConversationModelStore = ConversationModelState & ConversationModelActions;
@@ -43,15 +51,18 @@ type StoreSet = (
 type StoreGet = () => ConversationModelStore;
 
 let queueDrainPromise: Promise<void> | null = null;
+const canceledModels = new Set<string>();
 
 const INITIAL_STATE: ConversationModelState = {
   activeConversationId: null,
   requestedModelByConversation: {},
+  activeModelByConversation: {},
   engineLoadedModelId: null,
   downloadLifecycleByModel: {},
   queue: [],
   loadingModelId: null,
   queueRunning: false,
+  isDownloadManagerOpen: false,
 };
 
 function setLifecycle(
@@ -77,8 +88,20 @@ function toLifecycleFromProgress(step: string, current: DownloadLifecycle): Down
   return current === "Compiling" ? "Compiling" : "Downloading";
 }
 
+function resolveModelId(modelId: string): string {
+  return getModelById(modelId)?.id ?? SMART_MODEL.id;
+}
+
+function getRequestedForActive(state: ConversationModelState): string {
+  if (!state.activeConversationId) {
+    return SMART_MODEL.id;
+  }
+
+  return state.requestedModelByConversation[state.activeConversationId] ?? SMART_MODEL.id;
+}
+
 function shouldQueueModel(state: ConversationModelState, modelId: string): boolean {
-  if (state.engineLoadedModelId === modelId) {
+  if (state.engineLoadedModelId === modelId || state.loadingModelId === modelId) {
     return false;
   }
 
@@ -88,6 +111,20 @@ function shouldQueueModel(state: ConversationModelState, modelId: string): boole
   }
 
   return !state.queue.includes(modelId);
+}
+
+function markReadyForConversation(
+  state: ConversationModelState,
+  conversationId: string,
+  modelId: string
+): Partial<ConversationModelStore> {
+  return {
+    activeModelByConversation: {
+      ...state.activeModelByConversation,
+      [conversationId]: modelId,
+    },
+    downloadLifecycleByModel: setLifecycle(state.downloadLifecycleByModel, modelId, "Ready"),
+  };
 }
 
 async function runQueue(get: StoreGet, set: StoreSet): Promise<void> {
@@ -118,11 +155,13 @@ async function runQueue(get: StoreGet, set: StoreSet): Promise<void> {
         try {
           await modelEngine.loadModel(nextModelId);
         } catch {
+          const lifecycle = canceledModels.has(nextModelId) ? "Canceled" : "Failed";
+          canceledModels.delete(nextModelId);
           set((state) => ({
             downloadLifecycleByModel: setLifecycle(
               state.downloadLifecycleByModel,
               nextModelId,
-              "Failed"
+              lifecycle
             ),
           }));
         }
@@ -137,23 +176,69 @@ async function runQueue(get: StoreGet, set: StoreSet): Promise<void> {
 }
 
 async function queueModelLoad(modelId: string, get: StoreGet, set: StoreSet): Promise<void> {
-  if (shouldQueueModel(get(), modelId)) {
-    set((state) => ({
-      queue: [...state.queue, modelId],
-      downloadLifecycleByModel: setLifecycle(state.downloadLifecycleByModel, modelId, "Queued"),
-    }));
+  if (!shouldQueueModel(get(), modelId)) {
+    return;
   }
+
+  set((state) => ({
+    queue: [...state.queue, modelId],
+    downloadLifecycleByModel: setLifecycle(state.downloadLifecycleByModel, modelId, "Queued"),
+  }));
 
   await runQueue(get, set);
 }
 
-function resolveModelId(modelId: string): string {
-  return getModelById(modelId)?.id ?? SMART_MODEL.id;
+async function ensureConversationModel(
+  conversationId: string,
+  modelId: string,
+  get: StoreGet,
+  set: StoreSet,
+  persist: boolean
+): Promise<void> {
+  if (persist) {
+    await updateConversationModelTarget(conversationId, modelId);
+  }
+
+  set((state) => ({
+    requestedModelByConversation: {
+      ...state.requestedModelByConversation,
+      [conversationId]: modelId,
+    },
+  }));
+
+  if (get().engineLoadedModelId === modelId) {
+    set((state) => markReadyForConversation(state, conversationId, modelId));
+    return;
+  }
+
+  await queueModelLoad(modelId, get, set);
+}
+
+function updateReadyStateFromEngine(set: StoreSet, modelId: string): void {
+  set((state) => {
+    const activeConversationId = state.activeConversationId;
+    const requestedModelId = getRequestedForActive(state);
+    const nextState: Partial<ConversationModelStore> = {
+      engineLoadedModelId: modelId,
+      loadingModelId: null,
+      downloadLifecycleByModel: setLifecycle(state.downloadLifecycleByModel, modelId, "Ready"),
+    };
+
+    if (activeConversationId && requestedModelId === modelId) {
+      nextState.activeModelByConversation = {
+        ...state.activeModelByConversation,
+        [activeConversationId]: modelId,
+      };
+    }
+
+    return nextState;
+  });
 }
 
 function createHydrateConversation(set: StoreSet, get: StoreGet) {
   return async (conversationId: string, modelId: string): Promise<void> => {
     const resolvedModelId = resolveModelId(modelId);
+
     set((state) => ({
       activeConversationId: conversationId,
       requestedModelByConversation: {
@@ -163,13 +248,7 @@ function createHydrateConversation(set: StoreSet, get: StoreGet) {
     }));
 
     if (get().engineLoadedModelId === resolvedModelId) {
-      set((state) => ({
-        downloadLifecycleByModel: setLifecycle(
-          state.downloadLifecycleByModel,
-          resolvedModelId,
-          "Ready"
-        ),
-      }));
+      set((state) => markReadyForConversation(state, conversationId, resolvedModelId));
       return;
     }
 
@@ -184,27 +263,34 @@ function createRequestModelForConversation(set: StoreSet, get: StoreGet) {
       throw new Error(`Model not found: ${modelId}`);
     }
 
-    await updateConversationModelTarget(conversationId, resolvedModelId);
+    await ensureConversationModel(conversationId, resolvedModelId, get, set, true);
 
-    set((state) => ({
-      requestedModelByConversation: {
-        ...state.requestedModelByConversation,
-        [conversationId]: resolvedModelId,
-      },
-    }));
-
-    if (get().engineLoadedModelId === resolvedModelId) {
-      set((state) => ({
-        downloadLifecycleByModel: setLifecycle(
-          state.downloadLifecycleByModel,
-          resolvedModelId,
-          "Ready"
-        ),
-      }));
-      return;
+    const lifecycle = get().downloadLifecycleByModel[resolvedModelId];
+    if (lifecycle !== "Ready") {
+      set({ isDownloadManagerOpen: true });
     }
+  };
+}
 
-    await queueModelLoad(resolvedModelId, get, set);
+function createCancelModelDownload(set: StoreSet, get: StoreGet) {
+  return (modelId: string): void => {
+    canceledModels.add(modelId);
+
+    set((state) => {
+      const isQueued = state.queue.includes(modelId);
+      if (!isQueued) {
+        return {};
+      }
+
+      return {
+        queue: state.queue.filter((id) => id !== modelId),
+        downloadLifecycleByModel: setLifecycle(state.downloadLifecycleByModel, modelId, "Canceled"),
+      };
+    });
+
+    if (get().loadingModelId === modelId) {
+      modelEngine.unload();
+    }
   };
 }
 
@@ -223,15 +309,7 @@ function createSyncEngineState(set: StoreSet) {
     }
 
     if (engineState.kind === "ready") {
-      set((state) => ({
-        engineLoadedModelId: engineState.model.id,
-        loadingModelId: null,
-        downloadLifecycleByModel: setLifecycle(
-          state.downloadLifecycleByModel,
-          engineState.model.id,
-          "Ready"
-        ),
-      }));
+      updateReadyStateFromEngine(set, engineState.model.id);
       return;
     }
 
@@ -247,14 +325,23 @@ function createSyncEngineState(set: StoreSet) {
       return;
     }
 
-    set((state) => ({
-      engineLoadedModelId: null,
-      loadingModelId: null,
-      downloadLifecycleByModel:
-        state.loadingModelId === null
-          ? state.downloadLifecycleByModel
-          : setLifecycle(state.downloadLifecycleByModel, state.loadingModelId, "Canceled"),
-    }));
+    set((state) => {
+      const loadingModelId = state.loadingModelId;
+      const isCanceled = loadingModelId ? canceledModels.has(loadingModelId) : false;
+
+      if (loadingModelId) {
+        canceledModels.delete(loadingModelId);
+      }
+
+      return {
+        engineLoadedModelId: null,
+        loadingModelId: null,
+        downloadLifecycleByModel:
+          loadingModelId && isCanceled
+            ? setLifecycle(state.downloadLifecycleByModel, loadingModelId, "Canceled")
+            : state.downloadLifecycleByModel,
+      };
+    });
   };
 }
 
@@ -282,9 +369,7 @@ function createActions(set: StoreSet, get: StoreGet): ConversationModelActions {
   const requestModelForConversation = createRequestModelForConversation(set, get);
 
   return {
-    setActiveConversation: (conversationId) => {
-      set({ activeConversationId: conversationId });
-    },
+    setActiveConversation: (conversationId) => set({ activeConversationId: conversationId }),
     hydrateConversation: createHydrateConversation(set, get),
     requestModelForActiveConversation: async (modelId) => {
       const activeConversationId = get().activeConversationId;
@@ -295,10 +380,35 @@ function createActions(set: StoreSet, get: StoreGet): ConversationModelActions {
       await requestModelForConversation(activeConversationId, modelId);
     },
     requestModelForConversation,
+    cancelModelDownload: createCancelModelDownload(set, get),
+    retryModelDownload: async (modelId) => {
+      set((state) => ({
+        downloadLifecycleByModel: setLifecycle(state.downloadLifecycleByModel, modelId, "Queued"),
+      }));
+      await queueModelLoad(modelId, get, set);
+      set({ isDownloadManagerOpen: true });
+    },
+    openDownloadManager: () => set({ isDownloadManagerOpen: true }),
+    closeDownloadManager: () => set({ isDownloadManagerOpen: false }),
     syncEngineState: createSyncEngineState(set),
     syncDownloadProgress: createSyncDownloadProgress(set, get),
-    getRequestedModelForConversation: (conversationId) => {
-      return get().requestedModelByConversation[conversationId] ?? SMART_MODEL.id;
+    getRequestedModelForConversation: (conversationId) =>
+      get().requestedModelByConversation[conversationId] ?? SMART_MODEL.id,
+    getActiveModelForConversation: (conversationId) => {
+      const state = get();
+      return (
+        state.activeModelByConversation[conversationId] ??
+        state.requestedModelByConversation[conversationId] ??
+        SMART_MODEL.id
+      );
+    },
+    shouldActivateLoadedModel: (modelId) => {
+      const state = get();
+      if (!state.activeConversationId) {
+        return true;
+      }
+
+      return getRequestedForActive(state) === modelId;
     },
   };
 }
@@ -321,3 +431,5 @@ export const useEngineLoadedModelId = () =>
   useConversationModelStore((state) => state.engineLoadedModelId);
 export const useDownloadLifecycleByModel = () =>
   useConversationModelStore((state) => state.downloadLifecycleByModel);
+export const useIsDownloadManagerOpen = () =>
+  useConversationModelStore((state) => state.isDownloadManagerOpen);

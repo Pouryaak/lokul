@@ -112,13 +112,13 @@ export function ConversationMessages({ messages }: { messages: UIMessage[] }) {
 }
 
 interface InputSectionProps {
-  conversationId?: string;
+  conversationId: string;
   status: "submitted" | "streaming" | "ready" | "error";
   onSubmit: (message: { text: string }) => Promise<void>;
   onStop: () => void;
 }
 
-export function InputSection({ conversationId = "", status, onSubmit, onStop }: InputSectionProps) {
+export function InputSection({ conversationId, status, onSubmit, onStop }: InputSectionProps) {
   return (
     <div className="border-t border-gray-200 bg-white px-4 py-4">
       <div className="mx-auto max-w-3xl">
