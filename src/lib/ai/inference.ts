@@ -93,7 +93,8 @@ export class InferenceManager {
         }
       }
       this.terminate();
-      throw error;
+      const message = error instanceof Error ? error.message : "Unknown error";
+      throw new Error(`Failed to load model '${modelId}': ${message}`);
     }
   }
 
@@ -133,18 +134,31 @@ export class InferenceManager {
       throw new Error("Engine not initialized. Call initialize() first.");
     }
 
-    const stream = await this.engine.chat.completions.create({
-      messages,
-      stream: true,
-      temperature: 0.7,
-      max_tokens: 2000,
-    });
+    try {
+      const stream = await this.engine.chat.completions.create({
+        messages,
+        stream: true,
+        temperature: 0.7,
+        max_tokens: 2000,
+      });
 
-    for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content || "";
-      if (content) {
-        yield content;
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || "";
+        if (content) {
+          yield content;
+        }
       }
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        return;
+      }
+
+      if (import.meta.env.DEV) {
+        console.error("[InferenceManager] Generation error:", error);
+      }
+
+      const message = error instanceof Error ? error.message : "Unknown error";
+      throw new Error(`Failed to generate response: ${message}`);
     }
   }
 
