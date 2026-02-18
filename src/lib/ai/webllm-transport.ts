@@ -12,6 +12,11 @@ import type {
   UIMessageChunk,
   ChatRequestOptions,
 } from "ai";
+import {
+  startTokenTracking,
+  recordToken,
+  stopTokenTracking,
+} from "@/lib/performance/metrics";
 import { inferenceManager } from "./inference";
 
 /**
@@ -102,6 +107,9 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
             id: messageId,
           });
 
+          // Start tracking tokens for performance metrics
+          startTokenTracking();
+
           // Stream tokens from WebLLM
           const tokenStream = inferenceManager.generate(webLLMMessages);
 
@@ -111,6 +119,9 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
               break;
             }
 
+            // Record token for TPS calculation
+            recordToken();
+
             // Yield each token as a text-delta chunk
             controller.enqueue({
               type: "text-delta",
@@ -118,6 +129,9 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
               id: messageId,
             });
           }
+
+          // Record final metrics
+          stopTokenTracking();
 
           // Signal the end of text generation
           controller.enqueue({

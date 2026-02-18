@@ -237,3 +237,103 @@ export function getHealthColorClasses(health: SystemHealth): {
   };
   return classes[health];
 }
+
+// ============================================================================
+// Token and Inference Metrics Tracking
+// ============================================================================
+
+/**
+ * Metrics for a single inference/generation session
+ */
+export interface InferenceMetrics {
+  /** Number of tokens generated */
+  tokensGenerated: number;
+  /** Duration of generation in milliseconds */
+  duration: number;
+  /** Timestamp when metrics were recorded */
+  timestamp: number;
+}
+
+// Private state for token tracking
+let currentTokenCount = 0;
+let currentStartTime: number | null = null;
+let lastMetrics: InferenceMetrics | null = null;
+
+/**
+ * Start a new token tracking session.
+ * Call this when generation begins.
+ */
+export function startTokenTracking(): void {
+  currentTokenCount = 0;
+  currentStartTime = performance.now();
+}
+
+/**
+ * Record a single token being generated.
+ * Call this for each token in the stream.
+ */
+export function recordToken(): void {
+  currentTokenCount++;
+}
+
+/**
+ * Record final metrics for a generation session.
+ * Call this when generation completes.
+ */
+export function recordMetrics(metrics: InferenceMetrics): void {
+  lastMetrics = metrics;
+}
+
+/**
+ * Get the current token count for the active session.
+ */
+export function getCurrentTokenCount(): number {
+  return currentTokenCount;
+}
+
+/**
+ * Get the current tokens per second (TPS) rate.
+ * Returns 0 if tracking hasn't started.
+ */
+export function getCurrentTPS(): number {
+  if (currentStartTime === null) return 0;
+
+  const elapsed = performance.now() - currentStartTime;
+  if (elapsed === 0) return 0;
+
+  return (currentTokenCount / elapsed) * 1000;
+}
+
+/**
+ * Get the last recorded metrics.
+ */
+export function getLastMetrics(): InferenceMetrics | null {
+  return lastMetrics;
+}
+
+/**
+ * Stop token tracking and return final metrics.
+ * Call this when generation ends to get final stats.
+ */
+export function stopTokenTracking(): InferenceMetrics {
+  const duration = currentStartTime ? performance.now() - currentStartTime : 0;
+
+  const metrics: InferenceMetrics = {
+    tokensGenerated: currentTokenCount,
+    duration,
+    timestamp: Date.now(),
+  };
+
+  lastMetrics = metrics;
+  currentStartTime = null;
+
+  return metrics;
+}
+
+/**
+ * Reset all tracking state.
+ */
+export function resetTracking(): void {
+  currentTokenCount = 0;
+  currentStartTime = null;
+}
