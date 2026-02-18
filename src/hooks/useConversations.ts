@@ -2,6 +2,7 @@
  * useConversations Hook - Conversation list management
  *
  * Handles storage-backed conversation listing and metadata updates.
+ * Conversation hydration is route-driven in ChatDetailRoute.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -45,7 +46,7 @@ export function useConversations(): UseConversationsReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadConversations = useCallback(async () => {
+  const fetchConversations = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
@@ -71,39 +72,39 @@ export function useConversations(): UseConversationsReturn {
   }, []);
 
   useEffect(() => {
-    loadConversations();
-  }, [loadConversations]);
+    fetchConversations();
+  }, [fetchConversations]);
 
   const deleteConversation = useCallback(
     async (id: string): Promise<void> => {
       setError(null);
       try {
         await deleteConversationStorage(id);
-        await loadConversations();
+        await fetchConversations();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to delete conversation");
         throw err;
       }
     },
-    [loadConversations]
+    [fetchConversations]
   );
 
   const refreshConversations = useCallback(async (): Promise<void> => {
-    await loadConversations();
-  }, [loadConversations]);
+    await fetchConversations();
+  }, [fetchConversations]);
 
   const editTitle = useCallback(
     async (id: string, title: string): Promise<void> => {
       setError(null);
       try {
         await updateConversationTitle(id, title);
-        await loadConversations();
+        await fetchConversations();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to update title");
         throw err;
       }
     },
-    [loadConversations]
+    [fetchConversations]
   );
 
   return {
