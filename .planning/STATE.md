@@ -2,7 +2,7 @@
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
 **Status:** Milestone complete
-**Updated:** 2026-02-18
+**Updated:** 2026-02-18 (13:55 UTC)
 
 ---
 
@@ -26,9 +26,9 @@
 
 ## Current Position
 
-**Phase:** Phase 2 in progress
-**Plan:** 02-04 complete (4 of ? plans in Phase 2)
-**Status:** Conversation sidebar complete with performance monitoring
+**Phase:** Phase 2.1 in progress
+**Plan:** 02.1-01 complete (1 of ? plans in Phase 2.1)
+**Status:** AI SDK UI transport layer complete with WebLLM custom transport
 
 **Progress:**
 
@@ -42,12 +42,14 @@
   - [x] 01-02: Web Worker, AI inference, model store
   - [x] 01-03: 11-section landing page
   - [x] 01-04: PWA, offline, performance panel
-- [~] Phase 2: Chat Interface (5/? plans complete)
+- [x] Phase 2: Chat Interface (5/5 plans complete)
   - [x] 02-01: Chat state management, storage, hooks
   - [x] 02-02: Chat UI components (MessageInput, MessageBubble, MessageList, etc)
   - [x] 02-03: Markdown rendering and ChatInterface integration
   - [x] 02-04: Conversation sidebar with performance monitoring
   - [x] 02-05: Fix model download failure (gap closure)
+- [~] Phase 2.1: AI SDK UI Migration with Routing (1/? plans complete)
+  - [x] 02.1-01: AI SDK UI transport layer (WebLLMTransport, useAIChat)
 - [ ] Phase 3: Model Management
 - [ ] Phase 4: Memory System
 - [ ] Phase 5: Polish & PWA
@@ -76,6 +78,7 @@
 | 02-03 | 35 min | 3 | 5 | 2026-02-18 |
 | 02-04 | 35 min | 4 | 6 | 2026-02-18 |
 | 02-05 | 15 min | 3 | 3 | 2026-02-18 |
+| 02.1-01 | 15 min | 3 | 3 | 2026-02-18 |
 
 ---
 
@@ -105,6 +108,8 @@
 | 2026-02-18 | Memory warning threshold at 75% | Balances early warning with avoiding excessive alerts |
 | 2026-02-18 | Performance suggestion after 3 consecutive low TPS readings | Prevents false positives from single slow responses |
 | 2026-02-18 | Model IDs must include -MLC suffix | WebLLM v0.2.80 requires -MLC suffix for prebuilt model IDs to download correctly |
+| 2026-02-18 | Use ChatTransport interface for WebLLM integration | Standard AI SDK UI pattern for custom transports |
+| 2026-02-18 | Yield text-start, text-delta, text-end chunks | Required for proper streaming UI updates in AI SDK UI |
 
 ### Open Questions
 
@@ -128,17 +133,17 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 02-05 Gap Closure - Fixed model download failure with correct WebLLM model IDs
-**Next Action:** Phase 2 UAT testing - model download should now work
-**Context Hash:** phase2-model-fix-20260218
+**Last Action:** Completed 02.1-01 AI SDK UI transport layer - WebLLMTransport and useAIChat hook
+**Next Action:** Phase 2.1 Plan 02 - Integrate useAIChat into chat components
+**Context Hash:** ai-sdk-transport-20260218
 
 **Key Files:**
 - `/Users/poak/Documents/personal-project/Lokul/.planning/PROJECT.md` - Project definition
 - `/Users/poak/Documents/personal-project/Lokul/.planning/REQUIREMENTS.md` - v1 requirements (56 total)
 - `/Users/poak/Documents/personal-project/Lokul/.planning/ROADMAP.md` - Phase structure
-- `/Users/poak/Documents/personal-project/Lokul/src/components/Chat/` - Chat UI components
-- `/Users/poak/Documents/personal-project/Lokul/src/components/sidebar/` - Conversation sidebar components
-- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02-chat-interface/02-05-SUMMARY.md` - Latest plan summary (model ID fix)
+- `/Users/poak/Documents/personal-project/Lokul/src/lib/ai/webllm-transport.ts` - WebLLM custom transport
+- `/Users/poak/Documents/personal-project/Lokul/src/hooks/useAIChat.ts` - AI SDK UI hook wrapper
+- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02.1-ai-sdk-ui-migration-with-routing/02.1-01-SUMMARY.md` - Latest plan summary (transport layer)
 
 ---
 
