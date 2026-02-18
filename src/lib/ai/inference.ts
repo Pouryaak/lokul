@@ -85,10 +85,12 @@ export class InferenceManager {
 
       this.currentModel = modelId;
     } catch (error) {
-      console.error(`[InferenceManager] Failed to initialize model '${modelId}':`, error);
-      if (error instanceof Error) {
-        console.error(`[InferenceManager] Error name: ${error.name}`);
-        console.error(`[InferenceManager] Error stack: ${error.stack}`);
+      if (import.meta.env.DEV) {
+        console.error(`[InferenceManager] Failed to initialize model '${modelId}':`, error);
+        if (error instanceof Error) {
+          console.error(`[InferenceManager] Error name: ${error.name}`);
+          console.error(`[InferenceManager] Error stack: ${error.stack}`);
+        }
       }
       this.terminate();
       throw error;
