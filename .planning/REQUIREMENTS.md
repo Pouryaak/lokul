@@ -11,14 +11,14 @@
 
 ### Chat Interface (CHAT)
 
-- [ ] **CHAT-01**: User can type messages in an auto-resizing input field
-- [ ] **CHAT-02**: User can send messages with Enter key or Send button
-- [ ] **CHAT-03**: AI responses stream token-by-token (word-by-word) without UI lag
-- [ ] **CHAT-04**: Messages render with Markdown formatting (bold, italic, lists, code blocks)
-- [ ] **CHAT-05**: Code blocks display with syntax highlighting (Shiki)
-- [ ] **CHAT-06**: User can copy any message to clipboard with one click
-- [ ] **CHAT-07**: User can regenerate the last AI response
-- [ ] **CHAT-08**: User can clear the current conversation
+- [x] **CHAT-01**: User can type messages in an auto-resizing input field
+- [x] **CHAT-02**: User can send messages with Enter key or Send button
+- [x] **CHAT-03**: AI responses stream token-by-token (word-by-word) without UI lag
+- [x] **CHAT-04**: Messages render with Markdown formatting (bold, italic, lists, code blocks)
+- [x] **CHAT-05**: Code blocks display with syntax highlighting (Shiki)
+- [x] **CHAT-06**: User can copy any message to clipboard with one click
+- [x] **CHAT-07**: User can regenerate the last AI response
+- [x] **CHAT-08**: User can clear the current conversation
 - [ ] **CHAT-09**: Chat interface is responsive (works on desktop and mobile)
 - [ ] **CHAT-10**: Message list virtualizes for long conversations (> 50 messages)
 
@@ -121,14 +121,14 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CHAT-01 | Phase 2 | Pending |
-| CHAT-02 | Phase 2 | Pending |
-| CHAT-03 | Phase 2 | Pending |
-| CHAT-04 | Phase 2 | Pending |
-| CHAT-05 | Phase 2 | Pending |
-| CHAT-06 | Phase 2 | Pending |
-| CHAT-07 | Phase 2 | Pending |
-| CHAT-08 | Phase 2 | Pending |
+| CHAT-01 | Phase 2 | Complete |
+| CHAT-02 | Phase 2 | Complete |
+| CHAT-03 | Phase 2 | Complete |
+| CHAT-04 | Phase 2 | Complete |
+| CHAT-05 | Phase 2 | Complete |
+| CHAT-06 | Phase 2 | Complete |
+| CHAT-07 | Phase 2 | Complete |
+| CHAT-08 | Phase 2 | Complete |
 | CHAT-09 | Phase 5 | Pending |
 | CHAT-10 | Phase 5 | Pending |
 | MODEL-01 | Phase 1 | Pending |

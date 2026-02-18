@@ -19,18 +19,12 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
-        // Lokul custom variants
-        primary: "bg-[#FF6B35] text-white hover:bg-[#FF6B35]/90",
-        cta: "bg-gradient-to-r from-[#FF6B35] to-[#FF8F5C] text-white hover:from-[#FF6B35]/90 hover:to-[#FF8F5C]/90 shadow-lg",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-        md: "h-9 px-4 py-2 has-[>svg]:px-3",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        xl: "h-12 rounded-lg px-8 text-base",
-        "2xl": "h-14 rounded-xl px-10 text-lg",
         icon: "size-9",
         "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-8",

@@ -1,32 +1,28 @@
-/**
- * AppSidebar Component - Application-specific sidebar with conversation list
- *
- * Wraps shadcn sidebar primitives with Lokul-specific content:
- * - Header with logo and new chat button
- * - Conversation list with memory/performance warnings
- * - Footer with settings link
- *
- * Based on @blocks/sidebar-02 pattern from shadcn.
- */
+"use client";
 
-import { useCallback } from "react";
-import { Plus, Settings, MessageSquare, AlertTriangle, Zap, X, Loader2, Cpu } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useConversations } from "@/hooks/useConversations";
-import { useCurrentConversationId } from "@/store/chatStore";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarSeparator,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import {
+  Plus,
+  Settings,
+  MessageSquare,
+  AlertTriangle,
+  Zap,
+  X,
+  Loader2,
+  Cpu,
+} from "lucide-react";
+import { useCallback } from "react";
+import { useConversations } from "@/hooks/useConversations";
+import { useCurrentConversationId } from "@/store/chatStore";
 import {
   Select,
   SelectContent,
@@ -34,14 +30,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/Button";
 import { MODELS } from "@/lib/ai/models";
 import { useCurrentModel, useModelStore } from "@/store/modelStore";
 import type { Conversation } from "@/types/index";
 
-/**
- * Props for the AppSidebar component
- */
 interface AppSidebarProps {
   /** Callback when new chat button is clicked */
   onNewChat?: () => void;
@@ -53,50 +45,56 @@ interface AppSidebarProps {
 
 /**
  * Format a timestamp to relative time
- * Returns strings like "just now", "5m ago", "2h ago", "yesterday", "3d ago"
  */
 function formatRelativeTime(timestamp: number): string {
   const now = Date.now();
   const diff = now - timestamp;
 
-  // Less than 1 minute
-  if (diff < 60 * 1000) {
-    return "just now";
-  }
-
-  // Less than 1 hour
+  if (diff < 60 * 1000) return "just now";
   if (diff < 60 * 60 * 1000) {
-    const minutes = Math.floor(diff / (60 * 1000));
-    return `${minutes}m ago`;
+    return `${Math.floor(diff / (60 * 1000))}m ago`;
   }
-
-  // Less than 24 hours
   if (diff < 24 * 60 * 60 * 1000) {
-    const hours = Math.floor(diff / (60 * 60 * 1000));
-    return `${hours}h ago`;
+    return `${Math.floor(diff / (60 * 60 * 1000))}h ago`;
   }
-
-  // Less than 7 days
   if (diff < 7 * 24 * 60 * 60 * 1000) {
     const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-    if (days === 1) {
-      return "yesterday";
-    }
-    return `${days}d ago`;
+    return days === 1 ? "yesterday" : `${days}d ago`;
   }
 
-  // Default to date string
-  const date = new Date(timestamp);
-  return date.toLocaleDateString("en-US", {
+  return new Date(timestamp).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
   });
 }
 
 /**
- * Empty state component when no conversations exist
+ * Lokul Logo Component
  */
-function EmptyState() {
+function Logo({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-center rounded-lg bg-gradient-to-br from-[#FF6B35] to-[#FF8C5A]",
+        className
+      )}
+    >
+      <MessageSquare className="h-5 w-5 text-white" />
+    </div>
+  );
+}
+
+/**
+ * Empty state when no conversations exist
+ */
+function EmptyState({ isCollapsed }: { isCollapsed: boolean }) {
+  if (isCollapsed) {
+    return (
+      <div className="flex justify-center py-4">
+        <MessageSquare className="h-5 w-5 text-gray-400" />
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col items-center justify-center px-4 py-8 text-center">
       <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
@@ -111,7 +109,14 @@ function EmptyState() {
 /**
  * Loading state component
  */
-function LoadingState() {
+function LoadingState({ isCollapsed }: { isCollapsed: boolean }) {
+  if (isCollapsed) {
+    return (
+      <div className="flex justify-center py-4">
+        <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col items-center justify-center px-4 py-8">
       <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
@@ -121,78 +126,247 @@ function LoadingState() {
 }
 
 /**
- * Conversation menu item component
+ * Conversation list item
  */
-interface ConversationMenuItemProps {
-  conversation: Conversation;
-  isActive: boolean;
-  onClick: () => void;
-}
-
-function ConversationMenuItem({
+function ConversationItem({
   conversation,
   isActive,
   onClick,
-}: ConversationMenuItemProps) {
-  return (
-    <SidebarMenuItem>
-      <SidebarMenuButton
+  isCollapsed,
+}: {
+  conversation: Conversation;
+  isActive: boolean;
+  onClick: () => void;
+  isCollapsed: boolean;
+}) {
+  if (isCollapsed) {
+    return (
+      <button
         onClick={onClick}
-        isActive={isActive}
-        tooltip={conversation.title}
         className={cn(
-          "group flex w-full items-center gap-3",
-          isActive && "border-l-2 border-[#FF6B35]"
+          "flex w-full items-center justify-center rounded-lg p-2 transition-colors",
+          isActive
+            ? "bg-[#FF6B35]/10 text-[#FF6B35]"
+            : "text-gray-500 hover:bg-gray-100"
         )}
+        title={conversation.title}
       >
-        <MessageSquare
-          className={cn(
-            "h-4 w-4 shrink-0",
-            isActive ? "text-[#FF6B35]" : "text-gray-500"
-          )}
-        />
-        <div className="min-w-0 flex-1">
-          <p
-            className={cn(
-              "truncate text-sm font-medium",
-              isActive ? "text-gray-900" : "text-gray-700"
-            )}
-            title={conversation.title}
-          >
-            {conversation.title}
-          </p>
-          <p className="text-xs text-gray-500">
-            {formatRelativeTime(conversation.updatedAt)}
-          </p>
-        </div>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
+        <MessageSquare className="h-4 w-4" />
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-colors",
+        isActive
+          ? "bg-[#FF6B35]/10 text-gray-900"
+          : "text-gray-700 hover:bg-gray-100"
+      )}
+    >
+      <MessageSquare
+        className={cn(
+          "h-4 w-4 shrink-0",
+          isActive ? "text-[#FF6B35]" : "text-gray-500"
+        )}
+      />
+      <div className="min-w-0 flex-1 text-left">
+        <p className="truncate text-sm font-medium" title={conversation.title}>
+          {conversation.title}
+        </p>
+        <p className="text-xs text-gray-500">
+          {formatRelativeTime(conversation.updatedAt)}
+        </p>
+      </div>
+    </button>
   );
 }
 
 /**
- * AppSidebar component
+ * Model Selector Component
+ */
+function ModelSelector({ isCollapsed }: { isCollapsed: boolean }) {
+  const currentModel = useCurrentModel();
+  const loadModel = useModelStore((state) => state.loadModel);
+
+  const handleModelChange = useCallback(
+    async (modelId: string) => {
+      await loadModel(modelId);
+    },
+    [loadModel]
+  );
+
+  if (isCollapsed) {
+    return (
+      <div className="flex justify-center py-2">
+        <Cpu className="h-4 w-4 text-gray-500" />
+      </div>
+    );
+  }
+
+  return (
+    <Select
+      value={currentModel?.id || ""}
+      onValueChange={handleModelChange}
+    >
+      <SelectTrigger className="w-full">
+        <div className="flex items-center gap-2">
+          <Cpu className="h-4 w-4 text-gray-500" />
+          <SelectValue placeholder="Select model" />
+        </div>
+      </SelectTrigger>
+      <SelectContent>
+        {MODELS.map((model) => (
+          <SelectItem key={model.id} value={model.id}>
+            <div className="flex flex-col">
+              <span className="font-medium">{model.name}</span>
+              <span className="text-xs text-gray-500">
+                {model.description}
+              </span>
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+/**
+ * Warning banners for memory and performance
+ */
+function WarningBanners({
+  isCollapsed,
+  memoryWarning,
+  performanceSuggestion,
+  onDismissSuggestion,
+}: {
+  isCollapsed: boolean;
+  memoryWarning: string | null;
+  performanceSuggestion: string | null;
+  onDismissSuggestion: () => void;
+}) {
+  if (isCollapsed || (!memoryWarning && !performanceSuggestion)) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-2 px-3 py-2">
+      {memoryWarning && (
+        <div className="flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <div className="flex-1">
+            <p className="font-medium text-amber-800">High Memory Usage</p>
+            <p className="text-xs text-amber-700">
+              Memory usage is above 75%. Consider closing other tabs or
+              restarting the app.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {performanceSuggestion && (
+        <div className="flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-sm">
+          <Zap className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
+          <div className="flex-1">
+            <p className="font-medium text-blue-800">Performance Tip</p>
+            <p className="text-xs text-blue-700">{performanceSuggestion}</p>
+          </div>
+          <button
+            onClick={onDismissSuggestion}
+            className="shrink-0 rounded p-1 hover:bg-blue-100"
+            aria-label="Dismiss suggestion"
+          >
+            <X className="h-3 w-3 text-blue-600" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * New Chat Button
+ */
+function NewChatButton({
+  onClick,
+  isCollapsed,
+}: {
+  onClick: () => void;
+  isCollapsed: boolean;
+}) {
+  if (isCollapsed) {
+    return (
+      <button
+        onClick={onClick}
+        className="flex w-full items-center justify-center rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+        title="New chat"
+      >
+        <Plus className="h-4 w-4" />
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      className="flex w-full items-center gap-2 rounded-lg bg-[#FF6B35] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#FF8C5A]"
+    >
+      <Plus className="h-4 w-4" />
+      <span>New chat</span>
+    </button>
+  );
+}
+
+/**
+ * Settings Button
+ */
+function SettingsButton({
+  onClick,
+  isCollapsed,
+}: {
+  onClick: () => void;
+  isCollapsed: boolean;
+}) {
+  if (isCollapsed) {
+    return (
+      <button
+        onClick={onClick}
+        className="flex w-full items-center justify-center rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+        title="Settings"
+      >
+        <Settings className="h-4 w-4" />
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
+    >
+      <Settings className="h-4 w-4" />
+      <span>Settings</span>
+    </button>
+  );
+}
+
+/**
+ * AppSidebar Component
  *
- * @example
- * ```tsx
- * <AppSidebar
- *   onNewChat={() => createNewConversation()}
- *   onSettingsClick={() => openSettings()}
- * />
- * ```
+ * Uses @blocks/sidebar-02 pattern with collapsible icon-only mode.
+ * Matches the blocks.so DashboardSidebar structure.
  */
 export function AppSidebar({
   onNewChat,
   onSettingsClick,
   className,
 }: AppSidebarProps) {
-  const currentConversationId = useCurrentConversationId();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
-  const currentModel = useCurrentModel();
-  const loadModel = useModelStore((state) => state.loadModel);
-
+  const currentConversationId = useCurrentConversationId();
   const {
     conversations,
     isLoading,
@@ -203,23 +377,11 @@ export function AppSidebar({
     clearPerformanceSuggestion,
   } = useConversations();
 
-  /**
-   * Handle model change - creates new conversation with selected model
-   */
-  const handleModelChange = useCallback(
-    async (modelId: string) => {
-      // Load the new model
-      await loadModel(modelId);
-      // Create new conversation with the selected model
-      createNewConversation();
-      onNewChat?.();
-    },
-    [loadModel, createNewConversation, onNewChat]
-  );
+  const handleNewChat = useCallback(() => {
+    createNewConversation();
+    onNewChat?.();
+  }, [createNewConversation, onNewChat]);
 
-  /**
-   * Handle loading a conversation
-   */
   const handleLoadConversation = useCallback(
     (id: string) => {
       loadConversation(id);
@@ -227,152 +389,87 @@ export function AppSidebar({
     [loadConversation]
   );
 
-  /**
-   * Handle new chat button click
-   */
-  const handleNewChat = useCallback(() => {
-    createNewConversation();
-    onNewChat?.();
-  }, [createNewConversation, onNewChat]);
-
   return (
-    <Sidebar
-      collapsible="icon"
-      className={cn("border-r border-gray-200", className)}
-    >
-      {/* Header with logo and new chat button */}
-      <SidebarHeader className="p-4">
-        <div className="flex items-center justify-between">
+    <Sidebar variant="inset" collapsible="icon" className={className}>
+      {/* Header with Logo and New Chat */}
+      <SidebarHeader
+        className={cn(
+          "flex md:pt-3.5",
+          isCollapsed
+            ? "flex-row items-center justify-between gap-y-4 md:flex-col md:items-start md:justify-start"
+            : "flex-row items-center justify-between"
+        )}
+      >
+        {/* Logo */}
+        <a href="/" className="flex items-center gap-2">
+          <Logo className="h-8 w-8" />
           {!isCollapsed && (
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#FF6B35] to-[#FF8C5A]">
-                <MessageSquare className="h-4 w-4 text-white" />
-              </div>
-              <span className="text-sm font-semibold text-gray-900">Lokul</span>
-            </div>
+            <span className="font-semibold text-gray-900">Lokul</span>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleNewChat}
-            aria-label="New chat"
-            title="New chat"
-            className={cn("shrink-0", isCollapsed && "w-full")}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
+        </a>
+
+        {/* New Chat Button + Trigger */}
+        <motion.div
+          key={isCollapsed ? "header-collapsed" : "header-expanded"}
+          className={cn(
+            "flex items-center gap-2",
+            isCollapsed ? "flex-row md:flex-col-reverse" : "flex-row"
+          )}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <NewChatButton onClick={handleNewChat} isCollapsed={isCollapsed} />
+          <SidebarTrigger />
+        </motion.div>
       </SidebarHeader>
 
       {/* Model Selector */}
-      {!isCollapsed && (
-        <div className="px-4 pb-3">
-          <Select
-            value={currentModel?.id || ""}
-            onValueChange={handleModelChange}
-          >
-            <SelectTrigger className="w-full">
-              <div className="flex items-center gap-2">
-                <Cpu className="h-4 w-4 text-gray-500" />
-                <SelectValue placeholder="Select model" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              {MODELS.map((model) => (
-                <SelectItem key={model.id} value={model.id}>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{model.name}</span>
-                    <span className="text-xs text-gray-500">
-                      {model.description}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
+      <div className={cn("px-3", isCollapsed && "py-2")}>
+        <ModelSelector isCollapsed={isCollapsed} />
+      </div>
 
-      <SidebarSeparator />
+      {/* Warning Banners */}
+      <WarningBanners
+        isCollapsed={isCollapsed}
+        memoryWarning={memoryWarning}
+        performanceSuggestion={performanceSuggestion}
+        onDismissSuggestion={clearPerformanceSuggestion}
+      />
 
-      {/* Warning banners */}
-      {!isCollapsed && (memoryWarning || performanceSuggestion) && (
-        <div className="space-y-2 p-3">
-          {/* Memory warning */}
-          {memoryWarning && (
-            <div className="flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-              <div className="flex-1">
-                <p className="font-medium text-amber-800">High Memory Usage</p>
-                <p className="text-xs text-amber-700">
-                  Memory usage is above 75%. Consider closing other tabs or
-                  restarting the app.
-                </p>
-              </div>
-            </div>
-          )}
+      {/* Conversation List */}
+      <SidebarContent className="gap-4 px-2 py-4">
+        {!isCollapsed && (
+          <p className="px-3 text-xs font-medium text-gray-500">
+            Conversations
+          </p>
+        )}
 
-          {/* Performance suggestion */}
-          {performanceSuggestion && (
-            <div className="flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-sm">
-              <Zap className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
-              <div className="flex-1">
-                <p className="font-medium text-blue-800">Performance Tip</p>
-                <p className="text-xs text-blue-700">{performanceSuggestion}</p>
-              </div>
-              <button
-                onClick={clearPerformanceSuggestion}
-                className="shrink-0 rounded p-1 hover:bg-blue-100"
-                aria-label="Dismiss suggestion"
-              >
-                <X className="h-3 w-3 text-blue-600" />
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Conversation list */}
-      <SidebarContent className="px-2">
-        <SidebarGroup>
-          {!isCollapsed && (
-            <SidebarGroupLabel className="text-xs font-medium text-gray-500">
-              Conversations
-            </SidebarGroupLabel>
-          )}
-          <SidebarMenu>
-            {isLoading ? (
-              <LoadingState />
-            ) : conversations.length === 0 ? (
-              <EmptyState />
-            ) : (
-              conversations.map((conversation) => (
-                <ConversationMenuItem
-                  key={conversation.id}
-                  conversation={conversation}
-                  isActive={conversation.id === currentConversationId}
-                  onClick={() => handleLoadConversation(conversation.id)}
-                />
-              ))
-            )}
-          </SidebarMenu>
-        </SidebarGroup>
+        {isLoading ? (
+          <LoadingState isCollapsed={isCollapsed} />
+        ) : conversations.length === 0 ? (
+          <EmptyState isCollapsed={isCollapsed} />
+        ) : (
+          <div className="space-y-1">
+            {conversations.map((conversation) => (
+              <ConversationItem
+                key={conversation.id}
+                conversation={conversation}
+                isActive={conversation.id === currentConversationId}
+                onClick={() => handleLoadConversation(conversation.id)}
+                isCollapsed={isCollapsed}
+              />
+            ))}
+          </div>
+        )}
       </SidebarContent>
 
-      {/* Footer with settings */}
-      <SidebarFooter className="p-4">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={onSettingsClick}
-              tooltip="Settings"
-              className="w-full"
-            >
-              <Settings className="h-4 w-4" />
-              {!isCollapsed && <span>Settings</span>}
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      {/* Footer with Settings */}
+      <SidebarFooter className="px-2">
+        <SettingsButton
+          onClick={onSettingsClick || (() => {})}
+          isCollapsed={isCollapsed}
+        />
       </SidebarFooter>
     </Sidebar>
   );
