@@ -50,7 +50,19 @@ export function useConversations(): UseConversationsReturn {
     setError(null);
 
     try {
-      setConversations(await getAllConversations());
+      const allConversations = await getAllConversations();
+      const seenIds = new Map<string, Conversation>();
+
+      for (const conversation of allConversations) {
+        const hasDuplicate = seenIds.has(conversation.id);
+        if (hasDuplicate && import.meta.env.DEV) {
+          console.warn(`[useConversations] Duplicate conversation ID found: ${conversation.id}`);
+        }
+        seenIds.set(conversation.id, conversation);
+      }
+
+      const deduplicated = Array.from(seenIds.values());
+      setConversations(deduplicated);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load conversations");
     } finally {
