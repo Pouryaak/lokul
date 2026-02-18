@@ -150,11 +150,13 @@ export function generateConversationTitle(firstUserMessage: string): string {
  * Create a new conversation with initial messages
  *
  * @param modelId - The model ID to use for this conversation
+ * @param id - Optional conversation ID (uses crypto.randomUUID() if not provided)
  * @param messages - Initial messages (optional)
  * @returns The created conversation
  */
 export function createConversation(
   modelId: string,
+  id?: string,
   messages: Message[] = []
 ): Conversation {
   const now = Date.now();
@@ -166,7 +168,7 @@ export function createConversation(
     : "New Conversation";
 
   return {
-    id: crypto.randomUUID(),
+    id: id ?? crypto.randomUUID(),
     title,
     model: modelId,
     messages,

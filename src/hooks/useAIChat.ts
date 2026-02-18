@@ -6,12 +6,54 @@
  * Includes automatic persistence to IndexedDB.
  */
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import type { TextUIPart } from "ai";
 import { WebLLMTransport } from "@/lib/ai/webllm-transport";
-import { getConversation, saveConversation } from "@/lib/storage/conversations";
+import { getConversation, saveConversation, createConversation } from "@/lib/storage/conversations";
+import { debounce } from "@/lib/utils/debounce";
 import type { Message } from "@/types/index";
+
+const PERSISTENCE_DEBOUNCE_MS = 500;
+const NEW_CONVERSATION_TITLE = "New Conversation";
+const CONVERSATION_TITLE_MAX_LENGTH = 50;
+
+function getTextFromMessage(message: UIMessage): string {
+  return message.parts
+    .filter((part): part is TextUIPart => part.type === "text")
+    .map((part) => part.text)
+    .join("");
+}
+
+function getConversationTitle(messages: UIMessage[]): string | null {
+  const firstUserMessage = messages.find((message) => message.role === "user");
+
+  if (!firstUserMessage) {
+    return null;
+  }
+
+  const textContent = getTextFromMessage(firstUserMessage);
+
+  if (!textContent) {
+    return null;
+  }
+
+  if (textContent.length <= CONVERSATION_TITLE_MAX_LENGTH) {
+    return textContent;
+  }
+
+  return `${textContent.slice(0, CONVERSATION_TITLE_MAX_LENGTH)}...`;
+}
+
+function toStorageMessage(message: UIMessage, conversationId: string, timestamp: number): Message {
+  return {
+    id: message.id,
+    role: message.role,
+    content: getTextFromMessage(message),
+    timestamp,
+    conversationId,
+  };
+}
 
 /**
  * Options for the useAIChat hook
@@ -59,7 +101,7 @@ export function useAIChat(options: UseAIChatOptions) {
   const { conversationId, modelId, initialMessages } = options;
 
   // Create WebLLM transport instance with the specified model
-  const transport = new WebLLMTransport({ modelId });
+  const transport = useMemo(() => new WebLLMTransport({ modelId }), [modelId]);
 
   // Configure useChat with the WebLLM transport
   const chatHelpers = useChat({
@@ -70,38 +112,58 @@ export function useAIChat(options: UseAIChatOptions) {
 
   const { messages } = chatHelpers;
 
-  // Persist messages to IndexedDB when they change
-  useEffect(() => {
-    if (messages.length === 0) return;
-
-    const persistMessages = async () => {
+  const persistMessages = useCallback(
+    async (nextMessages: UIMessage[]) => {
       try {
-        const conversation = await getConversation(conversationId);
-        if (!conversation) return;
+        let conversation = await getConversation(conversationId);
 
-        // Convert UIMessages to storage format
-        const storageMessages: Message[] = messages.map((msg): Message => ({
-          id: msg.id,
-          role: msg.role,
-          content: msg.parts
-            .filter((p): p is TextUIPart => p.type === "text")
-            .map((p) => p.text)
-            .join(""),
-          timestamp: Date.now(),
-          conversationId,
-        }));
+        if (!conversation) {
+          conversation = createConversation(modelId, conversationId);
+        }
 
-        conversation.messages = storageMessages;
-        conversation.updatedAt = Date.now();
+        if (conversation.title === NEW_CONVERSATION_TITLE) {
+          const title = getConversationTitle(nextMessages);
+          if (title) {
+            conversation.title = title;
+          }
+        }
+
+        const timestamp = Date.now();
+        conversation.messages = nextMessages.map((message) =>
+          toStorageMessage(message, conversationId, timestamp)
+        );
+        conversation.updatedAt = timestamp;
 
         await saveConversation(conversation);
       } catch (error) {
-        console.error("Failed to persist conversation:", error);
+        if (import.meta.env.DEV) {
+          console.error("Failed to persist conversation:", error);
+        }
       }
-    };
+    },
+    [conversationId, modelId]
+  );
 
-    persistMessages();
-  }, [messages, conversationId]);
+  const debouncedPersistMessages = useMemo(
+    () =>
+      debounce((...args: unknown[]) => {
+        const [nextMessages] = args as [UIMessage[]];
+        void persistMessages(nextMessages);
+      }, PERSISTENCE_DEBOUNCE_MS),
+    [persistMessages]
+  );
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      return;
+    }
+
+    debouncedPersistMessages(messages);
+
+    return () => {
+      debouncedPersistMessages.cancel();
+    };
+  }, [messages, debouncedPersistMessages]);
 
   return chatHelpers;
 }
