@@ -14,3 +14,9 @@
 - `npm run type-check` fails on pre-existing missing route file:
   - `src/App.tsx:17` (`Cannot find module './routes/ChatDetailRoute'`)
 - This failure is unrelated to debounce/listener cleanup changes in plan 02.2-03 and was not modified in this plan.
+
+### 2026-02-18 - Plan 02.2-04 lint baseline issues (out of scope)
+
+- `npm run lint` fails on pre-existing `no-duplicate-imports` violations across many `src/components/ai-elements/*` files.
+- `npm run lint` also fails on pre-existing `src/lib/utils/debounce.ts` (`@typescript-eslint/no-this-alias`) introduced outside this plan's scoped files.
+- These lint errors are outside Task 1-4 scope (`model-engine`, `modelStore`, `App`, `ChatDetailRoute`) and were not fixed in this plan.
