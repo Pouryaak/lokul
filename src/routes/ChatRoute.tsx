@@ -6,7 +6,7 @@
  * This prevents empty conversations from appearing in the sidebar.
  */
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { createConversation } from "@/lib/storage/conversations";
@@ -24,8 +24,14 @@ export function ChatRoute() {
   // Get current model from store
   const currentModel = useModelStore((state) => state.currentModel);
   const defaultModelId = "gemma-2b-it-q4f16_1-MLC"; // Fallback model
+  const isCreatingRef = useRef(false);
 
   useEffect(() => {
+    if (isCreatingRef.current) {
+      return;
+    }
+    isCreatingRef.current = true;
+
     const createNewConversation = async () => {
       try {
         // Use current model ID if available, otherwise use default
@@ -39,6 +45,7 @@ export function ChatRoute() {
         navigate(`/chat/${conversation.id}`, { replace: false });
       } catch (error) {
         console.error("Failed to create conversation:", error);
+        isCreatingRef.current = false;
         // On error, stay on this page briefly then redirect to root
         setTimeout(() => {
           navigate("/", { replace: true });
