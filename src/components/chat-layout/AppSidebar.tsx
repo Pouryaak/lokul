@@ -287,9 +287,9 @@ function WarningBanners({
 }
 
 /**
- * New Chat Button
+ * New Chat List Item (Claude-style)
  */
-function NewChatButton({
+function NewChatItem({
   onClick,
   isCollapsed,
 }: {
@@ -311,9 +311,9 @@ function NewChatButton({
   return (
     <button
       onClick={onClick}
-      className="flex w-full items-center gap-2 rounded-lg bg-[#FF6B35] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#FF8C5A]"
+      className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
     >
-      <Plus className="h-4 w-4" />
+      <Plus className="h-4 w-4 text-gray-500" />
       <span>New chat</span>
     </button>
   );
@@ -408,18 +408,17 @@ export function AppSidebar({
           )}
         </a>
 
-        {/* New Chat Button + Trigger */}
+        {/* Collapse Trigger Only */}
         <motion.div
           key={isCollapsed ? "header-collapsed" : "header-expanded"}
           className={cn(
-            "flex items-center gap-2",
+            "flex items-center",
             isCollapsed ? "flex-row md:flex-col-reverse" : "flex-row"
           )}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <NewChatButton onClick={handleNewChat} isCollapsed={isCollapsed} />
           <SidebarTrigger />
         </motion.div>
       </SidebarHeader>
@@ -439,6 +438,9 @@ export function AppSidebar({
 
       {/* Conversation List */}
       <SidebarContent className="gap-4 px-2 py-4">
+        {/* New Chat - Claude style, before conversations */}
+        <NewChatItem onClick={handleNewChat} isCollapsed={isCollapsed} />
+
         {!isCollapsed && (
           <p className="px-3 text-xs font-medium text-gray-500">
             Conversations

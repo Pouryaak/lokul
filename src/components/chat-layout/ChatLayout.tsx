@@ -12,7 +12,6 @@ import { Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   SidebarProvider,
-  SidebarTrigger,
   SidebarInset,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/Button";
@@ -85,10 +84,8 @@ export function ChatLayout({
           className
         )}
       >
-        {/* Header with sidebar trigger (visible when sidebar collapsed) */}
-        <header className="flex h-14 items-center gap-4 border-b border-gray-200/50 bg-white/50 px-4 backdrop-blur-sm">
-          <SidebarTrigger className="md:hidden" />
-          <SidebarTrigger className="hidden md:flex" />
+        {/* Header - only performance button, no duplicate sidebar trigger */}
+        <header className="flex h-14 items-center justify-end border-b border-gray-200/50 bg-white/50 px-4 backdrop-blur-sm">
           <div className="flex-1" />
         </header>
 
