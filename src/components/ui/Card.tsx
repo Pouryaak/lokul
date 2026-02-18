@@ -1,107 +1,92 @@
-/**
- * Card Component - Container with consistent styling
- *
- * Simple card wrapper with white background, shadow, and optional accent.
- */
+import * as React from "react"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-/**
- * Props for the Card component
- */
-export interface CardProps {
-  /** Card content */
-  children: React.ReactNode;
-  /** Additional CSS classes */
-  className?: string;
-  /** Whether to show orange accent on top */
-  accent?: boolean;
-  /** Whether card should have hover effect */
-  hover?: boolean;
-}
-
-/**
- * Card component for content containers
- *
- * @example
- * ```tsx
- * <Card accent hover>
- *   <h3>Card Title</h3>
- *   <p>Card content</p>
- * </Card>
- * ```
- */
-export function Card({ children, className, accent = false, hover = false }: CardProps) {
+function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
+      data-slot="card"
       className={cn(
-        "relative overflow-hidden rounded-xl bg-white p-6 shadow-md",
-        accent && "border-t-4 border-t-[#FF6B35]",
-        hover && "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg",
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
         className
       )}
-    >
-      {children}
-    </div>
-  );
+      {...props}
+    />
+  )
 }
 
-/**
- * Props for CardHeader component
- */
-export interface CardHeaderProps {
-  children: React.ReactNode;
-  className?: string;
+function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-header"
+      className={cn(
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-/**
- * Card header section
- */
-export function CardHeader({ children, className }: CardHeaderProps) {
-  return <div className={cn("mb-4", className)}>{children}</div>;
+function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-title"
+      className={cn("leading-none font-semibold", className)}
+      {...props}
+    />
+  )
 }
 
-/**
- * Props for CardTitle component
- */
-export interface CardTitleProps {
-  children: React.ReactNode;
-  className?: string;
+function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  )
 }
 
-/**
- * Card title styling
- */
-export function CardTitle({ children, className }: CardTitleProps) {
-  return <h3 className={cn("text-xl font-semibold text-[#1A1A1A]", className)}>{children}</h3>;
+function CardAction({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-action"
+      className={cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-/**
- * Props for CardContent component
- */
-export interface CardContentProps {
-  children: React.ReactNode;
-  className?: string;
+function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-content"
+      className={cn("px-6", className)}
+      {...props}
+    />
+  )
 }
 
-/**
- * Card content section
- */
-export function CardContent({ children, className }: CardContentProps) {
-  return <div className={cn("text-gray-600", className)}>{children}</div>;
+function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-footer"
+      className={cn("flex items-center px-6 [.border-t]:pt-6", className)}
+      {...props}
+    />
+  )
 }
 
-/**
- * Props for CardFooter component
- */
-export interface CardFooterProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-/**
- * Card footer section
- */
-export function CardFooter({ children, className }: CardFooterProps) {
-  return <div className={cn("mt-4 border-t border-gray-100 pt-4", className)}>{children}</div>;
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
 }
