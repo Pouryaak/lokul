@@ -2,7 +2,7 @@
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
 **Status:** Phase 1 Core Infrastructure complete, awaiting Phase 2 planning
-**Updated:** 2026-02-17
+**Updated:** 2026-02-18
 
 ---
 
@@ -26,23 +26,24 @@
 
 ## Current Position
 
-**Phase:** Phase 1 complete
-**Plan:** All 4 plans completed
-**Status:** Core Infrastructure complete, ready for Phase 2
+**Phase:** Phase 2 in progress
+**Plan:** 02-02 complete (2 of ? plans in Phase 2)
+**Status:** Chat UI components complete, ready for integration
 
 **Progress:**
 
 ```
-[====................] 20% (1/5 phases complete)
+[=====>..............] 25% (Phase 2 in progress)
 ```
 
 **Phases:**
 - [x] Phase 1: Core Infrastructure (4/4 plans complete)
   - [x] 01-01: Type definitions, storage, GPU detection
   - [x] 01-02: Web Worker, AI inference, model store
-  - [x] 01-03: 11-section landing page
+   - [x] 01-03: 11-section landing page
   - [x] 01-04: PWA, offline, performance panel
-- [ ] Phase 2: Chat Interface
+- [~] Phase 2: Chat Interface (1/? plans complete)
+  - [x] 02-01: Chat state management, storage, hooks
 - [ ] Phase 3: Model Management
 - [ ] Phase 4: Memory System
 - [ ] Phase 5: Polish & PWA
@@ -66,6 +67,7 @@
 | 01-02 | 25 min | 4 | 4 | 2026-02-17 |
 | 01-03 | 90 min | 14 | 15 | 2026-02-17 |
 | 01-04 | 35 min | 5 | 5 | 2026-02-17 |
+| 02-01 | 35 min | 3 | 4 | 2026-02-18 |
 
 ---
 
@@ -85,6 +87,9 @@
 | 2026-02-17 | Use shadcn/ui patterns with CVA for variants | Consistent, composable component API |
 | 2026-02-17 | StatusIndicator fixed bottom-left | Always visible without interfering with content |
 | 2026-02-17 | PerformancePanel toggleable from top-right | Available when needed, hidden by default |
+| 2026-02-18 | Use crypto.randomUUID() for IDs | Standard, cryptographically secure ID generation |
+| 2026-02-18 | Auto-generate conversation titles from first message | User-friendly, reduces manual title entry |
+| 2026-02-18 | Export selector hooks from chatStore | Prevents unnecessary re-renders in components |
 
 ### Open Questions
 
@@ -102,9 +107,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed Phase 1 Core Infrastructure (all 4 plans)
-**Next Action:** Plan Phase 2 (Chat Interface)
-**Context Hash:** phase1-complete-20260217
+**Last Action:** Completed 02-01 Chat State Management
+**Next Action:** Execute 02-02 Chat UI Components
+**Context Hash:** phase2-chat-state-20260218
 
 **Key Files:**
 - `/Users/poak/Documents/personal-project/Lokul/.planning/PROJECT.md` - Project definition
