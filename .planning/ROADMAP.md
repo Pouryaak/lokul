@@ -10,8 +10,9 @@
 ## Phases
 
 - [x] **Phase 1: Core Infrastructure** - Foundation for local AI inference with Web Workers, GPU detection, and offline capability
-- [ ] **Phase 2: Chat Interface** - Streaming chat with markdown, conversation storage, and basic performance monitoring
-- [ ] **Phase 2.1: AI SDK UI Migration with Routing** (INSERTED) - Add routing (/chat, /chat/[id]), integrate AI SDK UI with WebLLM, use ai-elements components
+- [x] **Phase 2: Chat Interface** - Streaming chat with markdown, conversation storage, and basic performance monitoring
+- [x] **Phase 2.1: AI SDK UI Migration with Routing** - Add routing (/chat, /chat/[id]), integrate AI SDK UI with WebLLM, use ai-elements components
+- [ ] **Phase 2.2: Stabilization & Refactor** (INSERTED) - Fix race conditions, establish error handling patterns, remove technical debt
 - [ ] **Phase 3: Model Management** - Three-tier model system (Quick/Smart/Genius) with download manager
 - [ ] **Phase 4: Memory System** - Three-tier memory (Core Facts + Daily Context + Recent Messages) with auto-compaction
 - [ ] **Phase 5: Polish & PWA** - Performance panel, responsive design, export/import, and PWA features
@@ -23,8 +24,9 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Core Infrastructure | 4/4 | Complete | 2026-02-17 |
-| 2. Chat Interface | 0/4 | Planned | - |
-| 2.1. AI SDK UI Migration | 0/TBD | Inserted | - |
+| 2. Chat Interface | 4/4 | Complete | 2026-02-18 |
+| 2.1. AI SDK UI Migration | 7/7 | Complete | 2026-02-18 |
+| 2.2. Stabilization & Refactor | 0/6 | In Progress | - |
 | 3. Model Management | 0/3 | Not started | - |
 | 4. Memory System | 0/3 | Not started | - |
 | 5. Polish & PWA | 0/3 | Not started | - |
@@ -132,11 +134,48 @@ Plans:
 - [ ] 02.1-06-PLAN.md — Integrate persistence with IndexedDB
 - [ ] 02.1-07-PLAN.md — Integrate performance monitoring and model switching
 
+### Phase 2.2: Stabilization & Refactor (INSERTED)
+
+**Goal:** Refactor existing functionality to industry-level standards—fix race conditions, establish consistent error handling, remove technical debt, and create a maintainable, modular architecture
+
+**Depends on:** Phase 2.1
+
+**Requirements:** Technical debt fixes (no new user-facing capabilities)
+
+**Success Criteria** (what must be TRUE):
+
+1. Zero race conditions in conversation persistence (debounced saves, optimistic locking)
+2. All async operations properly cancellable (abort signals throughout the stack)
+3. Consistent error handling with Result types and user-friendly recovery paths
+4. Clean separation of concerns (UI / Business Logic / Infrastructure layers)
+5. Legacy code removed (old chatStore.ts, useChat.ts, unused components)
+6. Memory leaks fixed (event listener cleanup, proper useEffect disposal)
+7. Request deduplication prevents duplicate operations
+8. No `any` types except in type guards
+9. All functions under 50 lines, components under 200 lines
+10. Defensive programming: input validation, null checks, resource limits
+
+**Plans:** 6 plans in 3 waves
+
+**Wave 1** (parallel):
+- [ ] 02.2-01-PLAN.md — Error handling infrastructure (Result<T,E> types, AppError types, utility functions)
+- [ ] 02.2-02-PLAN.md — State management cleanup (remove legacy chatStore.ts, useChat.ts, unused components)
+
+**Wave 2** (parallel, depends on Wave 1):
+- [ ] 02.2-03-PLAN.md — Race condition fixes (debounced persistence, event listener cleanup)
+- [ ] 02.2-04-PLAN.md — Model Engine (deduplication, auto-load on refresh, request cancellation)
+
+**Wave 3** (parallel, depends on Wave 2):
+- [ ] 02.2-05-PLAN.md — Critical bug fixes (ghost conversations, duplicates, working abort)
+- [ ] 02.2-06-PLAN.md — Error boundaries and cleanup (ErrorBoundary component, dismissible errors, console cleanup)
+
+---
+
 ### Phase 3: Model Management
 
 **Goal:** Users can seamlessly switch between three model tiers based on their quality/speed needs
 
-**Depends on:** Phase 2.1
+**Depends on:** Phase 2.2
 
 **Requirements:** MODEL-02, MODEL-03, MODEL-04, MODEL-05, MODEL-06, MODEL-08, FIRST-06
 
@@ -224,6 +263,12 @@ Phase 1 (Core Infrastructure)
 Phase 2 (Chat Interface)
     |
     v
+Phase 2.1 (AI SDK UI Migration)
+    |
+    v
+Phase 2.2 (Stabilization & Refactor)
+    |
+    v
 Phase 3 (Model Management)
     |
     v
@@ -235,10 +280,9 @@ Phase 5 (Polish & PWA)
 
 **Key Dependency Rationale:**
 
-- **Phase 1 before all:** Web Worker architecture and GPU detection must be established first. Refactoring from main-thread inference later is prohibitively expensive.
-- **Phase 2 before Phase 3:** Basic streaming chat must work before adding model switching complexity.
-- **Phase 3 before Phase 4:** Memory system requires stable context building; context builder requires working chat across models.
-- **Phase 4 before Phase 5:** Polish features like export should include memory context; virtualization needs memory system stress testing.
+- **Phase 1 before all:** Web Worker architecture and GPU detection must be established first.
+- **Phase 2/2.1 before 2.2:** Must have working code before stabilizing it.
+- **Phase 2.2 before 3/4/5:** Model Management, Memory, and Polish need a stable, bug-free foundation. Building on shaky ground creates unfixable bugs.
 
 ---
 
@@ -248,6 +292,7 @@ Phases needing deeper research during planning:
 
 | Phase | Flag | Reason |
 |-------|------|--------|
+| Phase 2.2 | HIGH | Refactoring without clear patterns risks introducing new bugs; needs careful planning |
 | Phase 4 | HIGH | Complex custom logic for fact extraction and compaction; no established patterns |
 | Phase 3 | MEDIUM | Download UX patterns need validation; resumable downloads have edge cases |
 | Phase 1 | LOW | Well-documented WebLLM worker patterns |

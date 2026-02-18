@@ -2,7 +2,7 @@
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
 **Status:** Milestone complete
-**Updated:** 2026-02-18 (17:30 UTC)
+**Updated:** 2026-02-18 (18:30 UTC)
 
 ---
 
@@ -26,9 +26,9 @@
 
 ## Current Position
 
-**Phase:** Phase 2.1 in progress
-**Plan:** 02.1-07 complete (7 of 7 plans in Phase 2.1)
-**Status:** Performance integration complete - all Phase 2.1 plans finished
+**Phase:** Phase 2.2 - Stabilization & Refactor
+**Plan:** 6 plans created, ready for execution
+**Status:** PIVOT - Planning complete, ready to execute stabilization
 
 **Progress:**
 
@@ -56,6 +56,7 @@
   - [x] 02.1-05: Message actions, conversation clearing, welcome screen
   - [x] 02.1-06: Integration testing and verification
   - [x] 02.1-07: Performance integration (StatusIndicator, PerformancePanel, model selector)
+- [ ] Phase 2.2: Stabilization & Refactor (IN PROGRESS - fix race conditions, establish error patterns, remove tech debt)
 - [ ] Phase 3: Model Management
 - [ ] Phase 4: Memory System
 - [ ] Phase 5: Polish & PWA
@@ -136,6 +137,10 @@
 | 2026-02-18 | Token tracking in metrics module | High-frequency token counting without React overhead |
 | 2026-02-18 | Model selector creates new conversation | Per user decision: changing model = new chat |
 | 2026-02-18 | Sidebar conversation click navigates to /chat/[id] | Bug fix - URL must update when conversation clicked for proper routing |
+| 2026-02-18 | Start Chatting navigates to /loading first | Bug fix - navigate immediately to loading screen, then load model (was hanging with no feedback) |
+| 2026-02-18 | Add code block CSS styling | Fixed AI code responses appearing as plain text without formatting - added pre/code block styles with dark theme support |
+| 2026-02-18 | New Chat creates conversation in memory only | Bug fix - clicking New Chat no longer saves empty conversation to sidebar; conversation only saved when user sends first message |
+| 2026-02-18 | New Chat button shouldn't create conversation immediately | Bug fix - clicking New Chat just navigates to /chat; conversation only created when user sends first message |
 - [Phase 02.1]: Use TextUIPart type from ai package for message part filtering in persistence layer
 
 ### Open Questions
@@ -148,37 +153,57 @@ None currently.
 
 ### Technical Debt
 
-None currently.
+| Issue | Location | Severity | Phase 2.2 Fix |
+|-------|----------|----------|---------------|
+| Race condition in persistence | `useAIChat.ts:74-120` | Critical | Debounced saves + optimistic locking |
+| Missing abort implementation | `AIChatInterface.tsx:97` | Critical | AbortSignal propagation through stack |
+| Memory leak in transport | `webllm-transport.ts:77-84` | High | Event listener cleanup in finally block |
+| Dual state management | `chatStore.ts` + AI SDK | High | Remove legacy, standardize on AI SDK |
+| No request deduplication | `modelStore.ts:70-124` | High | In-flight request tracking |
+| Tight coupling | `useAIChat.ts:58-123` | Medium | Transport memoization / singleton |
+| Inconsistent error handling | Multiple files | Medium | Result<T,E> types + standard patterns |
+| Missing Error Boundary | `App.tsx` | Medium | Wrap routes with error boundary |
 
 ### Roadmap Evolution
 
 | Date | Change | Reason |
 |------|--------|--------|
 | 2026-02-18 | Phase 2.1 inserted after Phase 2 | Need routing (/chat, /chat/[id]) and AI SDK UI migration before Phase 3 |
+| 2026-02-18 | Phase 2.2 inserted after Phase 2.1 | Codebase is flaky—race conditions, memory leaks, inconsistent patterns. Need stabilization before Model Management. |
 
 ---
 
 ## Session Continuity
 
-**Last Action:** Fixed sidebar conversation click routing - added onConversationClick callback prop to navigate to /chat/[id]
-**Next Action:** Phase 3 - Model Management
-**Context Hash:** sidebar-routing-fix-20260218
+**Last Action:** Created Phase 2.2 (Stabilization & Refactor) - audited codebase, identified critical issues, established phase context
+**Next Action:** Execute Phase 2.2 - run `/gsd:execute-phase 02.2-stabilization-and-refactor` to begin stabilization
+**Context Hash:** stabilization-phase-created-20260218
+
+**Critical Bugs Identified by User (must fix in Phase 2.2):**
+
+| Bug | Symptom | Files Involved |
+|-----|---------|----------------|
+| Ghost Conversations | Opening `/chat` shows 20+ deleted conversations, "not found" toasts, creation loop | `ChatRoute.tsx`, `useConversations.ts`, `chatStore.ts` |
+| Duplicate Sidebar Entries | Same conversation appears multiple times | `AppSidebar.tsx`, `useConversations.ts`, IndexedDB |
+| Model Loading on Refresh | Hard refresh breaks model loading, only works via landing page | `App.tsx`, `modelStore.ts`, `ChatLayoutWrapper` |
+
+**Key Decision:** User explicitly requested we stop adding features and stabilize existing code. Focus is on industry-level patterns: Result types, proper cancellation, clean architecture, defensive programming.
 
 **Key Files:**
 - `/Users/poak/Documents/personal-project/Lokul/.planning/PROJECT.md` - Project definition
 - `/Users/poak/Documents/personal-project/Lokul/.planning/REQUIREMENTS.md` - v1 requirements (56 total)
 - `/Users/poak/Documents/personal-project/Lokul/.planning/ROADMAP.md` - Phase structure
-- `/Users/poak/Documents/personal-project/Lokul/src/components/Chat/AIChatInterface.tsx` - Main chat interface with message actions
-- `/Users/poak/Documents/personal-project/Lokul/src/components/ai-elements/message.tsx` - AI SDK UI message components
-- `/Users/poak/Documents/personal-project/Lokul/src/components/Chat/WelcomeScreen.tsx` - Welcome screen with suggested prompts
-- `/Users/poak/Documents/personal-project/Lokul/src/components/chat-layout/ChatLayout.tsx` - Chat layout with performance components
-- `/Users/poak/Documents/personal-project/Lokul/src/components/chat-layout/AppSidebar.tsx` - Sidebar with model selector
-- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02.1-ai-sdk-ui-migration-with-routing/02.1-07-SUMMARY.md` - Latest plan summary
+- `/Users/poak/Documents/personal-project/Lokul/.planning/audit/STABILITY_AUDIT.md` - Full codebase audit with issues
+- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02.2-stabilization-and-refactor/02.2-CONTEXT.md` - Phase decisions and patterns
 
 ---
 
 ## Notes
 
+- **CRITICAL:** Phase 2.2 is a pivot — stopping feature development to stabilize existing code
+- Codebase audit found race conditions, memory leaks, dual state management, inconsistent error handling
+- User wants industry-level patterns: Result<T,E> types, proper cancellation, clean architecture
+- Phase 2.2 must be completed before Phase 3 — building Model Management on shaky ground creates unfixable bugs
 - Research flagged Phase 4 (Memory System) as HIGH complexity — may need additional research during planning
 - Phase 3 (Model Management) flagged as MEDIUM complexity for download UX patterns
 - All 56 v1 requirements mapped to exactly one phase with 100% coverage
