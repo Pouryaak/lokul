@@ -2,7 +2,7 @@
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
 **Status:** Milestone complete
-**Updated:** 2026-02-18 (14:04 UTC)
+**Updated:** 2026-02-18 (17:30 UTC)
 
 ---
 
@@ -135,6 +135,7 @@
 | 2026-02-18 | Performance components in ChatLayout | Better component composition, layout owns its UI |
 | 2026-02-18 | Token tracking in metrics module | High-frequency token counting without React overhead |
 | 2026-02-18 | Model selector creates new conversation | Per user decision: changing model = new chat |
+| 2026-02-18 | Sidebar conversation click navigates to /chat/[id] | Bug fix - URL must update when conversation clicked for proper routing |
 - [Phase 02.1]: Use TextUIPart type from ai package for message part filtering in persistence layer
 
 ### Open Questions
@@ -159,9 +160,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 02.1-07 Performance integration with AI SDK UI
+**Last Action:** Fixed sidebar conversation click routing - added onConversationClick callback prop to navigate to /chat/[id]
 **Next Action:** Phase 3 - Model Management
-**Context Hash:** performance-integration-20260218
+**Context Hash:** sidebar-routing-fix-20260218
 
 **Key Files:**
 - `/Users/poak/Documents/personal-project/Lokul/.planning/PROJECT.md` - Project definition

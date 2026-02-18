@@ -123,8 +123,13 @@ function ChatLayoutWrapper() {
     navigate("/chat");
   }, [navigate]);
 
+  // Handle conversation click - navigate to specific conversation
+  const handleConversationClick = useCallback((id: string) => {
+    navigate(`/chat/${id}`);
+  }, [navigate]);
+
   return (
-    <ChatLayout onNewChat={handleNewChat}>
+    <ChatLayout onNewChat={handleNewChat} onConversationClick={handleConversationClick}>
       <Outlet />
     </ChatLayout>
   );

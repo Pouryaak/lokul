@@ -29,6 +29,8 @@ interface ChatLayoutProps {
   onNewChat?: () => void;
   /** Callback when settings is clicked */
   onSettingsClick?: () => void;
+  /** Callback when a conversation is clicked in sidebar - passes conversation ID */
+  onConversationClick?: (id: string) => void;
   /** Optional additional className */
   className?: string;
   /** Whether the sidebar is open by default */
@@ -59,6 +61,7 @@ export function ChatLayout({
   children,
   onNewChat,
   onSettingsClick,
+  onConversationClick,
   className,
   defaultOpen = true,
   open,
@@ -74,7 +77,11 @@ export function ChatLayout({
       className="h-screen"
     >
       {/* App Sidebar with conversation list */}
-      <AppSidebar onNewChat={onNewChat} onSettingsClick={onSettingsClick} />
+      <AppSidebar
+        onNewChat={onNewChat}
+        onSettingsClick={onSettingsClick}
+        onConversationClick={onConversationClick}
+      />
 
       {/* Main content area */}
       <SidebarInset

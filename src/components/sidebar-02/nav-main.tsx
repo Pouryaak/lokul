@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import type React from "react";
 import { useState } from "react";
 
@@ -91,8 +91,7 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                         >
                           <SidebarMenuSubButton asChild>
                             <Link
-                              href={subRoute.link}
-                              prefetch={true}
+                              to={subRoute.link}
                               className="flex items-center rounded-md px-4 py-1.5 text-sm font-medium text-muted-foreground hover:bg-sidebar-muted hover:text-foreground"
                             >
                               {subRoute.title}
@@ -107,8 +106,7 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
             ) : (
               <SidebarMenuButton tooltip={route.title} asChild>
                 <Link
-                  href={route.link}
-                  prefetch={true}
+                  to={route.link}
                   className={cn(
                     "flex items-center rounded-lg px-2 transition-colors text-muted-foreground hover:bg-sidebar-muted hover:text-foreground",
                     isCollapsed && "justify-center"

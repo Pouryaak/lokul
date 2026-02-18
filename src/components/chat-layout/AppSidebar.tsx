@@ -39,6 +39,8 @@ interface AppSidebarProps {
   onNewChat?: () => void;
   /** Callback when settings is clicked */
   onSettingsClick?: () => void;
+  /** Callback when a conversation is clicked - passes conversation ID for navigation */
+  onConversationClick?: (id: string) => void;
   /** Optional additional className */
   className?: string;
 }
@@ -243,7 +245,7 @@ function WarningBanners({
   onDismissSuggestion,
 }: {
   isCollapsed: boolean;
-  memoryWarning: string | null;
+  memoryWarning: boolean;
   performanceSuggestion: string | null;
   onDismissSuggestion: () => void;
 }) {
@@ -361,6 +363,7 @@ function SettingsButton({
 export function AppSidebar({
   onNewChat,
   onSettingsClick,
+  onConversationClick,
   className,
 }: AppSidebarProps) {
   const { state } = useSidebar();
@@ -385,8 +388,9 @@ export function AppSidebar({
   const handleLoadConversation = useCallback(
     (id: string) => {
       loadConversation(id);
+      onConversationClick?.(id);
     },
-    [loadConversation]
+    [loadConversation, onConversationClick]
   );
 
   return (
