@@ -27,8 +27,8 @@
 ## Current Position
 
 **Phase:** Phase 2.2 - Stabilization & Refactor
-**Plan:** 02.2-06 complete (6/6 plans complete)
-**Status:** PHASE COMPLETE - stabilization and refactor completed
+**Plan:** 02.2-09 complete (9/9 plans complete, gap closure cycle complete)
+**Status:** PHASE COMPLETE - stabilization and refactor completed with gap-closure pass
 
 **Progress:**
 
@@ -78,6 +78,8 @@
 | Phase 02.2 P04 | 4 min | 4 tasks | 4 files |
 | Phase 02.2 P06 | 2 min | 5 tasks | 4 files |
 | Phase 02.2 P05 | 3 min | 6 tasks | 5 files |
+| Phase 02.2 P10 | 5m | 3 tasks | 7 files |
+| Phase 02.2 P11 | 7m | 3 tasks | 6 files |
 
 ### Plan Execution Metrics
 
@@ -164,6 +166,12 @@
 - [Phase 02.2]: Deduplicate loaded conversations with a Map keyed by ID before rendering sidebar state
 - [Phase 02.2]: Handle conversation selection through route navigation only and let ChatDetailRoute own hydration
 - [Phase 02.2]: Use useAIChat stop() directly for stop-generation instead of local placeholder behavior
+- [Phase 02.2]: Carry cancel reason metadata into storage APIs so aborted persistence reports deterministic intent.
+- [Phase 02.2]: Treat generateSafe Result handling as canonical in transport and only surface user-safe messages to UI streams.
+- [Phase 02.2]: Expose persistence failure recovery as explicit retry/dismiss actions instead of DEV-only logging.
+- [Phase 02.2]: Move persistence orchestration into dedicated helper hooks so useAIChat remains a thin integration boundary.
+- [Phase 02.2]: Scope architecture-fit rule to core application paths and document temporary legacy exceptions explicitly.
+- [Phase 02.2]: Run architecture-check before full lint so function-size regressions fail early in local and CI flows.
 
 ### Open Questions
 
@@ -197,9 +205,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 02.2-06 - added route-level ErrorBoundary, dismissible chat errors, and hardened inference error handling
-**Next Action:** Begin Phase 3 planning/execution (Model Management)
-**Context Hash:** stabilization-phase-02.2-06-complete-20260218
+**Last Action:** Completed 02.2-07/08/09 gap closure plans - OCC persistence, Result/cancellation hardening, and size-limit refactors
+**Next Action:** Re-run phase verification, then begin Phase 3 planning/execution (Model Management)
+**Context Hash:** stabilization-phase-02.2-gaps-closed-20260218
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 
