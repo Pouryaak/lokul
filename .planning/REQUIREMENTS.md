@@ -25,13 +25,13 @@
 ### Model Management (MODEL)
 
 - [ ] **MODEL-01**: App auto-loads Quick Mode (Phi-2 2.7B, ~80MB) on first visit
-- [ ] **MODEL-02**: User can see current active model in UI header
-- [ ] **MODEL-03**: User can switch to Smart Mode (Llama 3.2 3B, ~2.8GB) via dropdown
-- [ ] **MODEL-04**: User can switch to Genius Mode (Mistral 7B, ~6.4GB) via dropdown
-- [ ] **MODEL-05**: Download progress displays with percentage and time estimate
-- [ ] **MODEL-06**: User can cancel an in-progress model download
+- [x] **MODEL-02**: User can see current active/requested model in chat controls (input selector + download manager)
+- [x] **MODEL-03**: User can switch to Smart Mode (Llama 3.2 3B, ~2.8GB) via dropdown
+- [x] **MODEL-04**: User can switch to Genius Mode (Mistral 7B, ~6.4GB) via dropdown
+- [x] **MODEL-05**: Download progress displays with percentage and time estimate
+- [x] **MODEL-06**: User can cancel an in-progress model download
 - [ ] **MODEL-07**: Downloaded models persist in cache across browser sessions
-- [ ] **MODEL-08**: Model switch does not require page reload (seamless transition)
+- [x] **MODEL-08**: Model switch does not require page reload (seamless transition)
 
 ### Performance Monitoring (PERF)
 
@@ -70,7 +70,7 @@
 - [ ] **FIRST-03**: Setup flow shows honest progress steps during Quick Mode load
 - [ ] **FIRST-04**: First message can be sent within 60 seconds of landing
 - [ ] **FIRST-05**: Clear error shown if WebGPU not supported (browser compatibility)
-- [ ] **FIRST-06**: Prompt to download Smart Mode shown after first successful chat
+- [x] **FIRST-06**: New chats default to Smart Mode (prompt flow removed by approved scope update)
 
 ### Memory & Context (MEM)
 
@@ -132,13 +132,13 @@
 | CHAT-09 | Phase 5 | Pending |
 | CHAT-10 | Phase 5 | Pending |
 | MODEL-01 | Phase 1 | Pending |
-| MODEL-02 | Phase 3 | Pending |
-| MODEL-03 | Phase 3 | Pending |
-| MODEL-04 | Phase 3 | Pending |
-| MODEL-05 | Phase 3 | Pending |
-| MODEL-06 | Phase 3 | Pending |
+| MODEL-02 | Phase 3 | Complete |
+| MODEL-03 | Phase 3 | Complete |
+| MODEL-04 | Phase 3 | Complete |
+| MODEL-05 | Phase 3 | Complete |
+| MODEL-06 | Phase 3 | Complete |
 | MODEL-07 | Phase 1 | Pending |
-| MODEL-08 | Phase 3 | Pending |
+| MODEL-08 | Phase 3 | Complete |
 | PERF-01 | Phase 1 | Pending |
 | PERF-02 | Phase 1 | Pending |
 | PERF-03 | Phase 2 | Pending |
@@ -165,7 +165,7 @@
 | FIRST-03 | Phase 1 | Pending |
 | FIRST-04 | Phase 1 | Pending |
 | FIRST-05 | Phase 1 | Pending |
-| FIRST-06 | Phase 3 | Pending |
+| FIRST-06 | Phase 3 | Complete |
 | MEM-01 | Phase 4 | Pending |
 | MEM-02 | Phase 4 | Pending |
 | MEM-03 | Phase 4 | Pending |
@@ -181,4 +181,4 @@
 
 ---
 *Requirements defined: 2026-02-17*
-*Last updated: 2026-02-17 after initial definition*
+*Last updated: 2026-02-19 after Phase 3 completion*

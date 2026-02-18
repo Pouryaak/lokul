@@ -1,8 +1,8 @@
 # State: Lokul
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
-**Status:** Milestone complete
-**Updated:** 2026-02-18 (16:59 UTC)
+**Status:** In progress
+**Updated:** 2026-02-19 (00:26 UTC)
 
 ---
 
@@ -26,14 +26,14 @@
 
 ## Current Position
 
-**Phase:** Phase 2.2 - Stabilization & Refactor
-**Plan:** 02.2-09 complete (9/9 plans complete, gap closure cycle complete)
-**Status:** PHASE COMPLETE - stabilization and refactor completed with gap-closure pass
+**Phase:** Phase 3 - Model Management
+**Plan:** 03-03 complete (3/3 plans complete)
+**Status:** PHASE COMPLETE - conversation-scoped model orchestration, download manager UX, and queue/race safeguards delivered
 
 **Progress:**
 
-[█████████░] 93%
-[======>.............] 40% (Phase 2.2 complete, preparing Phase 3)
+[███████░░░] 70%
+[==============>.....] 60% (Phase 3 complete, preparing Phase 4)
 ```
 
 **Phases:**
@@ -57,7 +57,7 @@
   - [x] 02.1-06: Integration testing and verification
   - [x] 02.1-07: Performance integration (StatusIndicator, PerformancePanel, model selector)
 - [x] Phase 2.2: Stabilization & Refactor (6/6 plans complete)
-- [ ] Phase 3: Model Management
+- [x] Phase 3: Model Management (3/3 plans complete)
 - [ ] Phase 4: Memory System
 - [ ] Phase 5: Polish & PWA
 
@@ -81,6 +81,8 @@
 | Phase 02.2 P10 | 5m | 3 tasks | 7 files |
 | Phase 02.2 P11 | 7m | 3 tasks | 6 files |
 | Phase 03-model-management P01 | 7m | 2 tasks | 7 files |
+| Phase 03-model-management P02 | 9m | 2 tasks | 5 files |
+| Phase 03-model-management P03 | 16m | 3 tasks | 6 files |
 
 ### Plan Execution Metrics
 
@@ -176,6 +178,8 @@
 - [Phase 03 prep]: Phase 3 must preserve 02.2 reliability guardrails (cancellation, persistence ordering semantics, no sidebar route-flicker regressions) per `.planning/phases/03-model-management/03-NOTES.md`.
 - [Phase 03-model-management]: Delegate in-chat model switch requests from modelStore to conversationModelStore when an active conversation exists.
 - [Phase 03-model-management]: Persist model-target changes without touching updatedAt so sidebar ordering remains message-activity-driven.
+- [Phase 03-model-management]: Gate model activation with requested-target checks so stale download completions cannot force-switch active runtime.
+- [Phase 03-model-management]: Keep requested-vs-active model state split per conversation to preserve non-blocking chat during downloads.
 
 ### Open Questions
 
@@ -209,9 +213,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 02.2-07/08/09 gap closure plans - OCC persistence, Result/cancellation hardening, and size-limit refactors
-**Next Action:** Re-run phase verification, then begin Phase 3 planning/execution (Model Management)
-**Context Hash:** stabilization-phase-02.2-gaps-closed-20260218
+**Last Action:** Completed Phase 3 plans (03-01/02/03) for model orchestration, UI management, and queue/race test coverage
+**Next Action:** Begin Phase 4 planning/execution (Memory System)
+**Context Hash:** phase-03-model-management-complete-20260219
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 

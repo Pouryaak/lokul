@@ -12,8 +12,8 @@
 - [x] **Phase 1: Core Infrastructure** - Foundation for local AI inference with Web Workers, GPU detection, and offline capability
 - [x] **Phase 2: Chat Interface** - Streaming chat with markdown, conversation storage, and basic performance monitoring
 - [x] **Phase 2.1: AI SDK UI Migration with Routing** - Add routing (/chat, /chat/[id]), integrate AI SDK UI with WebLLM, use ai-elements components
-- [ ] **Phase 2.2: Stabilization & Refactor** (INSERTED) - Fix race conditions, establish error handling patterns, remove technical debt
-- [ ] **Phase 3: Model Management** - Three-tier model system (Quick/Smart/Genius) with download manager
+- [x] **Phase 2.2: Stabilization & Refactor** (INSERTED) - Fix race conditions, establish error handling patterns, remove technical debt
+- [x] **Phase 3: Model Management** - Conversation-scoped model switching with Smart-default strategy and download manager
 - [ ] **Phase 4: Memory System** - Three-tier memory (Core Facts + Daily Context + Recent Messages) with auto-compaction
 - [ ] **Phase 5: Polish & PWA** - Performance panel, responsive design, export/import, and PWA features
 
@@ -26,8 +26,8 @@
 | 1. Core Infrastructure | 4/4 | Complete | 2026-02-17 |
 | 2. Chat Interface | 4/4 | Complete | 2026-02-18 |
 | 2.1. AI SDK UI Migration | 7/7 | Complete | 2026-02-18 |
-| 2.2. Stabilization & Refactor | 0/6 | In Progress | - |
-| 3. Model Management | 0/3 | Not started | - |
+| 2.2. Stabilization & Refactor | 6/6 | Complete | 2026-02-18 |
+| 3. Model Management | 3/3 | Complete | 2026-02-19 |
 | 4. Memory System | 0/3 | Not started | - |
 | 5. Polish & PWA | 0/3 | Not started | - |
 
@@ -173,7 +173,7 @@ Plans:
 
 ### Phase 3: Model Management
 
-**Goal:** Users can seamlessly switch between three model tiers based on their quality/speed needs
+**Goal:** Users can seamlessly switch models per conversation with non-blocking downloads and explicit lifecycle visibility
 
 **Depends on:** Phase 2.2
 
@@ -181,17 +181,23 @@ Plans:
 
 **Success Criteria** (what must be TRUE):
 
-1. User can see active model name in UI header
-2. User can switch to Smart Mode (Llama 3.2 3B) via dropdown with progress display
-3. User can switch to Genius Mode (Mistral 7B) via dropdown with progress display
-4. Download progress shows percentage and time estimate for large models
-5. User can cancel an in-progress model download
-6. Model switch happens without page reload (seamless transition)
-7. After first successful chat, user sees prompt to download Smart Mode
+1. User can select model near input actions (desktop and mobile) with clear active/requested state
+2. Opening a conversation restores its saved model target (conversation-scoped behavior)
+3. Download Manager in header-right shows per-model status: Queued, Downloading, Compiling, Ready, Failed, Canceled
+4. Selecting an undownloaded model starts background download and opens/focuses Download Manager
+5. Download progress shows percentage and best-effort time estimate, with inline retry on failure
+6. User can cancel a queued/in-progress download only after confirmation
+7. Model switch happens without page reload and does not break current conversation thread
+8. New chats default to Smart mode; Smart prompt flow is removed per approved scope amendment
 
-**Plans:**
+**Plans:** 3 plans in 2 waves
 
-- `03-NOTES.md` - Phase 3 guardrails and 02.2 stabilization carry-forward notes
+**Wave 1** (parallel):
+- [x] 03-01-PLAN.md — Conversation-scoped model orchestration and Smart-default runtime behavior
+- [x] 03-02-PLAN.md — Input-anchored selector and header-right Download Manager UI shell
+
+**Wave 2** (depends on Wave 1):
+- [x] 03-03-PLAN.md — End-to-end orchestration wiring, cancellation/retry feedback, and queue/race tests
 
 ---
 
@@ -314,4 +320,4 @@ Phases needing deeper research during planning:
 
 ---
 
-*Last updated: 2026-02-18*
+*Last updated: 2026-02-19*
