@@ -2,7 +2,7 @@
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
 **Status:** Milestone complete
-**Updated:** 2026-02-18 (16:42 UTC)
+**Updated:** 2026-02-18 (16:44 UTC)
 
 ---
 
@@ -27,12 +27,12 @@
 ## Current Position
 
 **Phase:** Phase 2.2 - Stabilization & Refactor
-**Plan:** 02.2-02 next (1/6 plans complete)
+**Plan:** 02.2-03 next (2/6 plans complete)
 **Status:** IN PROGRESS - executing stabilization plans
 
 **Progress:**
 
-[████████░░] 77%
+[████████░░] 82%
 [=====>..............] 25% (Phase 2 in progress)
 ```
 
@@ -73,6 +73,7 @@
 | Crash rate | < 5% | N/A | Not started |
 | Phase 02.1-ai-sdk-ui-migration-with-routing P02.1-06 | 3m | 3 tasks | 3 files |
 | Phase 02.2 P01 | 1 min | 3 tasks | 4 files |
+| Phase 02.2 P02 | 3 min | 4 tasks | 8 files |
 
 ### Plan Execution Metrics
 
@@ -145,6 +146,8 @@
 - [Phase 02.1]: Use TextUIPart type from ai package for message part filtering in persistence layer
 - [Phase 02.2]: Converted src/lib/utils.ts into src/lib/utils/index.ts so @/lib/utils imports stay stable while adding modular error utilities
 - [Phase 02.2]: Implemented dependency-free Result and AppError infrastructure to standardize explicit failure handling
+- [Phase 02.2]: Use route params (/chat/:id) as active conversation state instead of chatStore selectors
+- [Phase 02.2]: Keep useConversations focused on IndexedDB list operations only, removing imperative chat load/clear concerns
 
 ### Open Questions
 
@@ -178,9 +181,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 02.2-01 - Result type system and AppError infrastructure established with atomic task commits
-**Next Action:** Execute 02.2-02 plan to continue stabilization work
-**Context Hash:** stabilization-phase-02.2-01-complete-20260218
+**Last Action:** Completed 02.2-02 - removed legacy chatStore/useChat and superseded chat components; AI SDK UI is now single chat-state source
+**Next Action:** Execute 02.2-03 plan to continue stabilization work
+**Context Hash:** stabilization-phase-02.2-02-complete-20260218
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 
