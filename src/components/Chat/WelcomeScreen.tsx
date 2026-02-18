@@ -17,27 +17,27 @@ interface WelcomeScreenProps {
 }
 
 /**
- * Default suggestion prompts
+ * Default suggestion prompts - privacy-focused AI use cases
  */
 const SUGGESTIONS = [
   {
     id: 1,
-    text: "Explain quantum computing in simple terms",
+    text: "Help me brainstorm ideas for a project",
     icon: "",
   },
   {
     id: 2,
-    text: "Write a Python function to sort a list",
+    text: "Explain how WebGPU enables local AI",
     icon: "",
   },
   {
     id: 3,
-    text: "Help me brainstorm ideas for a blog post",
+    text: "Write a TypeScript function to filter an array",
     icon: "",
   },
   {
     id: 4,
-    text: "What's the difference between React and Vue?",
+    text: "What are the benefits of privacy-first apps?",
     icon: "",
   },
 ];
