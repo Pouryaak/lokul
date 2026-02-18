@@ -1,11 +1,5 @@
 import { useCallback, useEffect } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useNavigate,
-  Outlet,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
 import { ChatLayout } from "./components/chat-layout/ChatLayout";
 import { ComparisonSection } from "./components/landing/ComparisonSection";
@@ -25,10 +19,7 @@ import { ChatRoute } from "./routes/ChatRoute";
 import { RootLayout } from "./routes/RootLayout";
 import { QUICK_MODEL } from "./lib/ai/models";
 import { useModelStore } from "./store/modelStore";
-import {
-  selectHasCompletedSetup,
-  useSettingsStore,
-} from "./store/settingsStore";
+import { selectHasCompletedSetup, useSettingsStore } from "./store/settingsStore";
 
 /**
  * LandingPage component - All landing sections combined
@@ -36,22 +27,10 @@ import {
 function LandingPage() {
   const navigate = useNavigate();
 
-  // Model store
-  const loadModel = useModelStore((state) => state.loadModel);
-  const completeSetup = useSettingsStore((state) => state.completeSetup);
-
-  // Handle start chatting
-  const handleStart = useCallback(async () => {
-    // Load Quick Model
-    try {
-      await loadModel(QUICK_MODEL.id);
-      await completeSetup();
-      navigate("/chat");
-    } catch (error) {
-      // Error is handled by model store
-      console.error("Failed to load model:", error);
-    }
-  }, [loadModel, completeSetup, navigate]);
+  // Handle start chatting - navigate to loading page which handles model download
+  const handleStart = useCallback(() => {
+    navigate("/loading");
+  }, [navigate]);
 
   return (
     <div className="relative min-h-screen bg-white">
@@ -79,9 +58,30 @@ function LoadingPage() {
   // Model store
   const cancelDownload = useModelStore((state) => state.cancelDownload);
   const resetModel = useModelStore((state) => state.resetModel);
+  const loadModel = useModelStore((state) => state.loadModel);
   const downloadProgress = useModelStore((state) => state.downloadProgress);
   const loadingStep = useModelStore((state) => state.loadingStep);
   const modelError = useModelStore((state) => state.error);
+  const currentModel = useModelStore((state) => state.currentModel);
+
+  // Settings store
+  const completeSetup = useSettingsStore((state) => state.completeSetup);
+
+  // Start loading model when page mounts
+  useEffect(() => {
+    if (!currentModel && loadingStep === "idle") {
+      loadModel(QUICK_MODEL.id);
+    }
+  }, [currentModel, loadingStep, loadModel]);
+
+  // Navigate to chat when model is ready
+  useEffect(() => {
+    if (loadingStep === "ready" && currentModel) {
+      completeSetup().then(() => {
+        navigate("/chat");
+      });
+    }
+  }, [loadingStep, currentModel, completeSetup, navigate]);
 
   // Handle cancel
   const handleCancel = useCallback(() => {
@@ -90,7 +90,7 @@ function LoadingPage() {
     navigate("/");
   }, [cancelDownload, resetModel, navigate]);
 
-  // Handle ready
+  // Handle ready (manual proceed)
   const handleReady = useCallback(() => {
     navigate("/chat");
   }, [navigate]);
@@ -124,9 +124,12 @@ function ChatLayoutWrapper() {
   }, [navigate]);
 
   // Handle conversation click - navigate to specific conversation
-  const handleConversationClick = useCallback((id: string) => {
-    navigate(`/chat/${id}`);
-  }, [navigate]);
+  const handleConversationClick = useCallback(
+    (id: string) => {
+      navigate(`/chat/${id}`);
+    },
+    [navigate]
+  );
 
   return (
     <ChatLayout onNewChat={handleNewChat} onConversationClick={handleConversationClick}>
@@ -148,6 +151,8 @@ function AppContent() {
 
   // Model store
   const currentModel = useModelStore((state) => state.currentModel);
+  const loadModel = useModelStore((state) => state.loadModel);
+  const loadingStep = useModelStore((state) => state.loadingStep);
 
   // Load settings on mount
   useEffect(() => {
@@ -164,6 +169,15 @@ function AppContent() {
       }
     }
   }, [hasCompletedSetup, currentModel, isSettingsLoading, navigate]);
+
+  useEffect(() => {
+    const isChatRoute = window.location.pathname.startsWith("/chat");
+
+    if (isChatRoute && !currentModel && loadingStep === "idle") {
+      // auto-loading default model for direct chat entry.
+      loadModel(QUICK_MODEL.id);
+    }
+  }, [currentModel, loadingStep, loadModel]);
 
   return (
     <Routes>
