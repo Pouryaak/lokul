@@ -31,7 +31,7 @@ export interface ModelConfig {
  * ~80MB download, minimal VRAM requirement
  */
 export const QUICK_MODEL: ModelConfig = {
-  id: "phi-2-q4f16_1",
+  id: "phi-2-q4f16_1-MLC",
   name: "Quick Mode",
   description: "Fast responses, good for everyday chat (Phi-2 2.7B)",
   sizeMB: 80,
@@ -45,7 +45,7 @@ export const QUICK_MODEL: ModelConfig = {
  * ~2.8GB download, moderate VRAM requirement
  */
 export const SMART_MODEL: ModelConfig = {
-  id: "llama-3.2-3b-q4f16_1",
+  id: "Llama-3.2-3B-Instruct-q4f16_1-MLC",
   name: "Smart Mode",
   description: "Balanced quality and speed (Llama 3.2 3B)",
   sizeMB: 2800,
@@ -59,7 +59,7 @@ export const SMART_MODEL: ModelConfig = {
  * ~6.4GB download, high VRAM requirement
  */
 export const GENIUS_MODEL: ModelConfig = {
-  id: "mistral-7b-q4f16_1",
+  id: "Mistral-7B-Instruct-v0.3-q4f16_1-MLC",
   name: "Genius Mode",
   description: "Highest quality responses (Mistral 7B)",
   sizeMB: 6400,
