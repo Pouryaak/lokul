@@ -1,6 +1,6 @@
 import { Activity } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { ChatInterface } from "./components/chat/ChatInterface";
+import { ChatInterface } from "./components/Chat/ChatInterface";
 import { ComparisonSection } from "./components/landing/ComparisonSection";
 import { DemoSection } from "./components/landing/DemoSection";
 import { FAQSection } from "./components/landing/FAQSection";
