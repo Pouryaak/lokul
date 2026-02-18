@@ -5,12 +5,13 @@
  * Integrates with IndexedDB storage and chatStore for conversation loading.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   getAllConversations,
   deleteConversation as deleteConversationStorage,
+  updateConversationTitle,
 } from "@/lib/storage/conversations";
-import { useChatStore } from "@/store/chatStore";
+import { useChatStore, useChatMetrics } from "@/store/chatStore";
 import type { Conversation } from "@/types/index";
 
 // Get the store instance for imperative operations
@@ -34,6 +35,16 @@ interface UseConversationsReturn {
   refreshConversations: () => Promise<void>;
   /** Create a new conversation (clears current chat) */
   createNewConversation: () => void;
+  /** Edit a conversation title */
+  editTitle: (id: string, title: string) => Promise<void>;
+  /** Current memory usage in MB (null if not available) */
+  memoryUsageMB: number | null;
+  /** Whether memory usage exceeds 75% */
+  memoryWarning: boolean;
+  /** Performance suggestion message (null if none) */
+  performanceSuggestion: string | null;
+  /** Clear the performance suggestion */
+  clearPerformanceSuggestion: () => void;
 }
 
 /**
@@ -61,12 +72,101 @@ export function useConversations(): UseConversationsReturn {
   // Track current conversation ID for delete comparison
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
 
+  // Performance monitoring state
+  const [memoryUsageMB, setMemoryUsageMB] = useState<number | null>(null);
+  const [memoryWarning, setMemoryWarning] = useState<boolean>(false);
+  const [performanceSuggestion, setPerformanceSuggestion] = useState<string | null>(null);
+
+  // Refs for performance tracking
+  const lowTpsCountRef = useRef<number>(0);
+  const lastMetricsRef = useRef<{ tokensPerSecond: number; timestamp: number } | null>(null);
+
   // Subscribe to conversation ID changes
   useEffect(() => {
     const unsubscribe = chatStore.subscribe((state) => {
       setActiveConversationId(state.currentConversationId);
     });
     return () => unsubscribe();
+  }, []);
+
+  // Get chat metrics for performance monitoring
+  const chatMetrics = useChatMetrics();
+
+  /**
+   * Memory monitoring effect
+   * Polls memory usage every 5 seconds (Chrome only)
+   */
+  useEffect(() => {
+    const checkMemory = () => {
+      const perf = performance as Performance & {
+        memory?: {
+          usedJSHeapSize: number;
+          totalJSHeapSize: number;
+          jsHeapSizeLimit: number;
+        };
+      };
+
+      if (perf.memory) {
+        const usedMB = Math.round(perf.memory.usedJSHeapSize / (1024 * 1024));
+        const limitMB = Math.round(perf.memory.jsHeapSizeLimit / (1024 * 1024));
+        const usagePercent = (usedMB / limitMB) * 100;
+
+        setMemoryUsageMB(usedMB);
+        setMemoryWarning(usagePercent > 75);
+      }
+    };
+
+    // Check immediately
+    checkMemory();
+
+    // Poll every 5 seconds
+    const interval = setInterval(checkMemory, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  /**
+   * Performance degradation detection
+   * Tracks tokens per second and suggests Quick Mode if TPS is consistently low
+   */
+  useEffect(() => {
+    // Only check when we have metrics and not currently streaming
+    if (chatMetrics.tokensPerSecond === 0) {
+      return;
+    }
+
+    const now = Date.now();
+    const tps = chatMetrics.tokensPerSecond;
+
+    // Check if TPS is below threshold
+    if (tps < 5 && tps > 0) {
+      // Increment low TPS counter
+      lowTpsCountRef.current += 1;
+
+      // If we've had 3+ consecutive low TPS readings, suggest Quick Mode
+      if (lowTpsCountRef.current >= 3) {
+        setPerformanceSuggestion(
+          "Performance is slow. Consider switching to Quick Mode for faster responses."
+        );
+      }
+    } else {
+      // Reset counter if TPS is good
+      lowTpsCountRef.current = 0;
+    }
+
+    // Store current metrics for next comparison
+    lastMetricsRef.current = {
+      tokensPerSecond: tps,
+      timestamp: now,
+    };
+  }, [chatMetrics.tokensPerSecond]);
+
+  /**
+   * Clear performance suggestion
+   */
+  const clearPerformanceSuggestion = useCallback(() => {
+    setPerformanceSuggestion(null);
+    lowTpsCountRef.current = 0;
   }, []);
 
   /**
@@ -174,6 +274,32 @@ export function useConversations(): UseConversationsReturn {
     chatStore.getState().clearChat();
   }, []);
 
+  /**
+   * Edit a conversation title
+   */
+  const editTitle = useCallback(
+    async (id: string, title: string): Promise<void> => {
+      setError(null);
+
+      try {
+        await updateConversationTitle(id, title);
+
+        // Refresh the list to show updated title
+        await loadConversations();
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to update title";
+        setError(errorMessage);
+
+        if (import.meta.env.DEV) {
+          console.error("[useConversations] Edit title error:", err);
+        }
+        throw err;
+      }
+    },
+    [loadConversations]
+  );
+
   return {
     conversations,
     isLoading,
@@ -182,5 +308,10 @@ export function useConversations(): UseConversationsReturn {
     deleteConversation,
     refreshConversations,
     createNewConversation,
+    editTitle,
+    memoryUsageMB,
+    memoryWarning,
+    performanceSuggestion,
+    clearPerformanceSuggestion,
   };
 }
