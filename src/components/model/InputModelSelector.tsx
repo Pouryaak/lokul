@@ -137,7 +137,10 @@ export function InputModelSelector({ conversationId }: InputModelSelectorProps) 
       </Select>
 
       {activeBadge ? (
-        <span className="rounded-full bg-[#FF6B35]/10 px-2 py-0.5 text-[10px] font-semibold text-[#FF6B35]">
+        <span
+          className="rounded-full bg-[#FF6B35]/10 px-2 py-0.5 text-[10px] font-semibold text-[#FF6B35]"
+          aria-live="polite"
+        >
           {activeBadge}
         </span>
       ) : null}

@@ -382,6 +382,11 @@ function createActions(set: StoreSet, get: StoreGet): ConversationModelActions {
     requestModelForConversation,
     cancelModelDownload: createCancelModelDownload(set, get),
     retryModelDownload: async (modelId) => {
+      if (!shouldQueueModel(get(), modelId)) {
+        set({ isDownloadManagerOpen: true });
+        return;
+      }
+
       set((state) => ({
         downloadLifecycleByModel: setLifecycle(state.downloadLifecycleByModel, modelId, "Queued"),
       }));

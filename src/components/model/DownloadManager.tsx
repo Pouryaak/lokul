@@ -22,6 +22,15 @@ function getStatusClass(status: DownloadLifecycle): string {
   return "bg-amber-100 text-amber-700";
 }
 
+function estimateRemainingSeconds(percentage: number, elapsedSeconds: number): number | null {
+  if (percentage <= 0 || elapsedSeconds <= 0) {
+    return null;
+  }
+
+  const remainingRatio = Math.max(0, (100 - percentage) / percentage);
+  return Math.round(elapsedSeconds * remainingRatio);
+}
+
 export function DownloadManager() {
   const [confirmModelId, setConfirmModelId] = useState<string | null>(null);
 
@@ -51,10 +60,18 @@ export function DownloadManager() {
           : status === "Ready"
             ? 100
             : null,
-        etaSeconds: isActiveDownload ? null : null,
+        etaSeconds:
+          isActiveDownload && downloadProgress
+            ? estimateRemainingSeconds(downloadProgress.percentage, downloadProgress.timeElapsed)
+            : null,
       };
     });
-  }, [downloadProgress?.percentage, downloadProgress?.step, lifecycleByModel]);
+  }, [
+    downloadProgress?.percentage,
+    downloadProgress?.step,
+    downloadProgress?.timeElapsed,
+    lifecycleByModel,
+  ]);
 
   const hasActivity = rows.some(
     (row) => row.status === "Queued" || row.status === "Downloading" || row.status === "Compiling"
