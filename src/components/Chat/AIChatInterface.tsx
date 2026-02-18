@@ -61,7 +61,7 @@ export function AIChatInterface({
   initialMessages,
   className,
 }: AIChatInterfaceProps) {
-  const { messages, sendMessage, status, error } = useAIChat({
+  const { messages, sendMessage, status, error, stop } = useAIChat({
     conversationId,
     modelId,
     initialMessages,
@@ -93,8 +93,8 @@ export function AIChatInterface({
    * Handle stopping generation
    */
   const handleStop = useCallback(() => {
-    toast.info("Stop is not available yet for this model.");
-  }, []);
+    stop();
+  }, [stop]);
 
   // Show error toast when error occurs
   useEffect(() => {
