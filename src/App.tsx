@@ -1,5 +1,6 @@
 import { Activity } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { ChatInterface } from "./components/chat/ChatInterface";
 import { ComparisonSection } from "./components/landing/ComparisonSection";
 import { DemoSection } from "./components/landing/DemoSection";
 import { FAQSection } from "./components/landing/FAQSection";
@@ -116,27 +117,13 @@ export function App() {
     );
   }
 
-  // Chat screen (placeholder)
+  // Chat screen
   if (appState === "chat") {
     return (
-      <div className="bg-background relative flex min-h-screen items-center justify-center">
-        {/* Main Content */}
-        <div className="max-w-md text-center">
-          <div className="mb-6 flex justify-center">
-            <div className="relative">
-              <div className="absolute inset-0 rounded-full bg-[#FF6B35]/20 blur-3xl" />
-              <img src="/lokul-logo.png" alt="" className="relative h-16 w-16" />
-            </div>
-          </div>
-          <h1 className="text-foreground mb-4 text-3xl font-bold">Ready to chat!</h1>
-          <p className="text-muted-foreground mb-6">{currentModel?.name} is loaded and ready.</p>
-          <p className="text-muted-foreground text-sm">Chat interface coming in the next phase.</p>
-          <button
-            onClick={() => setAppState("landing")}
-            className="mt-6 text-[#FF6B35] hover:underline"
-          >
-            Back to landing page
-          </button>
+      <div className="flex h-screen flex-col bg-[#FFF8F0]">
+        {/* Main Chat Area */}
+        <div className="flex-1 overflow-hidden">
+          <ChatInterface />
         </div>
 
         {/* Performance Toggle Button - Top Right */}
@@ -173,8 +160,8 @@ export function App() {
       <ProblemSolutionSection />
       <ModelsSection />
       <DemoSection />
-      <HowItWorksSection />
       <ComparisonSection />
+      <HowItWorksSection />
       <TechnicalTrustSection />
       <FAQSection />
       {/* TestimonialsSection hidden for now - will add back later */}
