@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Plus, Settings, MessageSquare, Loader2, Cpu } from "lucide-react";
 import { useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useConversations } from "@/hooks/useConversations";
 import {
   Select,
@@ -272,14 +272,10 @@ function SettingsButton({ onClick, isCollapsed }: { onClick: () => void; isColla
  * Uses @blocks/sidebar-02 pattern with collapsible icon-only mode.
  * Matches the blocks.so DashboardSidebar structure.
  */
-export function AppSidebar({
-  onNewChat,
-  onSettingsClick,
-  onConversationClick,
-  className,
-}: AppSidebarProps) {
+export function AppSidebar({ onNewChat, onSettingsClick, className }: AppSidebarProps) {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const navigate = useNavigate();
   const { id: currentConversationId } = useParams<{ id: string }>();
 
   const { conversations, isLoading } = useConversations();
@@ -288,11 +284,11 @@ export function AppSidebar({
     onNewChat?.();
   }, [onNewChat]);
 
-  const handleLoadConversation = useCallback(
+  const handleConversationClick = useCallback(
     (id: string) => {
-      onConversationClick?.(id);
+      navigate(`/chat/${id}`);
     },
-    [onConversationClick]
+    [navigate]
   );
 
   return (
@@ -350,7 +346,7 @@ export function AppSidebar({
                 key={conversation.id}
                 conversation={conversation}
                 isActive={conversation.id === currentConversationId}
-                onClick={() => handleLoadConversation(conversation.id)}
+                onClick={() => handleConversationClick(conversation.id)}
                 isCollapsed={isCollapsed}
               />
             ))}
