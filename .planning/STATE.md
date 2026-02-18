@@ -27,8 +27,8 @@
 ## Current Position
 
 **Phase:** Phase 2 in progress
-**Plan:** 02-03 complete (3 of ? plans in Phase 2)
-**Status:** Chat interface integration complete with Markdown support
+**Plan:** 02-04 complete (4 of ? plans in Phase 2)
+**Status:** Conversation sidebar complete with performance monitoring
 
 **Progress:**
 
@@ -42,10 +42,11 @@
   - [x] 01-02: Web Worker, AI inference, model store
   - [x] 01-03: 11-section landing page
   - [x] 01-04: PWA, offline, performance panel
-- [~] Phase 2: Chat Interface (3/? plans complete)
+- [~] Phase 2: Chat Interface (4/? plans complete)
   - [x] 02-01: Chat state management, storage, hooks
   - [x] 02-02: Chat UI components (MessageInput, MessageBubble, MessageList, etc)
   - [x] 02-03: Markdown rendering and ChatInterface integration
+  - [x] 02-04: Conversation sidebar with performance monitoring
 - [ ] Phase 3: Model Management
 - [ ] Phase 4: Memory System
 - [ ] Phase 5: Polish & PWA
@@ -72,6 +73,7 @@
 | 02-01 | 35 min | 3 | 4 | 2026-02-18 |
 | 02-02 | 45 min | 3 | 8 | 2026-02-18 |
 | 02-03 | 35 min | 3 | 5 | 2026-02-18 |
+| 02-04 | 35 min | 4 | 6 | 2026-02-18 |
 
 ---
 
@@ -97,6 +99,9 @@
 | 2026-02-18 | Custom chat components vs pre-built libraries | Libraries not installed; custom components follow design language |
 | 2026-02-18 | Use react-markdown for AI message rendering | Full markdown support with XSS-safe rendering |
 | 2026-02-18 | Implement CodeBlock with react-syntax-highlighter | Provides syntax highlighting without additional dependencies |
+| 2026-02-18 | Custom sidebar implementation (blocks.so/sidebar not available) | blocks.so/sidebar is a design reference, not an npm package |
+| 2026-02-18 | Memory warning threshold at 75% | Balances early warning with avoiding excessive alerts |
+| 2026-02-18 | Performance suggestion after 3 consecutive low TPS readings | Prevents false positives from single slow responses |
 
 ### Open Questions
 
@@ -114,7 +119,7 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 02-03 Chat Interface Integration
+**Last Action:** Completed 02-04 Conversation Sidebar with Performance Monitoring
 **Next Action:** Phase 2 complete - ready for Phase 3 (Model Management)
 **Context Hash:** phase2-complete-20260218
 
@@ -123,7 +128,8 @@ None currently.
 - `/Users/poak/Documents/personal-project/Lokul/.planning/REQUIREMENTS.md` - v1 requirements (56 total)
 - `/Users/poak/Documents/personal-project/Lokul/.planning/ROADMAP.md` - Phase structure
 - `/Users/poak/Documents/personal-project/Lokul/src/components/Chat/` - Chat UI components
-- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02-chat-interface/02-03-SUMMARY.md` - Latest plan summary
+- `/Users/poak/Documents/personal-project/Lokul/src/components/sidebar/` - Conversation sidebar components
+- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02-chat-interface/02-04-SUMMARY.md` - Latest plan summary
 
 ---
 
