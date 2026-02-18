@@ -6,6 +6,7 @@
  */
 
 import { db, type SettingsRecord } from "./db";
+import { SMART_MODEL } from "@/lib/ai/models";
 import type { Settings } from "@/types/index";
 
 /**
@@ -14,9 +15,9 @@ import type { Settings } from "@/types/index";
  */
 export const defaultSettings: Settings = {
   theme: "system",
-  defaultModel: "phi-2",
+  defaultModel: SMART_MODEL.id,
   hasCompletedSetup: false,
-  autoLoadQuickMode: true,
+  autoLoadQuickMode: false,
   version: 1,
 };
 

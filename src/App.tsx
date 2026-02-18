@@ -15,12 +15,16 @@ import { ProblemSolutionSection } from "./components/landing/ProblemSolutionSect
 import { TechnicalTrustSection } from "./components/landing/TechnicalTrustSection";
 import { LoadingScreen } from "./components/onboarding/LoadingScreen";
 import { StatusIndicator } from "./components/performance/StatusIndicator";
-import { QUICK_MODEL } from "./lib/ai/models";
+import { SMART_MODEL, getModelById } from "./lib/ai/models";
 import { ChatDetailRoute } from "./routes/ChatDetailRoute";
 import { ChatRoute } from "./routes/ChatRoute";
 import { RootLayout } from "./routes/RootLayout";
 import { useModelStore } from "./store/modelStore";
-import { selectHasCompletedSetup, useSettingsStore } from "./store/settingsStore";
+import {
+  selectDefaultModel,
+  selectHasCompletedSetup,
+  useSettingsStore,
+} from "./store/settingsStore";
 
 function logModelBootstrap(scope: string, payload: Record<string, unknown>): void {
   if (!import.meta.env.DEV) {
@@ -60,6 +64,8 @@ function LoadingPage() {
   const modelError = useModelStore((state) => state.error);
   const currentModel = useModelStore((state) => state.currentModel);
   const completeSetup = useSettingsStore((state) => state.completeSetup);
+  const defaultModelId = useSettingsStore(selectDefaultModel);
+  const bootstrapModel = getModelById(defaultModelId) ?? SMART_MODEL;
 
   useEffect(() => {
     logModelBootstrap("LoadingPage.effect", {
@@ -68,10 +74,10 @@ function LoadingPage() {
     });
 
     if (!currentModel && loadingStep === "idle") {
-      logModelBootstrap("LoadingPage.autoload", { modelId: QUICK_MODEL.id });
-      loadModel(QUICK_MODEL.id);
+      logModelBootstrap("LoadingPage.autoload", { modelId: bootstrapModel.id });
+      loadModel(bootstrapModel.id);
     }
-  }, [currentModel, loadingStep, loadModel]);
+  }, [bootstrapModel.id, currentModel, loadingStep, loadModel]);
 
   useEffect(() => {
     if (loadingStep === "ready" && currentModel) {
@@ -90,8 +96,8 @@ function LoadingPage() {
       <LoadingScreen
         onCancel={handleCancel}
         onReady={() => navigate("/chat")}
-        modelName={QUICK_MODEL.name}
-        modelSizeMB={QUICK_MODEL.sizeMB}
+        modelName={bootstrapModel.name}
+        modelSizeMB={bootstrapModel.sizeMB}
         progress={downloadProgress}
         loadingStep={loadingStep}
         error={modelError}
@@ -118,9 +124,11 @@ function AppContent() {
   const hasCompletedSetup = useSettingsStore(selectHasCompletedSetup);
   const isSettingsLoading = useSettingsStore((state) => state.isLoading);
   const loadSettings = useSettingsStore((state) => state.loadSettings);
+  const defaultModelId = useSettingsStore(selectDefaultModel);
   const currentModel = useModelStore((state) => state.currentModel);
   const loadModel = useModelStore((state) => state.loadModel);
   const loadingStep = useModelStore((state) => state.loadingStep);
+  const bootstrapModelId = getModelById(defaultModelId)?.id ?? SMART_MODEL.id;
 
   useEffect(() => {
     loadSettings();
@@ -148,10 +156,10 @@ function AppContent() {
     });
 
     if (isChatRoute && !currentModel && loadingStep === "idle") {
-      logModelBootstrap("AppContent.autoload", { modelId: QUICK_MODEL.id });
-      loadModel(QUICK_MODEL.id);
+      logModelBootstrap("AppContent.autoload", { modelId: bootstrapModelId });
+      loadModel(bootstrapModelId);
     }
-  }, [currentModel, loadingStep, loadModel]);
+  }, [bootstrapModelId, currentModel, loadingStep, loadModel]);
 
   return (
     <ErrorBoundary>

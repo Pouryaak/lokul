@@ -10,7 +10,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { createConversation, saveConversation } from "@/lib/storage/conversations";
-import { useModelStore } from "@/store/modelStore";
+import { SMART_MODEL } from "@/lib/ai/models";
 
 /**
  * ChatRoute component
@@ -20,10 +20,6 @@ import { useModelStore } from "@/store/modelStore";
  */
 export function ChatRoute() {
   const navigate = useNavigate();
-
-  // Get current model from store
-  const currentModel = useModelStore((state) => state.currentModel);
-  const defaultModelId = "gemma-2b-it-q4f16_1-MLC"; // Fallback model
   const isCreatingRef = useRef(false);
 
   useEffect(() => {
@@ -34,11 +30,8 @@ export function ChatRoute() {
 
     const createNewConversation = async () => {
       try {
-        // Use current model ID if available, otherwise use default
-        const modelId = currentModel?.id || defaultModelId;
-
         // Create new conversation (in memory only - not saved until first message)
-        const conversation = createConversation(modelId);
+        const conversation = createConversation(SMART_MODEL.id);
 
         // Persist immediately so New Chat appears in sidebar like ChatGPT.
         await saveConversation(conversation);
@@ -57,7 +50,7 @@ export function ChatRoute() {
     };
 
     createNewConversation();
-  }, [navigate, currentModel]);
+  }, [navigate]);
 
   // Show loading state while creating
   return (
