@@ -10,7 +10,7 @@
  */
 
 import { useCallback } from "react";
-import { Plus, Settings, MessageSquare, AlertTriangle, Zap, X, Loader2 } from "lucide-react";
+import { Plus, Settings, MessageSquare, AlertTriangle, Zap, X, Loader2, Cpu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useConversations } from "@/hooks/useConversations";
 import { useCurrentConversationId } from "@/store/chatStore";
@@ -27,7 +27,16 @@ import {
   SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/Button";
+import { MODELS } from "@/lib/ai/models";
+import { useCurrentModel, useModelStore } from "@/store/modelStore";
 import type { Conversation } from "@/types/index";
 
 /**
@@ -181,6 +190,9 @@ export function AppSidebar({
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
+  const currentModel = useCurrentModel();
+  const loadModel = useModelStore((state) => state.loadModel);
+
   const {
     conversations,
     isLoading,
@@ -190,6 +202,20 @@ export function AppSidebar({
     performanceSuggestion,
     clearPerformanceSuggestion,
   } = useConversations();
+
+  /**
+   * Handle model change - creates new conversation with selected model
+   */
+  const handleModelChange = useCallback(
+    async (modelId: string) => {
+      // Load the new model
+      await loadModel(modelId);
+      // Create new conversation with the selected model
+      createNewConversation();
+      onNewChat?.();
+    },
+    [loadModel, createNewConversation, onNewChat]
+  );
 
   /**
    * Handle loading a conversation
@@ -237,6 +263,35 @@ export function AppSidebar({
           </Button>
         </div>
       </SidebarHeader>
+
+      {/* Model Selector */}
+      {!isCollapsed && (
+        <div className="px-4 pb-3">
+          <Select
+            value={currentModel?.id || ""}
+            onValueChange={handleModelChange}
+          >
+            <SelectTrigger className="w-full">
+              <div className="flex items-center gap-2">
+                <Cpu className="h-4 w-4 text-gray-500" />
+                <SelectValue placeholder="Select model" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              {MODELS.map((model) => (
+                <SelectItem key={model.id} value={model.id}>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{model.name}</span>
+                    <span className="text-xs text-gray-500">
+                      {model.description}
+                    </span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       <SidebarSeparator />
 
