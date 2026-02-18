@@ -8,7 +8,20 @@
 
 import type { ChatTransport, UIMessage, UIMessageChunk, ChatRequestOptions } from "ai";
 import { startTokenTracking, recordToken, stopTokenTracking } from "@/lib/performance/metrics";
+import { getUserMessage, modelNotLoadedError, toAppError, type AppError } from "@/lib/utils/errors";
+import { err, ok, type Result } from "@/types/result";
 import { inferenceManager } from "./inference";
+import type { CancellationReason } from "@/types/index";
+
+const DEFAULT_CANCEL_REASON: CancellationReason = "user_stop";
+
+function getCancelReason(reason: unknown): CancellationReason {
+  if (reason === "route_change" || reason === "model_switch" || reason === "shutdown") {
+    return reason;
+  }
+
+  return DEFAULT_CANCEL_REASON;
+}
 
 /**
  * Options for creating a WebLLMTransport instance
@@ -65,7 +78,8 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
     abortSignal: AbortSignal | undefined;
   } & ChatRequestOptions): Promise<ReadableStream<UIMessageChunk>> {
     // Create a new AbortController for this request
-    this.abortController = new AbortController();
+    const requestAbortController = new AbortController();
+    this.abortController = requestAbortController;
 
     let cleanupAbortListener: (() => void) | null = null;
 
@@ -84,70 +98,26 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
     // Convert UIMessages to WebLLM format
     const webLLMMessages = this.convertToWebLLMMessages(messages);
 
-    // Create the stream
+    const cancelReason = getCancelReason(abortSignal?.reason);
+
     const stream = new ReadableStream<UIMessageChunk>({
       start: async (controller) => {
         try {
-          // Check if model is loaded, if not we need to initialize it
-          if (!inferenceManager.isLoaded()) {
-            // For now, throw an error - the caller should ensure model is loaded
-            throw new Error("Model not initialized. Please load a model before sending messages.");
-          }
-
-          // Generate a unique ID for this assistant message
-          const messageId = crypto.randomUUID();
-
-          // Signal the start of text generation
-          controller.enqueue({
-            type: "text-start",
-            id: messageId,
+          const result = await this.streamResponse(controller, webLLMMessages, {
+            signal: requestAbortController.signal,
+            cancelReason,
           });
 
-          // Start tracking tokens for performance metrics
-          startTokenTracking();
-
-          // Stream tokens from WebLLM
-          const tokenStream = inferenceManager.generate(webLLMMessages);
-
-          for await (const token of tokenStream) {
-            // Check if aborted
-            if (this.abortController?.signal.aborted) {
-              break;
-            }
-
-            // Record token for TPS calculation
-            recordToken();
-
-            // Yield each token as a text-delta chunk
+          if (result.kind === "err") {
             controller.enqueue({
-              type: "text-delta",
-              delta: token,
-              id: messageId,
+              type: "error",
+              errorText: getUserMessage(result.error),
             });
           }
 
-          // Record final metrics
-          stopTokenTracking();
-
-          // Signal the end of text generation
-          controller.enqueue({
-            type: "text-end",
-            id: messageId,
-          });
-
-          // Close the stream
-          controller.close();
-        } catch (error) {
-          // Handle errors by yielding an error chunk
-          const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-
-          controller.enqueue({
-            type: "error",
-            errorText: errorMessage,
-          });
-
           controller.close();
         } finally {
+          stopTokenTracking();
           cleanupAbortListener?.();
           cleanupAbortListener = null;
         }
@@ -161,6 +131,71 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
     });
 
     return stream;
+  }
+
+  private async streamResponse(
+    controller: ReadableStreamDefaultController<UIMessageChunk>,
+    webLLMMessages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
+    options: { signal: AbortSignal; cancelReason: CancellationReason }
+  ): Promise<Result<void, AppError>> {
+    const tokenStreamResult = await this.createTokenStream(webLLMMessages, options);
+
+    if (tokenStreamResult.kind === "err") {
+      return tokenStreamResult;
+    }
+
+    const messageId = crypto.randomUUID();
+    controller.enqueue({ type: "text-start", id: messageId });
+    startTokenTracking();
+
+    const streamResult = await this.pushTokenChunks(controller, tokenStreamResult.value, messageId);
+    if (streamResult.kind === "err") {
+      return streamResult;
+    }
+
+    controller.enqueue({ type: "text-end", id: messageId });
+    return ok(undefined);
+  }
+
+  private async createTokenStream(
+    webLLMMessages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
+    options: { signal: AbortSignal; cancelReason: CancellationReason }
+  ): Promise<Result<AsyncGenerator<string>, AppError>> {
+    if (!inferenceManager.isLoaded()) {
+      return err(
+        modelNotLoadedError("Model not initialized. Please load a model before sending messages.")
+      );
+    }
+
+    return inferenceManager.generateSafe(webLLMMessages, {
+      signal: options.signal,
+      cancelReason: options.cancelReason,
+    });
+  }
+
+  private async pushTokenChunks(
+    controller: ReadableStreamDefaultController<UIMessageChunk>,
+    tokenStream: AsyncGenerator<string>,
+    messageId: string
+  ): Promise<Result<void, AppError>> {
+    try {
+      for await (const token of tokenStream) {
+        if (this.abortController?.signal.aborted) {
+          break;
+        }
+
+        recordToken();
+        controller.enqueue({
+          type: "text-delta",
+          delta: token,
+          id: messageId,
+        });
+      }
+
+      return ok(undefined);
+    } catch (error) {
+      return err(toAppError(error));
+    }
   }
 
   /**

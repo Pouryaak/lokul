@@ -11,7 +11,16 @@ import {
   type MLCEngineInterface,
   type InitProgressReport,
 } from "@mlc-ai/web-llm";
+import {
+  abortedError,
+  modelError,
+  modelNotLoadedError,
+  toAppError,
+  type AppError,
+} from "@/lib/utils/errors";
+import { err, ok, type Result } from "@/types/result";
 import { getModelById, type ModelConfig } from "./models";
+import type { CancellationReason } from "@/types/index";
 
 /**
  * Download progress information
@@ -35,6 +44,11 @@ export interface Message {
   content: string;
 }
 
+export interface GenerateOptions {
+  signal?: AbortSignal;
+  cancelReason?: CancellationReason;
+}
+
 /**
  * Manages AI inference operations via Web Worker
  */
@@ -48,6 +62,52 @@ export class InferenceManager {
   /** Progress callback function */
   private progressCallback: ((progress: DownloadProgress) => void) | null = null;
 
+  private ensureLoaded(): Result<void, AppError> {
+    if (!this.engine) {
+      return err(modelNotLoadedError("Engine not initialized. Call initialize() first."));
+    }
+
+    return ok(undefined);
+  }
+
+  async initializeSafe(
+    modelId: string,
+    onProgress?: (progress: DownloadProgress) => void
+  ): Promise<Result<void, AppError>> {
+    const model = getModelById(modelId);
+    if (!model) {
+      return err(modelError(`Model not found: ${modelId}`));
+    }
+
+    if (this.worker) {
+      this.terminate();
+    }
+
+    this.progressCallback = onProgress || null;
+
+    try {
+      this.worker = new Worker(new URL("../../workers/inference.worker.ts", import.meta.url), {
+        type: "module",
+      });
+
+      this.engine = await CreateWebWorkerMLCEngine(this.worker, modelId, {
+        initProgressCallback: (report: InitProgressReport) => {
+          this.handleProgress(report, model);
+        },
+      });
+
+      this.currentModel = modelId;
+      return ok(undefined);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error(`[InferenceManager] Failed to initialize model '${modelId}':`, error);
+      }
+
+      this.terminate();
+      return err(modelError(`Failed to load model '${modelId}'`, undefined, error));
+    }
+  }
+
   /**
    * Initialize the AI engine with a model
    * @param modelId - The model identifier to load
@@ -58,43 +118,10 @@ export class InferenceManager {
     modelId: string,
     onProgress?: (progress: DownloadProgress) => void
   ): Promise<void> {
-    const model = getModelById(modelId);
-    if (!model) {
-      throw new Error(`Model not found: ${modelId}`);
-    }
+    const result = await this.initializeSafe(modelId, onProgress);
 
-    // Clean up existing worker if any
-    if (this.worker) {
-      this.terminate();
-    }
-
-    this.progressCallback = onProgress || null;
-
-    try {
-      // Create Web Worker for inference
-      this.worker = new Worker(new URL("../../workers/inference.worker.ts", import.meta.url), {
-        type: "module",
-      });
-
-      // Create WebLLM engine with progress callback
-      this.engine = await CreateWebWorkerMLCEngine(this.worker, modelId, {
-        initProgressCallback: (report: InitProgressReport) => {
-          this.handleProgress(report, model);
-        },
-      });
-
-      this.currentModel = modelId;
-    } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error(`[InferenceManager] Failed to initialize model '${modelId}':`, error);
-        if (error instanceof Error) {
-          console.error(`[InferenceManager] Error name: ${error.name}`);
-          console.error(`[InferenceManager] Error stack: ${error.stack}`);
-        }
-      }
-      this.terminate();
-      const message = error instanceof Error ? error.message : "Unknown error";
-      throw new Error(`Failed to load model '${modelId}': ${message}`);
+    if (result.kind === "err") {
+      throw result.error;
     }
   }
 
@@ -129,13 +156,25 @@ export class InferenceManager {
    * @param messages - Array of chat messages
    * @returns Async generator yielding tokens
    */
-  async *generate(messages: Message[]): AsyncGenerator<string> {
-    if (!this.engine) {
-      throw new Error("Engine not initialized. Call initialize() first.");
+  async *generate(messages: Message[], options: GenerateOptions = {}): AsyncGenerator<string> {
+    const loadedResult = this.ensureLoaded();
+    if (loadedResult.kind === "err") {
+      throw loadedResult.error;
     }
 
+    const engine = this.engine;
+    if (!engine) {
+      throw modelNotLoadedError("Engine not initialized. Call initialize() first.");
+    }
+
+    const abortHandler = () => {
+      this.abort();
+    };
+
+    options.signal?.addEventListener("abort", abortHandler);
+
     try {
-      const stream = await this.engine.chat.completions.create({
+      const stream = await engine.chat.completions.create({
         messages,
         stream: true,
         temperature: 0.7,
@@ -143,12 +182,20 @@ export class InferenceManager {
       });
 
       for await (const chunk of stream) {
+        if (options.signal?.aborted) {
+          return;
+        }
+
         const content = chunk.choices[0]?.delta?.content || "";
         if (content) {
           yield content;
         }
       }
     } catch (error) {
+      if (options.signal?.aborted) {
+        return;
+      }
+
       if (error instanceof Error && error.name === "AbortError") {
         return;
       }
@@ -157,8 +204,29 @@ export class InferenceManager {
         console.error("[InferenceManager] Generation error:", error);
       }
 
-      const message = error instanceof Error ? error.message : "Unknown error";
-      throw new Error(`Failed to generate response: ${message}`);
+      throw toAppError(error);
+    } finally {
+      options.signal?.removeEventListener("abort", abortHandler);
+    }
+  }
+
+  async generateSafe(
+    messages: Message[],
+    options: GenerateOptions = {}
+  ): Promise<Result<AsyncGenerator<string>, AppError>> {
+    if (options.signal?.aborted) {
+      return err(abortedError(options.cancelReason));
+    }
+
+    const loadedResult = this.ensureLoaded();
+    if (loadedResult.kind === "err") {
+      return loadedResult;
+    }
+
+    try {
+      return ok(this.generate(messages, options));
+    } catch (error) {
+      return err(toAppError(error));
     }
   }
 
