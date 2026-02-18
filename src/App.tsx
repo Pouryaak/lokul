@@ -1,7 +1,14 @@
-import { Activity, Menu } from "lucide-react";
+import { Activity } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { ChatInterface } from "./components/Chat/ChatInterface";
-import { ConversationSidebar } from "./components/Sidebar/ConversationSidebar";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useNavigate,
+  Outlet,
+} from "react-router-dom";
+import { Toaster } from "sonner";
+import { ChatLayout } from "./components/chat-layout/ChatLayout";
 import { ComparisonSection } from "./components/landing/ComparisonSection";
 import { DemoSection } from "./components/landing/DemoSection";
 import { FAQSection } from "./components/landing/FAQSection";
@@ -9,190 +16,46 @@ import { FinalCTASection } from "./components/landing/FinalCTASection";
 import { FooterSection } from "./components/landing/FooterSection";
 import { HeroSection } from "./components/landing/HeroSection";
 import { HowItWorksSection } from "./components/landing/HowItWorksSection";
+import { ModelsSection } from "./components/landing/ModelsSection";
 import { ProblemSolutionSection } from "./components/landing/ProblemSolutionSection";
 import { TechnicalTrustSection } from "./components/landing/TechnicalTrustSection";
-// import { TestimonialsSection } from "./components/landing/TestimonialsSection";
-import { ModelsSection } from "./components/landing/ModelsSection";
 import { LoadingScreen } from "./components/onboarding/LoadingScreen";
 import { PerformancePanel } from "./components/performance/PerformancePanel";
 import { StatusIndicator } from "./components/performance/StatusIndicator";
 import { Button } from "./components/ui/Button";
+import { ChatDetailRoute } from "./routes/ChatDetailRoute";
+import { ChatRoute } from "./routes/ChatRoute";
+import { RootLayout } from "./routes/RootLayout";
 import { QUICK_MODEL } from "./lib/ai/models";
 import { useModelStore } from "./store/modelStore";
-import { selectHasCompletedSetup, useSettingsStore } from "./store/settingsStore";
-import { useClearChat } from "./store/chatStore";
+import {
+  selectHasCompletedSetup,
+  useSettingsStore,
+} from "./store/settingsStore";
 
 /**
- * App states
+ * LandingPage component - All landing sections combined
  */
-type AppState = "landing" | "loading" | "chat" | "error";
-
-/**
- * App component - Main application entry point
- *
- * Orchestrates the landing page and onboarding flow:
- * - Landing state: Shows 11-section marketing page
- * - Loading state: Shows model download progress
- * - Chat state: Shows chat interface (placeholder)
- *
- * Also includes:
- * - StatusIndicator: Fixed bottom-left (always visible)
- * - PerformancePanel: Toggleable panel
- * - Performance toggle button: Top-right corner
- */
-export function App() {
-  // App state
-  const [appState, setAppState] = useState<AppState>("landing");
-  const [showPerformancePanel, setShowPerformancePanel] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  // Clear chat action for new conversation
-  const clearChat = useClearChat();
-
-  // Settings store
-  const hasCompletedSetup = useSettingsStore(selectHasCompletedSetup);
-  const isSettingsLoading = useSettingsStore((state) => state.isLoading);
-  const loadSettings = useSettingsStore((state) => state.loadSettings);
-  const completeSetup = useSettingsStore((state) => state.completeSetup);
+function LandingPage() {
+  const navigate = useNavigate();
 
   // Model store
   const loadModel = useModelStore((state) => state.loadModel);
-  const cancelDownload = useModelStore((state) => state.cancelDownload);
-  const resetModel = useModelStore((state) => state.resetModel);
-  const downloadProgress = useModelStore((state) => state.downloadProgress);
-  const loadingStep = useModelStore((state) => state.loadingStep);
-  const modelError = useModelStore((state) => state.error);
-  const currentModel = useModelStore((state) => state.currentModel);
-
-  // Load settings on mount
-  useEffect(() => {
-    loadSettings();
-  }, [loadSettings]);
-
-  // Check if user has completed setup
-  useEffect(() => {
-    if (!isSettingsLoading) {
-      if (hasCompletedSetup && currentModel) {
-        setAppState("chat");
-      }
-    }
-  }, [hasCompletedSetup, currentModel, isSettingsLoading]);
+  const completeSetup = useSettingsStore((state) => state.completeSetup);
 
   // Handle start chatting
   const handleStart = useCallback(async () => {
-    setAppState("loading");
-
     // Load Quick Model
     try {
       await loadModel(QUICK_MODEL.id);
       await completeSetup();
+      navigate("/chat");
     } catch (error) {
       // Error is handled by model store
       console.error("Failed to load model:", error);
     }
-  }, [loadModel, completeSetup]);
+  }, [loadModel, completeSetup, navigate]);
 
-  // Handle cancel
-  const handleCancel = useCallback(() => {
-    cancelDownload();
-    resetModel();
-    setAppState("landing");
-  }, [cancelDownload, resetModel]);
-
-  // Handle ready
-  const handleReady = useCallback(() => {
-    setAppState("chat");
-  }, []);
-
-  // Handle new chat
-  const handleNewChat = useCallback(() => {
-    clearChat();
-  }, [clearChat]);
-
-  // Handle toggle sidebar
-  const handleToggleSidebar = useCallback(() => {
-    setSidebarOpen((prev) => !prev);
-  }, []);
-
-  // Loading screen
-  if (appState === "loading") {
-    return (
-      <>
-        <LoadingScreen
-          onCancel={handleCancel}
-          onReady={handleReady}
-          modelName={QUICK_MODEL.name}
-          modelSizeMB={QUICK_MODEL.sizeMB}
-          progress={downloadProgress}
-          loadingStep={loadingStep}
-          error={modelError}
-        />
-        {/* Status Indicator - always visible */}
-        <StatusIndicator />
-      </>
-    );
-  }
-
-  // Chat screen
-  if (appState === "chat") {
-    return (
-      <div className="flex h-screen overflow-hidden bg-[#FFF8F0]">
-        {/* Sidebar */}
-        <ConversationSidebar
-          isOpen={sidebarOpen}
-          onToggle={handleToggleSidebar}
-          onNewChat={handleNewChat}
-        />
-
-        {/* Main Chat Area */}
-        <div className="flex flex-1 flex-col overflow-hidden">
-          {/* Sidebar Toggle Button - Top Left (when sidebar is closed) */}
-          {!sidebarOpen && (
-            <div className="absolute top-4 left-4 z-30">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleToggleSidebar}
-                aria-label="Open sidebar"
-              >
-                <Menu className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
-
-          {/* Chat Interface */}
-          <div className="flex-1 overflow-hidden">
-            <ChatInterface />
-          </div>
-        </div>
-
-        {/* Performance Toggle Button - Top Right */}
-        <div className="fixed top-4 right-4 z-40">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowPerformancePanel(!showPerformancePanel)}
-            aria-label={showPerformancePanel ? "Hide performance panel" : "Show performance panel"}
-            aria-pressed={showPerformancePanel}
-          >
-            <Activity className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* Performance Panel - Right Side */}
-        {showPerformancePanel && (
-          <div className="fixed top-16 right-4 z-40">
-            <PerformancePanel onClose={() => setShowPerformancePanel(false)} />
-          </div>
-        )}
-
-        {/* Status Indicator - Bottom Left */}
-        <StatusIndicator />
-      </div>
-    );
-  }
-
-  // Landing page with all sections
   return (
     <div className="relative min-h-screen bg-white">
       {/* Landing Page Sections */}
@@ -204,11 +67,163 @@ export function App() {
       <HowItWorksSection />
       <TechnicalTrustSection />
       <FAQSection />
-      {/* TestimonialsSection hidden for now - will add back later */}
-      {/* <TestimonialsSection /> */}
       <FinalCTASection onStart={handleStart} />
       <FooterSection />
     </div>
+  );
+}
+
+/**
+ * LoadingPage component - Model download screen
+ */
+function LoadingPage() {
+  const navigate = useNavigate();
+
+  // Model store
+  const cancelDownload = useModelStore((state) => state.cancelDownload);
+  const resetModel = useModelStore((state) => state.resetModel);
+  const downloadProgress = useModelStore((state) => state.downloadProgress);
+  const loadingStep = useModelStore((state) => state.loadingStep);
+  const modelError = useModelStore((state) => state.error);
+
+  // Handle cancel
+  const handleCancel = useCallback(() => {
+    cancelDownload();
+    resetModel();
+    navigate("/");
+  }, [cancelDownload, resetModel, navigate]);
+
+  // Handle ready
+  const handleReady = useCallback(() => {
+    navigate("/chat");
+  }, [navigate]);
+
+  return (
+    <>
+      <LoadingScreen
+        onCancel={handleCancel}
+        onReady={handleReady}
+        modelName={QUICK_MODEL.name}
+        modelSizeMB={QUICK_MODEL.sizeMB}
+        progress={downloadProgress}
+        loadingStep={loadingStep}
+        error={modelError}
+      />
+      {/* Status Indicator - always visible */}
+      <StatusIndicator />
+    </>
+  );
+}
+
+/**
+ * ChatLayoutWrapper component - Wraps chat routes with layout and performance panel
+ */
+function ChatLayoutWrapper() {
+  const [showPerformancePanel, setShowPerformancePanel] = useState(false);
+  const navigate = useNavigate();
+
+  // Handle new chat
+  const handleNewChat = useCallback(() => {
+    navigate("/chat");
+  }, [navigate]);
+
+  return (
+    <div className="flex h-screen overflow-hidden bg-[#FFF8F0]">
+      <ChatLayout onNewChat={handleNewChat}>
+        <Outlet />
+      </ChatLayout>
+
+      {/* Performance Toggle Button - Top Right */}
+      <div className="fixed top-4 right-4 z-40">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowPerformancePanel(!showPerformancePanel)}
+          aria-label={
+            showPerformancePanel
+              ? "Hide performance panel"
+              : "Show performance panel"
+          }
+          aria-pressed={showPerformancePanel}
+        >
+          <Activity className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* Performance Panel - Right Side */}
+      {showPerformancePanel && (
+        <div className="fixed top-16 right-4 z-40">
+          <PerformancePanel onClose={() => setShowPerformancePanel(false)} />
+        </div>
+      )}
+
+      {/* Status Indicator - Bottom Left */}
+      <StatusIndicator />
+    </div>
+  );
+}
+
+/**
+ * AppContent component - Router content with routes
+ */
+function AppContent() {
+  const navigate = useNavigate();
+
+  // Settings store
+  const hasCompletedSetup = useSettingsStore(selectHasCompletedSetup);
+  const isSettingsLoading = useSettingsStore((state) => state.isLoading);
+  const loadSettings = useSettingsStore((state) => state.loadSettings);
+
+  // Model store
+  const currentModel = useModelStore((state) => state.currentModel);
+
+  // Load settings on mount
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
+
+  // Check if user has completed setup and redirect to chat if so
+  useEffect(() => {
+    if (!isSettingsLoading && hasCompletedSetup && currentModel) {
+      // User has already completed setup, redirect to /chat
+      // But only if we're at the root path
+      if (window.location.pathname === "/") {
+        navigate("/chat");
+      }
+    }
+  }, [hasCompletedSetup, currentModel, isSettingsLoading, navigate]);
+
+  return (
+    <Routes>
+      {/* Landing page routes */}
+      <Route path="/" element={<RootLayout />}>
+        <Route index element={<LandingPage />} />
+        <Route path="loading" element={<LoadingPage />} />
+      </Route>
+
+      {/* Chat routes */}
+      <Route path="chat" element={<ChatLayoutWrapper />}>
+        <Route index element={<ChatRoute />} />
+        <Route path=":id" element={<ChatDetailRoute />} />
+      </Route>
+
+      {/* Catch-all redirect to landing */}
+      <Route path="*" element={<LandingPage />} />
+    </Routes>
+  );
+}
+
+/**
+ * App component - Main application entry point
+ *
+ * Provides BrowserRouter and renders the app content.
+ */
+export function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+      <Toaster position="top-center" richColors />
+    </BrowserRouter>
   );
 }
 
