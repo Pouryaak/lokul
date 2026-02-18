@@ -5,8 +5,8 @@
  * Uses AI SDK UI patterns for message display and input handling.
  */
 
-import { useCallback, useEffect } from "react";
-import { User, Bot, MessageSquare } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { AlertCircle, Bot, MessageSquare, RefreshCw, User, X } from "lucide-react";
 import { toast } from "sonner";
 import type { UIMessage } from "@ai-sdk/react";
 import {
@@ -15,11 +15,7 @@ import {
   ConversationEmptyState,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from "@/components/ai-elements/message";
+import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputTextarea,
@@ -70,6 +66,7 @@ export function AIChatInterface({
     modelId,
     initialMessages,
   });
+  const [dismissedError, setDismissedError] = useState<string | null>(null);
 
   const hasMessages = messages.length > 0;
 
@@ -84,7 +81,9 @@ export function AIChatInterface({
         await sendMessage({ text: message.text });
       } catch (err) {
         toast.error("Failed to send message");
-        console.error("Send error:", err);
+        if (import.meta.env.DEV) {
+          console.error("Send error:", err);
+        }
       }
     },
     [sendMessage]
@@ -94,8 +93,7 @@ export function AIChatInterface({
    * Handle stopping generation
    */
   const handleStop = useCallback(() => {
-    // TODO: Implement abort in useAIChat/WebLLMTransport
-    console.log("Stop requested");
+    toast.info("Stop is not available yet for this model.");
   }, []);
 
   // Show error toast when error occurs
@@ -105,23 +103,41 @@ export function AIChatInterface({
     }
   }, [error]);
 
+  useEffect(() => {
+    if (error?.message) {
+      setDismissedError(null);
+    }
+  }, [error?.message]);
+
   return (
-    <div
-      className={cn(
-        "flex h-full flex-col bg-[#FFF8F0]",
-        className
-      )}
-    >
+    <div className={cn("flex h-full flex-col bg-[#FFF8F0]", className)}>
       {/* Error Banner */}
-      {error && (
-        <div className="bg-red-500 px-4 py-2 text-center text-sm text-white">
-          {error.message}
-          <button
-            onClick={() => window.location.reload()}
-            className="ml-2 underline hover:no-underline"
-          >
-            Reload
-          </button>
+      {error && dismissedError !== error.message && (
+        <div className="mx-4 mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
+
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-red-800">Error</p>
+              <p className="mt-1 text-sm text-red-600">{error.message}</p>
+
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-3 flex items-center gap-1.5 text-sm font-medium text-red-700 hover:text-red-800"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Reload
+              </button>
+            </div>
+
+            <button
+              onClick={() => setDismissedError(error.message)}
+              className="shrink-0 rounded-lg p-1 text-red-400 hover:bg-red-100 hover:text-red-600"
+              aria-label="Dismiss error"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       )}
 
@@ -156,13 +172,11 @@ export function AIChatInterface({
                   <Message from={msg.role}>
                     <MessageContent>
                       {msg.parts
-                        .filter((part): part is { type: "text"; text: string } =>
-                          part.type === "text"
+                        .filter(
+                          (part): part is { type: "text"; text: string } => part.type === "text"
                         )
                         .map((part, i) => (
-                          <MessageResponse key={i}>
-                            {part.text}
-                          </MessageResponse>
+                          <MessageResponse key={i}>{part.text}</MessageResponse>
                         ))}
                     </MessageContent>
                   </Message>
@@ -183,17 +197,9 @@ export function AIChatInterface({
       {/* Input Area */}
       <div className="border-t border-gray-200 bg-white px-4 py-4">
         <div className="mx-auto max-w-3xl">
-          <PromptInput
-            onSubmit={handleSubmit}
-          >
-            <PromptInputTextarea
-              placeholder="Message Lokul..."
-              className="min-h-[60px]"
-            />
-            <PromptInputSubmit
-              status={status}
-              onStop={handleStop}
-            />
+          <PromptInput onSubmit={handleSubmit}>
+            <PromptInputTextarea placeholder="Message Lokul..." className="min-h-[60px]" />
+            <PromptInputSubmit status={status} onStop={handleStop} />
           </PromptInput>
 
           {/* Footer text */}
