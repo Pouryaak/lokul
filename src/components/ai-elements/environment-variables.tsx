@@ -3,7 +3,7 @@
 import type { ComponentProps, HTMLAttributes } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { CheckIcon, CopyIcon, EyeIcon, EyeOffIcon } from "lucide-react";

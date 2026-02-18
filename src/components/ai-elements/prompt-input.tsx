@@ -835,7 +835,7 @@ export const PromptInputTextarea = ({
   onChange,
   onKeyDown,
   className,
-  placeholder = "What would you like to know?",
+  placeholder = "Message Lokul...",
   ...props
 }: PromptInputTextareaProps) => {
   const controller = useOptionalPromptInputController();
@@ -1125,10 +1125,15 @@ export const PromptInputSubmit = ({
     [isGenerating, onStop, onClick]
   );
 
+  // Lokul theme: orange background for submit button
+  const lokulStyles = !isGenerating
+    ? "bg-[#FF6B35] hover:bg-[#FF6B35]/90 text-white border-[#FF6B35]"
+    : "";
+
   return (
     <InputGroupButton
       aria-label={isGenerating ? "Stop" : "Submit"}
-      className={cn(className)}
+      className={cn(lokulStyles, className)}
       onClick={handleClick}
       size={size}
       type={isGenerating && onStop ? "button" : "submit"}

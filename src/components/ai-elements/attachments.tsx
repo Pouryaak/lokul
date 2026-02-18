@@ -3,7 +3,7 @@
 import type { FileUIPart, SourceDocumentUIPart } from "ai";
 import type { ComponentProps, HTMLAttributes, ReactNode } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   HoverCard,
   HoverCardContent,

@@ -2,7 +2,7 @@
 
 import type { ComponentProps, ReactNode } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   Collapsible,
   CollapsibleContent,

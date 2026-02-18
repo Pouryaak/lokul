@@ -8,7 +8,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 import { Handle, Position } from "@xyflow/react";
 

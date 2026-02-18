@@ -3,7 +3,7 @@
 import type { ComponentProps, ReactNode } from "react";
 
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   Command,
   CommandDialog,

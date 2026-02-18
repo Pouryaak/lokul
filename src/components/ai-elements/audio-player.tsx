@@ -3,11 +3,11 @@
 import type { Experimental_SpeechResult as SpeechResult } from "ai";
 import type { ComponentProps, CSSProperties } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   ButtonGroup,
   ButtonGroupText,
-} from "@/components/ui/button-group";
+} from "@/components/ui/Button-group";
 import { cn } from "@/lib/utils";
 import {
   MediaControlBar,

@@ -8,7 +8,7 @@ import type {
   ThemedToken,
 } from "shiki";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   Select,
   SelectContent,

@@ -3,7 +3,7 @@
 import type { ComponentProps, HTMLAttributes } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   Collapsible,
   CollapsibleContent,

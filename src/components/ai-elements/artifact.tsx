@@ -3,7 +3,7 @@
 import type { LucideIcon } from "lucide-react";
 import type { ComponentProps, HTMLAttributes } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   Tooltip,
   TooltipContent,
