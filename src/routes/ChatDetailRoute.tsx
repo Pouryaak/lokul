@@ -1,89 +1,128 @@
 /**
- * ChatDetailRoute Component - Handles /chat/:id
+ * ChatDetailRoute Component - Handles /chat/:id.
  *
- * Loads an existing conversation from storage and renders the chat interface.
- * If conversation not found, shows toast warning and redirects to /chat.
+ * Loads an existing conversation and waits for model readiness before
+ * rendering the AI chat interface.
  */
 
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import type { UIMessage } from "@ai-sdk/react";
+import { useParams } from "react-router-dom";
 import { AIChatInterface } from "@/components/Chat/AIChatInterface";
 import { getConversation } from "@/lib/storage/conversations";
+import { useModelStore } from "@/store/modelStore";
 import type { Conversation } from "@/types/index";
-import type { UIMessage } from "@ai-sdk/react";
 
-/**
- * ChatDetailRoute component
- *
- * Loads a conversation by ID from URL params and renders the chat interface.
- * Handles non-existent conversations with a toast warning and redirect.
- */
+function LoadingState({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center bg-[#FFF8F0]">
+      <Loader2 className="h-8 w-8 animate-spin text-[#FF6B35]" />
+      <p className="mt-4 text-gray-600">{title}</p>
+      {subtitle ? <p className="mt-2 text-sm text-gray-500">{subtitle}</p> : null}
+    </div>
+  );
+}
+
+function ErrorState({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center bg-[#FFF8F0]">
+      <p className="text-red-500">{title}</p>
+      <p className="mt-2 text-sm text-gray-600">{description}</p>
+      <button
+        onClick={() => window.location.reload()}
+        className="mt-4 rounded-lg bg-[#FF6B35] px-4 py-2 text-white hover:bg-[#FF6B35]/90"
+      >
+        Retry
+      </button>
+    </div>
+  );
+}
+
+function toInitialMessages(conversation: Conversation): UIMessage[] {
+  return conversation.messages.map((message) => ({
+    id: message.id,
+    role: message.role,
+    content: message.content,
+    parts: [{ type: "text", text: message.content }],
+  }));
+}
+
 export function ChatDetailRoute() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [conversation, setConversation] = useState<Conversation | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingConversation, setIsLoadingConversation] = useState(true);
+  const [conversationError, setConversationError] = useState<string | null>(null);
+
+  const currentModel = useModelStore((state) => state.currentModel);
+  const isModelLoading = useModelStore((state) => state.isLoading);
+  const modelError = useModelStore((state) => state.error);
 
   useEffect(() => {
+    if (!id) {
+      setConversationError("Conversation not found");
+      setIsLoadingConversation(false);
+      return;
+    }
+
     const loadConversation = async () => {
-      if (!id) {
-        toast.error("Invalid conversation ID");
-        navigate("/chat");
-        return;
-      }
+      setIsLoadingConversation(true);
+      setConversationError(null);
 
       try {
         const loadedConversation = await getConversation(id);
 
         if (!loadedConversation) {
-          // Conversation not found - show warning and redirect
-          toast.warning("Conversation not found");
-          navigate("/chat");
+          setConversationError("Conversation not found");
           return;
         }
 
         setConversation(loadedConversation);
       } catch (error) {
-        console.error("Failed to load conversation:", error);
-        toast.error("Failed to load conversation");
-        navigate("/chat");
+        const message = error instanceof Error ? error.message : "Failed to load conversation";
+        setConversationError(message);
       } finally {
-        setIsLoading(false);
+        setIsLoadingConversation(false);
       }
     };
 
-    loadConversation();
-  }, [id, navigate]);
+    void loadConversation();
+  }, [id]);
 
-  // Show loading state
-  if (isLoading) {
+  if (isLoadingConversation) {
+    return <LoadingState title="Loading conversation..." />;
+  }
+
+  if (conversationError || !conversation) {
     return (
-      <div className="flex h-full flex-col items-center justify-center bg-[#FFF8F0]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#FF6B35]" />
-        <p className="mt-4 text-gray-600">Loading conversation...</p>
-      </div>
+      <ErrorState title="Conversation unavailable" description={conversationError ?? "Not found"} />
     );
   }
 
-  if (!conversation) {
-    return null; // Will redirect
+  if (isModelLoading) {
+    return (
+      <LoadingState title="Loading AI model..." subtitle="This may take a moment on first load" />
+    );
   }
 
-  // Convert storage messages to UIMessages
-  const initialMessages: UIMessage[] = conversation.messages.map((msg) => ({
-    id: msg.id,
-    role: msg.role,
-    content: msg.content,
-    parts: [{ type: "text" as const, text: msg.content }],
-  }));
+  if (modelError) {
+    return <ErrorState title="Failed to load model" description={modelError} />;
+  }
+
+  if (!currentModel) {
+    return (
+      <ErrorState
+        title="No model loaded"
+        description="Please retry to initialize the default model."
+      />
+    );
+  }
 
   return (
     <AIChatInterface
-      conversationId={id!}
-      modelId={conversation.model}
-      initialMessages={initialMessages}
+      conversationId={conversation.id}
+      modelId={currentModel.id}
+      initialMessages={toInitialMessages(conversation)}
     />
   );
 }
