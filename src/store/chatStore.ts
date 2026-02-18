@@ -1,174 +1,333 @@
 /**
  * Chat Store - Reactive state management for chat conversations
  *
- * Manages messages, conversation state, streaming responses, and
- * chat-related actions like send, regenerate, and clear.
+ * Manages chat messages, streaming state, and conversation persistence.
+ * Integrates with inferenceManager for AI generation and auto-saves to IndexedDB.
  */
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import type { Message } from "@/types/index";
+import { inferenceManager } from "@/lib/ai/inference";
+import {
+  saveConversation,
+  createConversation,
+  addMessageToConversation,
+  generateConversationTitle,
+} from "@/lib/storage/conversations";
+import { useModelStore } from "./modelStore";
+import type { Message, Conversation } from "@/types/index";
+
+/**
+ * Chat performance metrics
+ */
+interface ChatMetrics {
+  /** Tokens generated per second */
+  tokensPerSecond: number;
+  /** Total response time in milliseconds */
+  responseTimeMs: number | null;
+  /** Total tokens generated in current response */
+  totalTokens: number;
+}
 
 /**
  * Chat state interface
  */
 interface ChatState {
   // State
-  /** Current conversation ID */
-  currentConversationId: string | null;
-  /** Messages in the current conversation */
+  /** All messages in current conversation */
   messages: Message[];
+  /** Current conversation ID (null if new/unsaved) */
+  currentConversationId: string | null;
   /** Whether AI is currently generating a response */
   isStreaming: boolean;
-  /** Streaming content being received */
+  /** Accumulated streaming content for current response */
   streamingContent: string;
   /** Error message if something went wrong */
   error: string | null;
+  /** Performance metrics for current/last response */
+  metrics: ChatMetrics;
+  /** Current conversation object (for auto-save) */
+  currentConversation: Conversation | null;
+}
 
-  // Actions
-  /** Send a new message */
+/**
+ * Chat actions interface
+ */
+interface ChatActions {
+  /** Send a message and start AI generation */
   sendMessage: (content: string) => Promise<void>;
-  /** Regenerate the last AI response */
-  regenerateMessage: () => Promise<void>;
-  /** Clear the current conversation */
-  clearConversation: () => void;
-  /** Stop the current generation */
+  /** Append a token to streaming content */
+  appendToken: (token: string) => void;
+  /** Stop ongoing generation */
   stopGeneration: () => void;
-  /** Add a streaming chunk */
-  appendStreamingContent: (chunk: string) => void;
-  /** Finalize streaming message */
-  finalizeStreamingMessage: () => void;
+  /** Clear chat and start new conversation */
+  clearChat: () => void;
+  /** Load an existing conversation */
+  loadConversation: (conversation: Conversation) => void;
   /** Set error state */
   setError: (error: string | null) => void;
 }
 
 /**
- * Generate a unique ID
+ * Create a new message object
  */
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
-
-/**
- * Create a new message
- */
-function createMessage(content: string, role: "user" | "assistant"): Message {
+function createMessage(
+  role: Message["role"],
+  content: string,
+  conversationId: string
+): Message {
   return {
-    id: generateId(),
+    id: crypto.randomUUID(),
     role,
     content,
     timestamp: Date.now(),
-    conversationId: "current",
+    conversationId,
   };
 }
 
 /**
- * Chat store with Zustand
+ * Build messages array for inference from current conversation
+ * Maps to the format expected by inferenceManager.generate()
  */
-export const useChatStore = create<ChatState>()(
+function buildInferenceMessages(messages: Message[]): Array<{
+  role: "system" | "user" | "assistant";
+  content: string;
+}> {
+  return messages.map((m) => ({
+    role: m.role,
+    content: m.content,
+  }));
+}
+
+/**
+ * Chat store with Zustand
+ *
+ * Features:
+ * - Message management with immutable updates
+ * - Streaming response handling with token accumulation
+ * - Auto-save to IndexedDB after message completion
+ * - Performance metrics tracking
+ */
+export const useChatStore = create<ChatState & ChatActions>()(
   devtools(
     (set, get) => ({
       // Initial state
-      currentConversationId: null,
       messages: [],
+      currentConversationId: null,
       isStreaming: false,
       streamingContent: "",
       error: null,
+      metrics: {
+        tokensPerSecond: 0,
+        responseTimeMs: null,
+        totalTokens: 0,
+      },
+      currentConversation: null,
 
       /**
-       * Send a new message
+       * Send a message and start AI generation
+       * Handles the full lifecycle: user message, streaming response, auto-save
        */
       sendMessage: async (content: string) => {
-        const trimmedContent = content.trim();
-        if (!trimmedContent) return;
+        const state = get();
 
-        // Add user message
-        const userMessage = createMessage(trimmedContent, "user");
-        set((state) => ({
-          messages: [...state.messages, userMessage],
+        // Validate content
+        const trimmedContent = content.trim();
+        if (!trimmedContent) {
+          set({ error: "Message cannot be empty" });
+          return;
+        }
+
+        // Check if model is loaded
+        const modelState = useModelStore.getState();
+        if (!modelState.currentModel) {
+          set({ error: "No model loaded. Please load a model first." });
+          return;
+        }
+
+        // Initialize conversation if needed
+        let conversation = state.currentConversation;
+        if (!conversation) {
+          conversation = createConversation(modelState.currentModel.id);
+        }
+
+        // Create user message
+        const userMessage = createMessage(
+          "user",
+          trimmedContent,
+          conversation.id
+        );
+
+        // Add user message to conversation
+        conversation = addMessageToConversation(conversation, userMessage);
+
+        // Update state with user message
+        set({
+          messages: conversation.messages,
+          currentConversationId: conversation.id,
+          currentConversation: conversation,
           isStreaming: true,
           streamingContent: "",
           error: null,
-        }));
+          metrics: {
+            tokensPerSecond: 0,
+            responseTimeMs: null,
+            totalTokens: 0,
+          },
+        });
 
-        // Simulate AI response (will be replaced with actual inference)
-        // This is a placeholder for the actual AI integration
-        setTimeout(() => {
-          get().finalizeStreamingMessage();
-        }, 1000);
-      },
+        // Track generation start time
+        const startTime = performance.now();
+        let tokenCount = 0;
 
-      /**
-       * Regenerate the last AI response
-       */
-      regenerateMessage: async () => {
-        const { messages } = get();
-        if (messages.length === 0) return;
+        try {
+          // Build messages for inference
+          const inferenceMessages = buildInferenceMessages(conversation.messages);
 
-        // Remove the last assistant message if it exists
-        const lastMessage = messages[messages.length - 1];
-        if (lastMessage.role === "assistant") {
-          set((state) => ({
-            messages: state.messages.slice(0, -1),
-            isStreaming: true,
+          // Generate streaming response
+          const stream = inferenceManager.generate(inferenceMessages);
+
+          // Accumulate streaming content
+          let assistantContent = "";
+
+          for await (const token of stream) {
+            assistantContent += token;
+            tokenCount++;
+
+            // Update streaming content in state
+            set({
+              streamingContent: assistantContent,
+              metrics: {
+                ...get().metrics,
+                totalTokens: tokenCount,
+              },
+            });
+          }
+
+          // Calculate metrics
+          const endTime = performance.now();
+          const responseTimeMs = endTime - startTime;
+          const tokensPerSecond =
+            responseTimeMs > 0 ? (tokenCount / responseTimeMs) * 1000 : 0;
+
+          // Create assistant message
+          const assistantMessage = createMessage(
+            "assistant",
+            assistantContent,
+            conversation.id
+          );
+
+          // Add metadata
+          assistantMessage.metadata = {
+            tokenCount,
+            generationTimeMs: responseTimeMs,
+            modelId: modelState.currentModel.id,
+          };
+
+          // Add assistant message to conversation
+          conversation = addMessageToConversation(conversation, assistantMessage);
+
+          // Update title on first user message if it's still default
+          if (
+            conversation.messages.filter((m) => m.role === "user").length === 1 &&
+            conversation.title === "New Conversation"
+          ) {
+            conversation.title = generateConversationTitle(trimmedContent);
+          }
+
+          // Auto-save to IndexedDB
+          await saveConversation(conversation);
+
+          // Update final state
+          set({
+            messages: conversation.messages,
+            currentConversation: conversation,
+            isStreaming: false,
             streamingContent: "",
-            error: null,
-          }));
-        }
+            metrics: {
+              tokensPerSecond: Math.round(tokensPerSecond * 10) / 10,
+              responseTimeMs: Math.round(responseTimeMs),
+              totalTokens: tokenCount,
+            },
+          });
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : "Failed to generate response";
 
-        // Simulate regeneration
-        setTimeout(() => {
-          get().finalizeStreamingMessage();
-        }, 1000);
+          // Update state with error
+          set({
+            error: errorMessage,
+            isStreaming: false,
+            streamingContent: "",
+          });
+
+          if (import.meta.env.DEV) {
+            console.error("[ChatStore] Generation error:", error);
+          }
+        }
       },
 
       /**
-       * Clear the current conversation
+       * Append a token to streaming content
+       * Used for manual token streaming if needed
        */
-      clearConversation: () => {
+      appendToken: (token: string) => {
+        set((state) => ({
+          streamingContent: state.streamingContent + token,
+        }));
+      },
+
+      /**
+       * Stop ongoing generation
+       */
+      stopGeneration: () => {
+        inferenceManager.abort();
+
+        set({
+          isStreaming: false,
+          streamingContent: "",
+        });
+      },
+
+      /**
+       * Clear chat and start new conversation
+       * Resets all chat state but keeps current model
+       */
+      clearChat: () => {
+        inferenceManager.abort();
+
         set({
           messages: [],
+          currentConversationId: null,
           isStreaming: false,
           streamingContent: "",
           error: null,
-          currentConversationId: null,
+          metrics: {
+            tokensPerSecond: 0,
+            responseTimeMs: null,
+            totalTokens: 0,
+          },
+          currentConversation: null,
         });
       },
 
       /**
-       * Stop the current generation
+       * Load an existing conversation
        */
-      stopGeneration: () => {
+      loadConversation: (conversation: Conversation) => {
         set({
+          messages: conversation.messages,
+          currentConversationId: conversation.id,
+          currentConversation: conversation,
           isStreaming: false,
           streamingContent: "",
+          error: null,
+          metrics: {
+            tokensPerSecond: 0,
+            responseTimeMs: null,
+            totalTokens: 0,
+          },
         });
-      },
-
-      /**
-       * Append streaming content
-       */
-      appendStreamingContent: (chunk: string) => {
-        set((state) => ({
-          streamingContent: state.streamingContent + chunk,
-        }));
-      },
-
-      /**
-       * Finalize streaming message
-       */
-      finalizeStreamingMessage: () => {
-        const { streamingContent } = get();
-        if (streamingContent.trim()) {
-          const assistantMessage = createMessage(streamingContent, "assistant");
-          set((state) => ({
-            messages: [...state.messages, assistantMessage],
-            streamingContent: "",
-            isStreaming: false,
-          }));
-        } else {
-          set({ isStreaming: false, streamingContent: "" });
-        }
       },
 
       /**
@@ -184,28 +343,46 @@ export const useChatStore = create<ChatState>()(
 
 /**
  * Selector hooks for common state slices
+ * These prevent unnecessary re-renders by selecting specific state
  */
 
-/** Get current messages */
+/** Get all messages */
 export const useMessages = () => useChatStore((state) => state.messages);
 
 /** Get streaming state */
 export const useIsStreaming = () => useChatStore((state) => state.isStreaming);
 
-/** Get streaming content */
-export const useStreamingContent = () => useChatStore((state) => state.streamingContent);
+/** Get current streaming content */
+export const useStreamingContent = () =>
+  useChatStore((state) => state.streamingContent);
 
-/** Get error state */
+/** Get error message */
 export const useChatError = () => useChatStore((state) => state.error);
+
+/** Get performance metrics */
+export const useChatMetrics = () => useChatStore((state) => state.metrics);
+
+/** Get current conversation ID */
+export const useCurrentConversationId = () =>
+  useChatStore((state) => state.currentConversationId);
+
+/** Get current conversation */
+export const useCurrentConversation = () =>
+  useChatStore((state) => state.currentConversation);
 
 /** Get sendMessage action */
 export const useSendMessage = () => useChatStore((state) => state.sendMessage);
 
-/** Get regenerateMessage action */
-export const useRegenerateMessage = () => useChatStore((state) => state.regenerateMessage);
-
-/** Get clearConversation action */
-export const useClearConversation = () => useChatStore((state) => state.clearConversation);
-
 /** Get stopGeneration action */
-export const useStopGeneration = () => useChatStore((state) => state.stopGeneration);
+export const useStopGeneration = () =>
+  useChatStore((state) => state.stopGeneration);
+
+/** Get clearChat action */
+export const useClearChat = () => useChatStore((state) => state.clearChat);
+
+/** Get loadConversation action */
+export const useLoadConversationAction = () =>
+  useChatStore((state) => state.loadConversation);
+
+/** Get setError action */
+export const useSetChatError = () => useChatStore((state) => state.setError);
