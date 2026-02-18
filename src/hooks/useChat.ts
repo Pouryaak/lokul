@@ -15,12 +15,9 @@ import {
   useSendMessage,
   useClearChat,
   useStopGeneration,
-  useChatStore,
+  useRegenerateMessage,
 } from "@/store/chatStore";
 import type { Message } from "@/types/index";
-
-// Get the store instance for imperative operations
-const chatStore = useChatStore;
 
 /**
  * Hook return type
@@ -80,47 +77,7 @@ export function useChat(): UseChatReturn {
   const sendMessageAction = useSendMessage();
   const clearChatAction = useClearChat();
   const stopGenerationAction = useStopGeneration();
-
-  /**
-   * Regenerate the last AI response
-   * Finds the last user message, truncates messages to before it,
-   * and re-sends the user message
-   */
-  const regenerateMessage = useCallback(async (): Promise<void> => {
-    const { messages: currentMessages, sendMessage } = chatStore.getState();
-
-    // Find the last user message
-    let lastUserIndex = -1;
-    for (let i = currentMessages.length - 1; i >= 0; i--) {
-      if (currentMessages[i].role === "user") {
-        lastUserIndex = i;
-        break;
-      }
-    }
-
-    if (lastUserIndex === -1) {
-      // No user message found
-      return;
-    }
-
-    // Get the last user message content
-    const lastUserMessage = currentMessages[lastUserIndex];
-
-    // Truncate messages to before the last user message
-    // We need to update the store state directly
-    const truncatedMessages = currentMessages.slice(0, lastUserIndex);
-
-    // Update the store with truncated messages
-    chatStore.setState({
-      messages: truncatedMessages,
-      isStreaming: false,
-      streamingContent: "",
-      error: null,
-    });
-
-    // Re-send the user message
-    await sendMessage(lastUserMessage.content);
-  }, []);
+  const regenerateMessageAction = useRegenerateMessage();
 
   /**
    * Send a message wrapper
@@ -131,6 +88,13 @@ export function useChat(): UseChatReturn {
     },
     [sendMessageAction]
   );
+
+  /**
+   * Regenerate the last AI response
+   */
+  const regenerateMessage = useCallback(async (): Promise<void> => {
+    await regenerateMessageAction();
+  }, [regenerateMessageAction]);
 
   /**
    * Clear chat wrapper

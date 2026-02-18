@@ -66,6 +66,8 @@ interface ChatActions {
   loadConversation: (conversation: Conversation) => void;
   /** Set error state */
   setError: (error: string | null) => void;
+  /** Regenerate the last AI response */
+  regenerateMessage: () => Promise<void>;
 }
 
 /**
@@ -336,6 +338,57 @@ export const useChatStore = create<ChatState & ChatActions>()(
       setError: (error: string | null) => {
         set({ error });
       },
+
+      /**
+       * Regenerate the last AI response
+       * Finds the last user message, truncates messages to before it,
+       * and re-sends the user message
+       */
+      regenerateMessage: async (): Promise<void> => {
+        const state = get();
+        const { messages: currentMessages } = state;
+
+        // Find the last user message
+        let lastUserIndex = -1;
+        for (let i = currentMessages.length - 1; i >= 0; i--) {
+          if (currentMessages[i].role === "user") {
+            lastUserIndex = i;
+            break;
+          }
+        }
+
+        if (lastUserIndex === -1) {
+          // No user message found
+          return;
+        }
+
+        // Get the last user message content
+        const lastUserMessage = currentMessages[lastUserIndex];
+
+        // Truncate messages to before the last user message
+        const truncatedMessages = currentMessages.slice(0, lastUserIndex);
+
+        // Update the store with truncated messages
+        set({
+          messages: truncatedMessages,
+          isStreaming: false,
+          streamingContent: "",
+          error: null,
+        });
+
+        // Update current conversation if exists
+        if (state.currentConversation) {
+          set({
+            currentConversation: {
+              ...state.currentConversation,
+              messages: truncatedMessages,
+            },
+          });
+        }
+
+        // Re-send the user message
+        await state.sendMessage(lastUserMessage.content);
+      },
     }),
     { name: "ChatStore" }
   )
@@ -386,3 +439,6 @@ export const useLoadConversationAction = () =>
 
 /** Get setError action */
 export const useSetChatError = () => useChatStore((state) => state.setError);
+
+/** Get regenerateMessage action */
+export const useRegenerateMessage = () => useChatStore((state) => state.regenerateMessage);
