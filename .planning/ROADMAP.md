@@ -11,6 +11,7 @@
 
 - [x] **Phase 1: Core Infrastructure** - Foundation for local AI inference with Web Workers, GPU detection, and offline capability
 - [ ] **Phase 2: Chat Interface** - Streaming chat with markdown, conversation storage, and basic performance monitoring
+- [ ] **Phase 2.1: AI SDK UI Migration with Routing** (INSERTED) - Add routing (/chat, /chat/[id]), integrate AI SDK UI with WebLLM, use ai-elements components
 - [ ] **Phase 3: Model Management** - Three-tier model system (Quick/Smart/Genius) with download manager
 - [ ] **Phase 4: Memory System** - Three-tier memory (Core Facts + Daily Context + Recent Messages) with auto-compaction
 - [ ] **Phase 5: Polish & PWA** - Performance panel, responsive design, export/import, and PWA features
@@ -23,6 +24,7 @@
 |-------|----------------|--------|-----------|
 | 1. Core Infrastructure | 4/4 | Complete | 2026-02-17 |
 | 2. Chat Interface | 0/4 | Planned | - |
+| 2.1. AI SDK UI Migration | 0/TBD | Inserted | - |
 | 3. Model Management | 0/3 | Not started | - |
 | 4. Memory System | 0/3 | Not started | - |
 | 5. Polish & PWA | 0/3 | Not started | - |
@@ -94,11 +96,35 @@ Plans:
 
 ---
 
+### Phase 02.1: AI SDK UI Migration with Routing (INSERTED)
+
+**Goal:** Refactor chat architecture with proper routing (/chat, /chat/[id]), migrate to AI SDK UI for standardized chat patterns, integrate ai-elements components for better UX
+
+**Depends on:** Phase 2
+
+**Requirements:** CHAT-01, CHAT-02, CHAT-03, CHAT-04, CHAT-05, CHAT-06, CHAT-07, CHAT-08
+
+**Success Criteria** (what must be TRUE):
+
+1. URL changes to /chat when entering chat interface
+2. Individual conversations have URLs like /chat/[id]
+3. Chat area is scrollable with smooth auto-scroll to bottom
+4. AI SDK UI provides streaming chat with status management
+5. WebLLM integrated as AI SDK UI custom transport for local inference
+6. ai-elements Conversation component handles message threading
+7. ai-elements Message component renders with proper styling
+8. ai-elements ModelSelector provides model switching UI
+
+**Plans:** TBD (run `/gsd:plan-phase 02.1` to break down)
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 02.1 to break down)
+
 ### Phase 3: Model Management
 
 **Goal:** Users can seamlessly switch between three model tiers based on their quality/speed needs
 
-**Depends on:** Phase 2
+**Depends on:** Phase 2.1
 
 **Requirements:** MODEL-02, MODEL-03, MODEL-04, MODEL-05, MODEL-06, MODEL-08, FIRST-06
 

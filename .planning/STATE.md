@@ -118,6 +118,12 @@ None currently.
 
 None currently.
 
+### Roadmap Evolution
+
+| Date | Change | Reason |
+|------|--------|--------|
+| 2026-02-18 | Phase 2.1 inserted after Phase 2 | Need routing (/chat, /chat/[id]) and AI SDK UI migration before Phase 3 |
+
 ---
 
 ## Session Continuity
