@@ -10,19 +10,10 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import {
-  Plus,
-  Settings,
-  MessageSquare,
-  AlertTriangle,
-  Zap,
-  X,
-  Loader2,
-  Cpu,
-} from "lucide-react";
+import { Plus, Settings, MessageSquare, AlertTriangle, Zap, X, Loader2, Cpu } from "lucide-react";
 import { useCallback } from "react";
+import { useParams } from "react-router-dom";
 import { useConversations } from "@/hooks/useConversations";
-import { useCurrentConversationId } from "@/store/chatStore";
 import {
   Select,
   SelectContent,
@@ -147,9 +138,7 @@ function ConversationItem({
         onClick={onClick}
         className={cn(
           "flex w-full items-center justify-center rounded-lg p-2 transition-colors",
-          isActive
-            ? "bg-[#FF6B35]/10 text-[#FF6B35]"
-            : "text-gray-500 hover:bg-gray-100"
+          isActive ? "bg-[#FF6B35]/10 text-[#FF6B35]" : "text-gray-500 hover:bg-gray-100"
         )}
         title={conversation.title}
       >
@@ -163,24 +152,17 @@ function ConversationItem({
       onClick={onClick}
       className={cn(
         "flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-colors",
-        isActive
-          ? "bg-[#FF6B35]/10 text-gray-900"
-          : "text-gray-700 hover:bg-gray-100"
+        isActive ? "bg-[#FF6B35]/10 text-gray-900" : "text-gray-700 hover:bg-gray-100"
       )}
     >
       <MessageSquare
-        className={cn(
-          "h-4 w-4 shrink-0",
-          isActive ? "text-[#FF6B35]" : "text-gray-500"
-        )}
+        className={cn("h-4 w-4 shrink-0", isActive ? "text-[#FF6B35]" : "text-gray-500")}
       />
       <div className="min-w-0 flex-1 text-left">
         <p className="truncate text-sm font-medium" title={conversation.title}>
           {conversation.title}
         </p>
-        <p className="text-xs text-gray-500">
-          {formatRelativeTime(conversation.updatedAt)}
-        </p>
+        <p className="text-xs text-gray-500">{formatRelativeTime(conversation.updatedAt)}</p>
       </div>
     </button>
   );
@@ -209,10 +191,7 @@ function ModelSelector({ isCollapsed }: { isCollapsed: boolean }) {
   }
 
   return (
-    <Select
-      value={currentModel?.id || ""}
-      onValueChange={handleModelChange}
-    >
+    <Select value={currentModel?.id || ""} onValueChange={handleModelChange}>
       <SelectTrigger className="w-full">
         <div className="flex items-center gap-2">
           <Cpu className="h-4 w-4 text-gray-500" />
@@ -224,9 +203,7 @@ function ModelSelector({ isCollapsed }: { isCollapsed: boolean }) {
           <SelectItem key={model.id} value={model.id}>
             <div className="flex flex-col">
               <span className="font-medium">{model.name}</span>
-              <span className="text-xs text-gray-500">
-                {model.description}
-              </span>
+              <span className="text-xs text-gray-500">{model.description}</span>
             </div>
           </SelectItem>
         ))}
@@ -261,8 +238,7 @@ function WarningBanners({
           <div className="flex-1">
             <p className="font-medium text-amber-800">High Memory Usage</p>
             <p className="text-xs text-amber-700">
-              Memory usage is above 75%. Consider closing other tabs or
-              restarting the app.
+              Memory usage is above 75%. Consider closing other tabs or restarting the app.
             </p>
           </div>
         </div>
@@ -291,13 +267,7 @@ function WarningBanners({
 /**
  * New Chat List Item (Claude-style)
  */
-function NewChatItem({
-  onClick,
-  isCollapsed,
-}: {
-  onClick: () => void;
-  isCollapsed: boolean;
-}) {
+function NewChatItem({ onClick, isCollapsed }: { onClick: () => void; isCollapsed: boolean }) {
   if (isCollapsed) {
     return (
       <button
@@ -324,13 +294,7 @@ function NewChatItem({
 /**
  * Settings Button
  */
-function SettingsButton({
-  onClick,
-  isCollapsed,
-}: {
-  onClick: () => void;
-  isCollapsed: boolean;
-}) {
+function SettingsButton({ onClick, isCollapsed }: { onClick: () => void; isCollapsed: boolean }) {
   if (isCollapsed) {
     return (
       <button
@@ -368,29 +332,25 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const { id: currentConversationId } = useParams<{ id: string }>();
 
-  const currentConversationId = useCurrentConversationId();
   const {
     conversations,
     isLoading,
-    loadConversation,
-    createNewConversation,
     memoryWarning,
     performanceSuggestion,
     clearPerformanceSuggestion,
   } = useConversations();
 
   const handleNewChat = useCallback(() => {
-    createNewConversation();
     onNewChat?.();
-  }, [createNewConversation, onNewChat]);
+  }, [onNewChat]);
 
   const handleLoadConversation = useCallback(
     (id: string) => {
-      loadConversation(id);
       onConversationClick?.(id);
     },
-    [loadConversation, onConversationClick]
+    [onConversationClick]
   );
 
   return (
@@ -407,9 +367,7 @@ export function AppSidebar({
         {/* Logo */}
         <a href="/" className="flex items-center gap-2">
           <Logo className="h-8 w-8" />
-          {!isCollapsed && (
-            <span className="font-semibold text-gray-900">Lokul</span>
-          )}
+          {!isCollapsed && <span className="font-semibold text-gray-900">Lokul</span>}
         </a>
 
         {/* Collapse Trigger Only */}
@@ -445,11 +403,7 @@ export function AppSidebar({
         {/* New Chat - Claude style, before conversations */}
         <NewChatItem onClick={handleNewChat} isCollapsed={isCollapsed} />
 
-        {!isCollapsed && (
-          <p className="px-3 text-xs font-medium text-gray-500">
-            Conversations
-          </p>
-        )}
+        {!isCollapsed && <p className="px-3 text-xs font-medium text-gray-500">Conversations</p>}
 
         {isLoading ? (
           <LoadingState isCollapsed={isCollapsed} />
@@ -472,10 +426,7 @@ export function AppSidebar({
 
       {/* Footer with Settings */}
       <SidebarFooter className="px-2">
-        <SettingsButton
-          onClick={onSettingsClick || (() => {})}
-          isCollapsed={isCollapsed}
-        />
+        <SettingsButton onClick={onSettingsClick || (() => {})} isCollapsed={isCollapsed} />
       </SidebarFooter>
     </Sidebar>
   );
