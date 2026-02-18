@@ -3,11 +3,11 @@
 import type { UIMessage } from "ai";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   ButtonGroup,
   ButtonGroupText,
-} from "@/components/ui/button-group";
+} from "@/components/ui/Button-group";
 import {
   Tooltip,
   TooltipContent,
@@ -350,6 +350,28 @@ export const MessageToolbar = ({
   <div
     className={cn(
       "mt-4 flex w-full items-center justify-between gap-4",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
+
+export type MessageAvatarProps = HTMLAttributes<HTMLDivElement> & {
+  role?: "user" | "assistant" | "system";
+};
+
+export const MessageAvatar = ({
+  className,
+  role = "assistant",
+  children,
+  ...props
+}: MessageAvatarProps) => (
+  <div
+    className={cn(
+      "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+      role === "user" ? "bg-[#FF6B35]" : "bg-gray-200",
       className
     )}
     {...props}
