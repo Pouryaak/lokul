@@ -130,7 +130,12 @@ export function AIChatInterface({
         <ConversationScrollButton />
       </Conversation>
 
-      <InputSection status={status} onSubmit={handleSubmit} onStop={handleStop} />
+      <InputSection
+        conversationId={conversationId}
+        status={status}
+        onSubmit={handleSubmit}
+        onStop={handleStop}
+      />
     </div>
   );
 }

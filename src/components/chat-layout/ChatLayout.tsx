@@ -10,14 +10,12 @@
 import { useState } from "react";
 import { Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  SidebarProvider,
-  SidebarInset,
-} from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/Button";
 import { AppSidebar } from "./AppSidebar";
 import { StatusIndicator } from "@/components/performance/StatusIndicator";
 import { PerformancePanel } from "@/components/performance/PerformancePanel";
+import { DownloadManager } from "@/components/model/DownloadManager";
 
 /**
  * Props for the ChatLayout component
@@ -93,28 +91,24 @@ export function ChatLayout({
       >
         {/* Header - only performance button, no duplicate sidebar trigger */}
         <header className="flex h-14 items-center justify-end border-b border-gray-200/50 bg-white/50 px-4 backdrop-blur-sm">
-          <div className="flex-1" />
+          <div className="flex items-center gap-2">
+            <DownloadManager />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowPerformancePanel(!showPerformancePanel)}
+              aria-label={
+                showPerformancePanel ? "Hide performance panel" : "Show performance panel"
+              }
+              aria-pressed={showPerformancePanel}
+            >
+              <Activity className="h-4 w-4" />
+            </Button>
+          </div>
         </header>
 
         {/* Main content */}
         <main className="flex-1 overflow-hidden">{children}</main>
-
-        {/* Performance Toggle Button - Top Right */}
-        <div className="absolute top-4 right-4 z-40">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowPerformancePanel(!showPerformancePanel)}
-            aria-label={
-              showPerformancePanel
-                ? "Hide performance panel"
-                : "Show performance panel"
-            }
-            aria-pressed={showPerformancePanel}
-          >
-            <Activity className="h-4 w-4" />
-          </Button>
-        </div>
 
         {/* Performance Panel - Right Side */}
         {showPerformancePanel && (
