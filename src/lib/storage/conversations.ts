@@ -337,6 +337,52 @@ export async function updateConversationTitle(
   }
 }
 
+export async function updateConversationModelTarget(
+  id: string,
+  modelId: string,
+  options: StorageOperationOptions = {}
+): Promise<void> {
+  try {
+    assertNotAborted(options);
+
+    const conversation = await getConversation(id, options);
+
+    if (!conversation) {
+      throw storageError(`Conversation not found: ${id}`);
+    }
+
+    if (conversation.model === modelId) {
+      return;
+    }
+
+    const nextConversation: Conversation = {
+      ...conversation,
+      model: modelId,
+      updatedAt: conversation.updatedAt,
+    };
+
+    const result = await saveConversationWithVersion(nextConversation, {
+      expectedVersion: conversation.version,
+      signal: options.signal,
+      cancelReason: options.cancelReason,
+    });
+
+    if (result.kind === "err") {
+      throw result.error;
+    }
+
+    if (import.meta.env.DEV) {
+      console.info(`[Conversations] Updated model target: ${id} -> ${modelId}`);
+    }
+  } catch (error) {
+    if (isAppError(error)) {
+      throw error;
+    }
+
+    throw storageError("Failed to update conversation model target", undefined, error);
+  }
+}
+
 export function generateConversationTitle(firstUserMessage: string): string {
   const trimmed = firstUserMessage.trim();
 

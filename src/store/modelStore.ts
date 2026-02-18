@@ -10,6 +10,7 @@ import { devtools } from "zustand/middleware";
 import { modelEngine } from "@/lib/ai/model-engine";
 import type { DownloadProgress } from "@/lib/ai/inference";
 import { MODELS, getModelById, type ModelConfig } from "@/lib/ai/models";
+import { useConversationModelStore } from "@/store/conversationModelStore";
 
 function logModelStore(scope: string, payload: Record<string, unknown>): void {
   if (!import.meta.env.DEV) {
@@ -54,6 +55,8 @@ export const useModelStore = create<ModelState>()(
   devtools(
     (set) => {
       modelEngine.subscribe((engineState) => {
+        useConversationModelStore.getState().syncEngineState(engineState);
+
         logModelStore("engine-state", {
           kind: engineState.kind,
           modelId:
@@ -105,6 +108,8 @@ export const useModelStore = create<ModelState>()(
       });
 
       modelEngine.setProgressCallback((progress) => {
+        useConversationModelStore.getState().syncDownloadProgress(progress.step);
+
         set({
           downloadProgress: progress,
           loadingStep: toLoadingStep(progress),
@@ -133,6 +138,12 @@ export const useModelStore = create<ModelState>()(
               loadingStep: "error",
               isLoading: false,
             });
+            return;
+          }
+
+          const conversationModelState = useConversationModelStore.getState();
+          if (conversationModelState.activeConversationId) {
+            await conversationModelState.requestModelForActiveConversation(modelId);
             return;
           }
 
