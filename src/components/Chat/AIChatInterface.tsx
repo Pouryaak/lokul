@@ -1,180 +1,104 @@
 /**
  * AIChatInterface Component - Main chat container using AI SDK UI
  *
- * Composes chat components using AI SDK UI patterns:
- * - ai-elements/message components for message display
- * - MessageInput for typing messages
- * - ChatToolbar for actions (regenerate, clear)
- * - WelcomeScreen for empty state with suggestions
+ * Composes ai-elements components with useAIChat hook for streaming inference.
+ * Uses AI SDK UI patterns for message display and input handling.
  */
 
-import { useCallback, useRef, useState } from "react";
-import { User, Bot, Copy, Check, RefreshCw, Trash2 } from "lucide-react";
+import { useCallback, useEffect } from "react";
+import { User, Bot, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Conversation,
+  ConversationContent,
+  ConversationEmptyState,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
 import {
   Message,
   MessageContent,
-  MessageActions,
-  MessageAction,
-  MessageAvatar,
+  MessageResponse,
 } from "@/components/ai-elements/message";
-import { MarkdownMessage } from "@/components/Chat/MarkdownMessage";
-import { MessageInput } from "@/components/Chat/MessageInput";
-import { WelcomeScreen } from "@/components/Chat/WelcomeScreen";
-import { useChat } from "@/hooks/useChat";
+import {
+  PromptInput,
+  PromptInputTextarea,
+  PromptInputSubmit,
+} from "@/components/ai-elements/prompt-input";
+import { useAIChat } from "@/hooks/useAIChat";
 import { cn } from "@/lib/utils";
-import type { Message as MessageType } from "@/types/index";
 
 /**
  * Props for the AIChatInterface component
  */
 interface AIChatInterfaceProps {
+  /** Conversation ID for this chat session */
+  conversationId: string;
+  /** Model ID to use for inference */
+  modelId: string;
   /** Additional CSS classes */
   className?: string;
 }
 
 /**
- * Copy text to clipboard with toast feedback
- */
-async function copyToClipboard(text: string): Promise<void> {
-  try {
-    await navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
-  } catch {
-    toast.error("Failed to copy");
-  }
-}
-
-/**
- * Individual message component with actions
- */
-interface ChatMessageProps {
-  message: MessageType;
-  isLast: boolean;
-  isStreaming: boolean;
-  onRegenerate?: () => void;
-}
-
-function ChatMessage({
-  message,
-  isLast,
-  isStreaming,
-  onRegenerate,
-}: ChatMessageProps) {
-  const [copied, setCopied] = useState(false);
-  const isUser = message.role === "user";
-
-  const handleCopy = useCallback(async () => {
-    await copyToClipboard(message.content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [message.content]);
-
-  return (
-    <Message from={message.role}>
-      <MessageAvatar>{isUser ? <User className="h-4 w-4 text-white" /> : <Bot className="h-4 w-4 text-gray-600" />}</MessageAvatar>
-      
-      <div className="flex max-w-[80%] flex-col gap-1">
-        <MessageContent>
-          {isUser ? (
-            <p className="whitespace-pre-wrap text-sm leading-relaxed">
-              {message.content}
-            </p>
-          ) : (
-            <div className="text-sm">
-              <MarkdownMessage content={message.content} />
-            </div>
-          )}
-        </MessageContent>
-
-        <MessageActions className={isLast ? "opacity-100" : ""}>
-          <MessageAction
-            onClick={handleCopy}
-            tooltip={copied ? "Copied!" : "Copy message"}
-          >
-            {copied ? (
-              <Check className="h-4 w-4" />
-            ) : (
-              <Copy className="h-4 w-4" />
-            )}
-          </MessageAction>
-
-          {!isUser && isLast && onRegenerate && (
-            <MessageAction
-              onClick={onRegenerate}
-              tooltip="Regenerate response"
-              disabled={isStreaming}
-            >
-              <RefreshCw className="h-4 w-4" />
-            </MessageAction>
-          )}
-        </MessageActions>
-      </div>
-    </Message>
-  );
-}
-
-/**
  * AIChatInterface component - Main chat container with AI SDK UI patterns
+ *
+ * Uses ai-elements components for consistent AI chat UI:
+ * - Conversation for scrollable message area with auto-scroll
+ * - Message for displaying user/assistant messages
+ * - PromptInput for auto-resizing input with submit
+ * - useAIChat hook for streaming inference
  *
  * @example
  * ```tsx
- * <AIChatInterface />
+ * <AIChatInterface
+ *   conversationId="conv-123"
+ *   modelId="phi-2-q4f16_1-MLC"
+ * />
  * ```
  */
-export function AIChatInterface({ className }: AIChatInterfaceProps) {
-  const {
-    messages,
-    isStreaming,
-    streamingContent,
-    sendMessage,
-    clearChat,
-    regenerateMessage,
-    error,
-  } = useChat();
+export function AIChatInterface({
+  conversationId,
+  modelId,
+  className,
+}: AIChatInterfaceProps) {
+  const { messages, sendMessage, status, error } = useAIChat({
+    conversationId,
+    modelId,
+  });
 
   const hasMessages = messages.length > 0;
-  const lastMessageIsAI = messages[messages.length - 1]?.role === "assistant";
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   /**
    * Handle sending a message
    */
-  const handleSend = useCallback(
-    async (content: string) => {
-      if (!content.trim()) return;
-      await sendMessage(content);
+  const handleSubmit = useCallback(
+    async (message: { text: string }) => {
+      if (!message.text.trim()) return;
+
+      try {
+        await sendMessage({ text: message.text });
+      } catch (err) {
+        toast.error("Failed to send message");
+        console.error("Send error:", err);
+      }
     },
     [sendMessage]
   );
 
   /**
-   * Handle suggestion click from WelcomeScreen
+   * Handle stopping generation
    */
-  const handleSuggestionClick = useCallback(
-    async (suggestion: string) => {
-      await sendMessage(suggestion);
-    },
-    [sendMessage]
-  );
+  const handleStop = useCallback(() => {
+    // TODO: Implement abort in useAIChat/WebLLMTransport
+    console.log("Stop requested");
+  }, []);
 
-  /**
-   * Handle clearing the conversation with confirmation
-   */
-  const handleClear = useCallback(() => {
-    if (confirm("Clear this conversation? This cannot be undone.")) {
-      clearChat();
-      toast.info("Conversation cleared");
+  // Show error toast when error occurs
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message || "An error occurred");
     }
-  }, [clearChat]);
-
-  /**
-   * Handle regenerating the last AI response
-   */
-  const handleRegenerate = useCallback(async () => {
-    if (!lastMessageIsAI || isStreaming) return;
-    await regenerateMessage();
-  }, [lastMessageIsAI, isStreaming, regenerateMessage]);
+  }, [error]);
 
   return (
     <div
@@ -186,97 +110,86 @@ export function AIChatInterface({ className }: AIChatInterfaceProps) {
       {/* Error Banner */}
       {error && (
         <div className="bg-red-500 px-4 py-2 text-center text-sm text-white">
-          {error}
+          {error.message}
           <button
-            onClick={clearChat}
+            onClick={() => window.location.reload()}
             className="ml-2 underline hover:no-underline"
           >
-            Clear chat
+            Reload
           </button>
         </div>
       )}
 
-      {/* Message Area */}
-      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="mx-auto max-w-3xl">
+      {/* Conversation Area */}
+      <Conversation className="flex-1">
+        <ConversationContent>
           {hasMessages ? (
-            <>
-              {/* Render all messages */}
-              {messages.map((message, index) => (
-                <ChatMessage
-                  key={message.id}
-                  message={message}
-                  isLast={index === messages.length - 1}
-                  isStreaming={isStreaming}
-                  onRegenerate={handleRegenerate}
-                />
-              ))}
-
-              {/* Streaming message */}
-              {isStreaming && streamingContent && (
-                <Message from="assistant">
-                  <MessageAvatar>
+            messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={cn(
+                  "group flex gap-4 py-6",
+                  msg.role === "user" ? "flex-row-reverse" : "flex-row"
+                )}
+              >
+                {/* Avatar */}
+                <div
+                  className={cn(
+                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                    msg.role === "user" ? "bg-[#FF6B35]" : "bg-gray-200"
+                  )}
+                >
+                  {msg.role === "user" ? (
+                    <User className="h-4 w-4 text-white" />
+                  ) : (
                     <Bot className="h-4 w-4 text-gray-600" />
-                  </MessageAvatar>
-                  <MessageContent>
-                    <div className="text-sm">
-                      <MarkdownMessage content={streamingContent} />
-                      <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-gray-400" />
-                    </div>
-                  </MessageContent>
-                </Message>
-              )}
-            </>
-          ) : (
-            <WelcomeScreen onSuggestionClick={handleSuggestionClick} />
-          )}
-        </div>
-      </div>
+                  )}
+                </div>
 
-      {/* Bottom Section */}
+                {/* Message */}
+                <div className="flex max-w-[80%] flex-col gap-1">
+                  <Message from={msg.role}>
+                    <MessageContent>
+                      {msg.parts
+                        .filter((part): part is { type: "text"; text: string } =>
+                          part.type === "text"
+                        )
+                        .map((part, i) => (
+                          <MessageResponse key={i}>
+                            {part.text}
+                          </MessageResponse>
+                        ))}
+                    </MessageContent>
+                  </Message>
+                </div>
+              </div>
+            ))
+          ) : (
+            <ConversationEmptyState
+              icon={<MessageSquare className="size-12 text-[#FF6B35]" />}
+              title="Start a conversation"
+              description="Type a message below to begin chatting with Lokul"
+            />
+          )}
+        </ConversationContent>
+        <ConversationScrollButton />
+      </Conversation>
+
+      {/* Input Area */}
       <div className="border-t border-gray-200 bg-white px-4 py-4">
         <div className="mx-auto max-w-3xl">
-          {/* Toolbar with Clear button */}
-          {hasMessages && (
-            <div className="flex items-center justify-end gap-2 border-b border-gray-100 pb-2 mb-2">
-              {/* Regenerate Button */}
-              <button
-                onClick={handleRegenerate}
-                disabled={!lastMessageIsAI || isStreaming}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
-                  "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
-                  "disabled:pointer-events-none disabled:opacity-40"
-                )}
-                aria-label="Regenerate response"
-              >
-                <RefreshCw className="h-4 w-4" />
-                <span>Regenerate</span>
-              </button>
-
-              {/* Clear Chat Button */}
-              <button
-                onClick={handleClear}
-                disabled={isStreaming}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
-                  "text-gray-600 hover:bg-red-50 hover:text-red-600",
-                  "disabled:pointer-events-none disabled:opacity-40"
-                )}
-                aria-label="Clear conversation"
-              >
-                <Trash2 className="h-4 w-4" />
-                <span>Clear chat</span>
-              </button>
-            </div>
-          )}
-
-          {/* Input */}
-          <MessageInput
-            onSend={handleSend}
-            isDisabled={isStreaming}
-            placeholder="Message Lokul..."
-          />
+          <PromptInput
+            onSubmit={handleSubmit}
+          >
+            <PromptInputTextarea
+              placeholder="Message Lokul..."
+              className="min-h-[60px]"
+            />
+            <PromptInputSubmit
+              status={status}
+              onStop={handleStop}
+            />
+          </PromptInput>
 
           {/* Footer text */}
           <p className="mt-2 text-center text-xs text-gray-400">
