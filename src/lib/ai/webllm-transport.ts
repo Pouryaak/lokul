@@ -6,17 +6,8 @@
  * batch-then-stream pattern.
  */
 
-import type {
-  ChatTransport,
-  UIMessage,
-  UIMessageChunk,
-  ChatRequestOptions,
-} from "ai";
-import {
-  startTokenTracking,
-  recordToken,
-  stopTokenTracking,
-} from "@/lib/performance/metrics";
+import type { ChatTransport, UIMessage, UIMessageChunk, ChatRequestOptions } from "ai";
+import { startTokenTracking, recordToken, stopTokenTracking } from "@/lib/performance/metrics";
 import { inferenceManager } from "./inference";
 
 /**
@@ -76,11 +67,18 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
     // Create a new AbortController for this request
     this.abortController = new AbortController();
 
+    let cleanupAbortListener: (() => void) | null = null;
+
     // Link with external abort signal if provided
     if (abortSignal) {
-      abortSignal.addEventListener("abort", () => {
+      const abortHandler = () => {
         this.abortController?.abort();
-      });
+      };
+
+      abortSignal.addEventListener("abort", abortHandler);
+      cleanupAbortListener = () => {
+        abortSignal.removeEventListener("abort", abortHandler);
+      };
     }
 
     // Convert UIMessages to WebLLM format
@@ -93,9 +91,7 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
           // Check if model is loaded, if not we need to initialize it
           if (!inferenceManager.isLoaded()) {
             // For now, throw an error - the caller should ensure model is loaded
-            throw new Error(
-              "Model not initialized. Please load a model before sending messages."
-            );
+            throw new Error("Model not initialized. Please load a model before sending messages.");
           }
 
           // Generate a unique ID for this assistant message
@@ -143,8 +139,7 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
           controller.close();
         } catch (error) {
           // Handle errors by yielding an error chunk
-          const errorMessage =
-            error instanceof Error ? error.message : "Unknown error occurred";
+          const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
 
           controller.enqueue({
             type: "error",
@@ -152,10 +147,15 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
           });
 
           controller.close();
+        } finally {
+          cleanupAbortListener?.();
+          cleanupAbortListener = null;
         }
       },
       cancel: () => {
         // Clean up when the stream is cancelled
+        cleanupAbortListener?.();
+        cleanupAbortListener = null;
         this.abort();
       },
     });
