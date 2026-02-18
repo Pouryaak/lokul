@@ -1,6 +1,7 @@
-import { Activity } from "lucide-react";
+import { Activity, Menu } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { ChatInterface } from "./components/Chat/ChatInterface";
+import { ConversationSidebar } from "./components/Sidebar/ConversationSidebar";
 import { ComparisonSection } from "./components/landing/ComparisonSection";
 import { DemoSection } from "./components/landing/DemoSection";
 import { FAQSection } from "./components/landing/FAQSection";
@@ -19,6 +20,7 @@ import { Button } from "./components/ui/Button";
 import { QUICK_MODEL } from "./lib/ai/models";
 import { useModelStore } from "./store/modelStore";
 import { selectHasCompletedSetup, useSettingsStore } from "./store/settingsStore";
+import { useClearChat } from "./store/chatStore";
 
 /**
  * App states
@@ -42,6 +44,10 @@ export function App() {
   // App state
   const [appState, setAppState] = useState<AppState>("landing");
   const [showPerformancePanel, setShowPerformancePanel] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Clear chat action for new conversation
+  const clearChat = useClearChat();
 
   // Settings store
   const hasCompletedSetup = useSettingsStore(selectHasCompletedSetup);
@@ -98,6 +104,16 @@ export function App() {
     setAppState("chat");
   }, []);
 
+  // Handle new chat
+  const handleNewChat = useCallback(() => {
+    clearChat();
+  }, [clearChat]);
+
+  // Handle toggle sidebar
+  const handleToggleSidebar = useCallback(() => {
+    setSidebarOpen((prev) => !prev);
+  }, []);
+
   // Loading screen
   if (appState === "loading") {
     return (
@@ -120,10 +136,34 @@ export function App() {
   // Chat screen
   if (appState === "chat") {
     return (
-      <div className="flex h-screen flex-col bg-[#FFF8F0]">
+      <div className="flex h-screen overflow-hidden bg-[#FFF8F0]">
+        {/* Sidebar */}
+        <ConversationSidebar
+          isOpen={sidebarOpen}
+          onToggle={handleToggleSidebar}
+          onNewChat={handleNewChat}
+        />
+
         {/* Main Chat Area */}
-        <div className="flex-1 overflow-hidden">
-          <ChatInterface />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          {/* Sidebar Toggle Button - Top Left (when sidebar is closed) */}
+          {!sidebarOpen && (
+            <div className="absolute top-4 left-4 z-30">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleToggleSidebar}
+                aria-label="Open sidebar"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
+          {/* Chat Interface */}
+          <div className="flex-1 overflow-hidden">
+            <ChatInterface />
+          </div>
         </div>
 
         {/* Performance Toggle Button - Top Right */}
