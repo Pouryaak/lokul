@@ -9,9 +9,10 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { ChatInterface } from "@/components/Chat/ChatInterface";
+import { AIChatInterface } from "@/components/Chat/AIChatInterface";
 import { getConversation } from "@/lib/storage/conversations";
 import type { Conversation } from "@/types/index";
+import type { UIMessage } from "@ai-sdk/react";
 
 /**
  * ChatDetailRoute component
@@ -66,13 +67,25 @@ export function ChatDetailRoute() {
     );
   }
 
-  // If we have a conversation, render the chat interface
-  if (conversation) {
-    return <ChatInterface />;
+  if (!conversation) {
+    return null; // Will redirect
   }
 
-  // Fallback (should not reach here due to redirect)
-  return null;
+  // Convert storage messages to UIMessages
+  const initialMessages: UIMessage[] = conversation.messages.map((msg) => ({
+    id: msg.id,
+    role: msg.role,
+    content: msg.content,
+    parts: [{ type: "text" as const, text: msg.content }],
+  }));
+
+  return (
+    <AIChatInterface
+      conversationId={id!}
+      modelId={conversation.model}
+      initialMessages={initialMessages}
+    />
+  );
 }
 
 export default ChatDetailRoute;

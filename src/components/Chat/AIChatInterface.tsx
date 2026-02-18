@@ -8,6 +8,7 @@
 import { useCallback, useEffect } from "react";
 import { User, Bot, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
+import type { UIMessage } from "@ai-sdk/react";
 import {
   Conversation,
   ConversationContent,
@@ -35,6 +36,8 @@ interface AIChatInterfaceProps {
   conversationId: string;
   /** Model ID to use for inference */
   modelId: string;
+  /** Initial messages to populate the chat */
+  initialMessages?: UIMessage[];
   /** Additional CSS classes */
   className?: string;
 }
@@ -59,11 +62,13 @@ interface AIChatInterfaceProps {
 export function AIChatInterface({
   conversationId,
   modelId,
+  initialMessages,
   className,
 }: AIChatInterfaceProps) {
   const { messages, sendMessage, status, error } = useAIChat({
     conversationId,
     modelId,
+    initialMessages,
   });
 
   const hasMessages = messages.length > 0;
