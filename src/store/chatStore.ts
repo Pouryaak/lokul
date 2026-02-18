@@ -433,12 +433,13 @@ export const useStopGeneration = () =>
 /** Get clearChat action */
 export const useClearChat = () => useChatStore((state) => state.clearChat);
 
+/** Get regenerateMessage action */
+export const useRegenerateMessage = () =>
+  useChatStore((state) => state.regenerateMessage);
+
 /** Get loadConversation action */
 export const useLoadConversationAction = () =>
   useChatStore((state) => state.loadConversation);
 
 /** Get setError action */
 export const useSetChatError = () => useChatStore((state) => state.setError);
-
-/** Get regenerateMessage action */
-export const useRegenerateMessage = () => useChatStore((state) => state.regenerateMessage);
