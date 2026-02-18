@@ -9,7 +9,7 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { createConversation } from "@/lib/storage/conversations";
+import { createConversation, saveConversation } from "@/lib/storage/conversations";
 import { useModelStore } from "@/store/modelStore";
 
 /**
@@ -39,6 +39,9 @@ export function ChatRoute() {
 
         // Create new conversation (in memory only - not saved until first message)
         const conversation = createConversation(modelId);
+
+        // Persist immediately so New Chat appears in sidebar like ChatGPT.
+        await saveConversation(conversation);
 
         // Navigate to the new conversation
         // Using replace: false to add to history (user can go back)

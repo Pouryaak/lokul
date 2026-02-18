@@ -1,20 +1,24 @@
 /**
- * Model Engine - industry-level model lifecycle management.
- *
- * Handles:
- * - Request deduplication for model loads
- * - Safe cancellation when switching models
- * - Synchronous state inspection + subscriptions
+ * Model Engine - model lifecycle management.
  */
 
+import { isRetryableError, modelError, toAppError, type AppError } from "@/lib/utils/errors";
 import { inferenceManager, type DownloadProgress } from "./inference";
 import { getModelById, type ModelConfig } from "./models";
+
+const MAX_INIT_RETRIES = 3;
+const BASE_RETRY_DELAY_MS = 300;
+const MAX_RETRY_DELAY_MS = 3000;
+const BREAKER_THRESHOLD = 3;
+const BREAKER_COOLDOWN_MS = 8000;
+
+export type CircuitState = "closed" | "open" | "half_open";
 
 export type ModelLoadingState =
   | { kind: "idle" }
   | { kind: "loading"; modelId: string; abort: () => void }
   | { kind: "ready"; model: ModelConfig }
-  | { kind: "error"; error: string; modelId: string };
+  | { kind: "error"; error: string; modelId: string; circuit: CircuitState };
 
 type StateListener = (state: ModelLoadingState) => void;
 
@@ -25,11 +29,30 @@ interface InFlightLoad {
   token: symbol;
 }
 
+interface CircuitBreaker {
+  state: CircuitState;
+  failureCount: number;
+  openedUntil: number | null;
+}
+
+function jitteredDelay(attempt: number): number {
+  const expDelay = Math.min(MAX_RETRY_DELAY_MS, BASE_RETRY_DELAY_MS * 2 ** attempt);
+  const jitter = Math.floor(Math.random() * 150);
+  return expDelay + jitter;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
+
 export class ModelEngine {
   private state: ModelLoadingState = { kind: "idle" };
   private listeners: Set<StateListener> = new Set();
   private progressCallback: ((progress: DownloadProgress) => void) | null = null;
   private inFlightLoad: InFlightLoad | null = null;
+  private breaker: CircuitBreaker = { state: "closed", failureCount: 0, openedUntil: null };
 
   getState(): ModelLoadingState {
     return this.state;
@@ -68,9 +91,9 @@ export class ModelEngine {
     const model = getModelById(modelId);
 
     if (!model) {
-      const error = `Model not found: ${modelId}`;
-      this.setState({ kind: "error", error, modelId });
-      throw new Error(error);
+      const nextError = `Model not found: ${modelId}`;
+      this.setState({ kind: "error", error: nextError, modelId, circuit: this.breaker.state });
+      throw modelError(nextError);
     }
 
     if (this.state.kind === "ready" && this.state.model.id === modelId) {
@@ -81,6 +104,7 @@ export class ModelEngine {
       return this.inFlightLoad.promise;
     }
 
+    this.assertCircuitAllowsAttempt(modelId);
     this.cancelInFlightLoad();
 
     const loadToken = Symbol(modelId);
@@ -91,12 +115,7 @@ export class ModelEngine {
     this.setState({ kind: "loading", modelId, abort });
 
     const promise = this.runLoad(model, loadToken, abort);
-    this.inFlightLoad = {
-      modelId,
-      promise,
-      abort,
-      token: loadToken,
-    };
+    this.inFlightLoad = { modelId, promise, abort, token: loadToken };
 
     return promise;
   }
@@ -109,10 +128,30 @@ export class ModelEngine {
 
   async retry(): Promise<void> {
     if (this.state.kind !== "error") {
-      throw new Error("No error to retry from");
+      throw modelError("No error to retry from");
     }
 
     return this.loadModel(this.state.modelId);
+  }
+
+  private assertCircuitAllowsAttempt(modelId: string): void {
+    const now = Date.now();
+
+    if (
+      this.breaker.state === "open" &&
+      this.breaker.openedUntil &&
+      now < this.breaker.openedUntil
+    ) {
+      const cooldownLeft = Math.max(0, this.breaker.openedUntil - now);
+      throw modelError(
+        `Model initialization temporarily paused. Retry in ${Math.ceil(cooldownLeft / 1000)}s.`,
+        `Circuit breaker open for model ${modelId}`
+      );
+    }
+
+    if (this.breaker.state === "open") {
+      this.breaker.state = "half_open";
+    }
   }
 
   private cancelInFlightLoad(): void {
@@ -126,14 +165,13 @@ export class ModelEngine {
 
   private async runLoad(model: ModelConfig, token: symbol, abort: () => void): Promise<void> {
     try {
-      await inferenceManager.initialize(model.id, (progress) => {
-        this.progressCallback?.(progress);
-      });
+      await this.initializeWithRetries(model);
 
       if (!this.isTokenActive(token)) {
         return;
       }
 
+      this.markSuccess();
       this.inFlightLoad = null;
       this.setState({ kind: "ready", model });
     } catch (error) {
@@ -141,10 +179,16 @@ export class ModelEngine {
         return;
       }
 
+      const appError = toAppError(error);
+      this.markFailure();
       this.inFlightLoad = null;
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      this.setState({ kind: "error", error: errorMessage, modelId: model.id });
-      throw error;
+      this.setState({
+        kind: "error",
+        error: appError.message,
+        modelId: model.id,
+        circuit: this.breaker.state,
+      });
+      throw appError;
     } finally {
       if (this.inFlightLoad?.token === token) {
         this.inFlightLoad = null;
@@ -154,6 +198,57 @@ export class ModelEngine {
         abort();
       }
     }
+  }
+
+  private async initializeWithRetries(model: ModelConfig): Promise<void> {
+    let lastError: AppError | null = null;
+
+    for (let attempt = 0; attempt <= MAX_INIT_RETRIES; attempt += 1) {
+      const result = await inferenceManager.initializeSafe(model.id, (progress) => {
+        this.progressCallback?.(progress);
+      });
+
+      if (result.kind === "ok") {
+        return;
+      }
+
+      lastError = result.error;
+
+      if (!isRetryableError(result.error) || attempt === MAX_INIT_RETRIES) {
+        break;
+      }
+
+      await sleep(jitteredDelay(attempt));
+    }
+
+    throw lastError ?? modelError("Model initialization failed");
+  }
+
+  private markSuccess(): void {
+    this.breaker = {
+      state: "closed",
+      failureCount: 0,
+      openedUntil: null,
+    };
+  }
+
+  private markFailure(): void {
+    const failureCount = this.breaker.failureCount + 1;
+
+    if (failureCount >= BREAKER_THRESHOLD) {
+      this.breaker = {
+        state: "open",
+        failureCount,
+        openedUntil: Date.now() + BREAKER_COOLDOWN_MS,
+      };
+      return;
+    }
+
+    this.breaker = {
+      state: this.breaker.state === "half_open" ? "open" : this.breaker.state,
+      failureCount,
+      openedUntil: this.breaker.openedUntil,
+    };
   }
 
   private isTokenActive(token: symbol): boolean {

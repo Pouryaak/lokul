@@ -6,6 +6,8 @@ export type ErrorCode =
   | "MODEL_ERROR"
   | "MODEL_NOT_LOADED"
   | "MODEL_DOWNLOAD_FAILED"
+  | "PERSISTENCE_CONFLICT"
+  | "PERSISTENCE_IDEMPOTENT_REPLAY"
   | "NETWORK_ERROR"
   | "UNKNOWN_ERROR"
   | "ABORTED";
@@ -15,6 +17,12 @@ export interface AppError {
   message: string;
   details?: string;
   cause?: unknown;
+}
+
+export interface PersistenceConflictMeta {
+  conversationId: string;
+  expectedVersion: number;
+  actualVersion: number;
 }
 
 export type ValidationError = AppError & { code: "VALIDATION_ERROR" };
@@ -94,6 +102,26 @@ export function modelDownloadFailed(modelId: string, cause?: unknown): ModelErro
   ) as ModelError;
 }
 
+export function persistenceConflictError(
+  details: PersistenceConflictMeta,
+  cause?: unknown
+): AppError {
+  return createError(
+    "PERSISTENCE_CONFLICT",
+    "Conversation changed in another operation. Retrying with latest state.",
+    `Conversation ${details.conversationId} expected v${details.expectedVersion} but found v${details.actualVersion}`,
+    cause
+  );
+}
+
+export function persistenceReplayError(conversationId: string, idempotencyKey: string): AppError {
+  return createError(
+    "PERSISTENCE_IDEMPOTENT_REPLAY",
+    "Duplicate save request ignored.",
+    `Replay suppressed for conversation ${conversationId} and key ${idempotencyKey}`
+  );
+}
+
 export function networkError(message: string, details?: string, cause?: unknown): NetworkError {
   return createError("NETWORK_ERROR", message, details, cause) as NetworkError;
 }
@@ -158,4 +186,18 @@ export function getTechnicalDetails(error: unknown): string | undefined {
   }
 
   return String(error);
+}
+
+const NON_RETRYABLE_CODES: ErrorCode[] = [
+  "VALIDATION_ERROR",
+  "STORAGE_NOT_FOUND",
+  "PERSISTENCE_IDEMPOTENT_REPLAY",
+];
+
+export function isRetryableError(error: unknown): boolean {
+  if (!isAppError(error)) {
+    return true;
+  }
+
+  return !NON_RETRYABLE_CODES.includes(error.code);
 }

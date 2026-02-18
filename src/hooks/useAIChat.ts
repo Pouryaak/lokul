@@ -40,6 +40,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
     conversationId,
     modelId,
     messages: chatHelpers.messages,
+    initialMessageCount: initialMessages?.length ?? 0,
     stopChat: chatHelpers.stop,
   });
 

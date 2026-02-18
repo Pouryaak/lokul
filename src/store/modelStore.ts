@@ -44,10 +44,8 @@ function toLoadingStep(progress: DownloadProgress | null): LoadingStep {
 
 export const useModelStore = create<ModelState>()(
   devtools(
-    (set, get) => {
+    (set) => {
       modelEngine.subscribe((engineState) => {
-        const progress = get().downloadProgress;
-
         if (engineState.kind === "idle") {
           set({
             currentModel: null,
@@ -63,7 +61,7 @@ export const useModelStore = create<ModelState>()(
           set({
             currentModel: null,
             isLoading: true,
-            loadingStep: toLoadingStep(progress),
+            loadingStep: "downloading",
             error: null,
           });
           return;

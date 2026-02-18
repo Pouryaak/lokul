@@ -2,7 +2,8 @@
  * useConversations Hook - Conversation list management
  */
 
-import { useState, useEffect, useCallback, type Dispatch, type SetStateAction } from "react";
+import { useCallback, useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import { useLiveQuery } from "dexie-react-hooks";
 import {
   getAllConversations,
   deleteConversation as deleteConversationStorage,
@@ -20,19 +21,14 @@ interface UseConversationsReturn {
 }
 
 export function useConversations(): UseConversationsReturn {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const liveConversations = useLiveQuery(loadConversationsSnapshot, []);
   const [error, setError] = useState<string | null>(null);
-  const fetchConversations = useConversationLoader(setConversations, setIsLoading, setError);
-  const actions = useConversationActions(fetchConversations, setError);
-
-  useEffect(() => {
-    void fetchConversations();
-  }, [fetchConversations]);
+  const conversations = useMemo(() => liveConversations ?? [], [liveConversations]);
+  const actions = useConversationActions(setError);
 
   return {
     conversations,
-    isLoading,
+    isLoading: liveConversations === undefined,
     error,
     deleteConversation: actions.deleteConversation,
     refreshConversations: actions.refreshConversations,
@@ -40,51 +36,33 @@ export function useConversations(): UseConversationsReturn {
   };
 }
 
-function useConversationLoader(
-  setConversations: Dispatch<SetStateAction<Conversation[]>>,
-  setIsLoading: Dispatch<SetStateAction<boolean>>,
-  setError: Dispatch<SetStateAction<string | null>>
-) {
-  return useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+async function loadConversationsSnapshot(): Promise<Conversation[]> {
+  const allConversations = await getAllConversations();
+  const dedupedConversations = new Map<string, Conversation>();
 
-    try {
-      const allConversations = await getAllConversations();
-      const seenIds = new Map<string, Conversation>();
-
-      for (const conversation of allConversations) {
-        if (seenIds.has(conversation.id) && import.meta.env.DEV) {
-          console.warn(`[useConversations] Duplicate conversation ID found: ${conversation.id}`);
-        }
-        seenIds.set(conversation.id, conversation);
-      }
-
-      setConversations(Array.from(seenIds.values()));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load conversations");
-    } finally {
-      setIsLoading(false);
+  for (const conversation of allConversations) {
+    if (dedupedConversations.has(conversation.id) && import.meta.env.DEV) {
+      console.warn(`[useConversations] Duplicate conversation ID found: ${conversation.id}`);
     }
-  }, [setConversations, setError, setIsLoading]);
+
+    dedupedConversations.set(conversation.id, conversation);
+  }
+
+  return Array.from(dedupedConversations.values());
 }
 
-function useConversationActions(
-  fetchConversations: () => Promise<void>,
-  setError: Dispatch<SetStateAction<string | null>>
-) {
+function useConversationActions(setError: Dispatch<SetStateAction<string | null>>) {
   const runMutation = useCallback(
     async (mutation: () => Promise<void>, fallbackMessage: string): Promise<void> => {
       setError(null);
       try {
         await mutation();
-        await fetchConversations();
       } catch (err) {
         setError(err instanceof Error ? err.message : fallbackMessage);
         throw err;
       }
     },
-    [fetchConversations, setError]
+    [setError]
   );
 
   const deleteConversation = useCallback(
@@ -94,8 +72,8 @@ function useConversationActions(
   );
 
   const refreshConversations = useCallback(async (): Promise<void> => {
-    await fetchConversations();
-  }, [fetchConversations]);
+    setError(null);
+  }, [setError]);
 
   const editTitle = useCallback(
     async (id: string, title: string): Promise<void> =>

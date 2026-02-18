@@ -10,7 +10,8 @@ import { Loader2 } from "lucide-react";
 import type { UIMessage } from "@ai-sdk/react";
 import { useParams } from "react-router-dom";
 import { AIChatInterface } from "@/components/Chat/AIChatInterface";
-import { getConversation } from "@/lib/storage/conversations";
+import { createConversation, getConversation } from "@/lib/storage/conversations";
+import { QUICK_MODEL } from "@/lib/ai/models";
 import { useModelStore } from "@/store/modelStore";
 import type { Conversation } from "@/types/index";
 
@@ -73,7 +74,8 @@ export function ChatDetailRoute() {
         const loadedConversation = await getConversation(id);
 
         if (!loadedConversation) {
-          setConversationError("Conversation not found");
+          const fallbackModelId = currentModel?.id ?? QUICK_MODEL.id;
+          setConversation(createConversation(fallbackModelId, id));
           return;
         }
 
@@ -87,7 +89,7 @@ export function ChatDetailRoute() {
     };
 
     void loadConversation();
-  }, [id]);
+  }, [id, currentModel]);
 
   if (isLoadingConversation) {
     return <LoadingState title="Loading conversation..." />;

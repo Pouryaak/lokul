@@ -45,6 +45,7 @@ interface UseChatPersistenceOptions {
   conversationId: string;
   modelId: string;
   messages: UIMessage[];
+  initialMessageCount: number;
   stopChat: () => void;
 }
 
@@ -188,7 +189,7 @@ async function persistWithRetry(
 }
 
 export function useChatPersistence(options: UseChatPersistenceOptions): UseChatPersistenceResult {
-  const { conversationId, modelId, messages, stopChat } = options;
+  const { conversationId, modelId, messages, initialMessageCount, stopChat } = options;
   const {
     persistenceRecovery,
     setPersistenceRecovery,
@@ -212,6 +213,7 @@ export function useChatPersistence(options: UseChatPersistenceOptions): UseChatP
     messages,
     conversationId,
     modelId,
+    initialMessageCount,
     debouncedPersist,
     abortPersistence,
     setPersistenceRecovery
@@ -328,13 +330,24 @@ function usePersistenceEffects(
   messages: UIMessage[],
   conversationId: string,
   modelId: string,
+  initialMessageCount: number,
   debouncedPersist: ReturnType<typeof useDebouncedPersistence>,
   abortPersistence: (reason: unknown) => void,
   setPersistenceRecovery: Dispatch<SetStateAction<PersistenceRecoveryState | null>>
 ) {
+  const hasProcessedInitialSnapshotRef = useRef(false);
+
   useEffect(() => {
     if (messages.length === 0) {
       return;
+    }
+
+    if (!hasProcessedInitialSnapshotRef.current) {
+      hasProcessedInitialSnapshotRef.current = true;
+
+      if (initialMessageCount > 0) {
+        return;
+      }
     }
 
     debouncedPersist(messages);
@@ -342,9 +355,10 @@ function usePersistenceEffects(
       abortPersistence("route_change");
       debouncedPersist.cancel();
     };
-  }, [abortPersistence, debouncedPersist, messages]);
+  }, [abortPersistence, debouncedPersist, initialMessageCount, messages]);
 
   useEffect(() => {
+    hasProcessedInitialSnapshotRef.current = false;
     setPersistenceRecovery(null);
   }, [conversationId, modelId, setPersistenceRecovery]);
 }
