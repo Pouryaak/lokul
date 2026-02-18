@@ -115,10 +115,22 @@ Plans:
 7. ai-elements Message component renders with proper styling
 8. ai-elements ModelSelector provides model switching UI
 
-**Plans:** TBD (run `/gsd:plan-phase 02.1` to break down)
+**Plans:** 7 plans in 4 waves
 
-Plans:
-- [ ] TBD (run /gsd:plan-phase 02.1 to break down)
+**Wave 1** (parallel):
+- [ ] 02.1-01-PLAN.md — Install AI SDK UI and create WebLLM custom transport
+- [ ] 02.1-02-PLAN.md — Create chat layout with collapsible sidebar
+
+**Wave 2**:
+- [ ] 02.1-03-PLAN.md — Implement React Router with /chat and /chat/[id] routes
+
+**Wave 3** (parallel):
+- [ ] 02.1-04-PLAN.md — Install ai-elements and create AIChatInterface component
+- [ ] 02.1-05-PLAN.md — Add message actions, conversation clearing, welcome screen
+
+**Wave 4** (parallel):
+- [ ] 02.1-06-PLAN.md — Integrate persistence with IndexedDB
+- [ ] 02.1-07-PLAN.md — Integrate performance monitoring and model switching
 
 ### Phase 3: Model Management
 
