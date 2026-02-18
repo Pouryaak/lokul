@@ -87,6 +87,41 @@
   }
 }
 
+/* Code block styling for Streamdown/Shiki */
+@layer base {
+  pre {
+    background-color: #1e1e1e;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+  }
+
+  pre code {
+    background-color: transparent;
+    padding: 0;
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  code {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.875em;
+  }
+
+  .dark pre {
+    background-color: #2d2d2d;
+  }
+
+  .dark code {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

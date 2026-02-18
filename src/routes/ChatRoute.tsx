@@ -1,14 +1,15 @@
 /**
  * ChatRoute Component - Handles /chat (no ID)
  *
- * On mount, creates a new conversation and navigates to /chat/{newId}.
- * This satisfies "auto-create new conversation at /chat".
+ * On mount, creates a new conversation (in memory only) and navigates to /chat/{newId}.
+ * The conversation is NOT saved to storage until the user sends their first message.
+ * This prevents empty conversations from appearing in the sidebar.
  */
 
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { createConversation, saveConversation } from "@/lib/storage/conversations";
+import { createConversation } from "@/lib/storage/conversations";
 import { useModelStore } from "@/store/modelStore";
 
 /**
@@ -30,11 +31,8 @@ export function ChatRoute() {
         // Use current model ID if available, otherwise use default
         const modelId = currentModel?.id || defaultModelId;
 
-        // Create new conversation
+        // Create new conversation (in memory only - not saved until first message)
         const conversation = createConversation(modelId);
-
-        // Save to storage
-        await saveConversation(conversation);
 
         // Navigate to the new conversation
         // Using replace: false to add to history (user can go back)
