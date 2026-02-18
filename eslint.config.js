@@ -57,5 +57,20 @@ export default tseslint.config(
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
     },
+  },
+  {
+    files: ["src/{hooks,lib/ai,routes,store}/**/*.{ts,tsx}"],
+    ignores: [
+      // Legacy migration surfaces with pending decomposition tracked in stabilization deferred items.
+      "src/routes/ChatDetailRoute.tsx",
+      "src/store/modelStore.ts",
+      "src/store/settingsStore.ts",
+    ],
+    rules: {
+      "max-lines-per-function": [
+        "error",
+        { max: 50, skipBlankLines: true, skipComments: true, IIFEs: true },
+      ],
+    },
   }
 );
