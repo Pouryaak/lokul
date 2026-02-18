@@ -2,7 +2,7 @@
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
 **Status:** Milestone complete
-**Updated:** 2026-02-18 (16:53 UTC)
+**Updated:** 2026-02-18 (16:59 UTC)
 
 ---
 
@@ -27,12 +27,12 @@
 ## Current Position
 
 **Phase:** Phase 2.2 - Stabilization & Refactor
-**Plan:** 02.2-05 next (3/6 plans complete)
+**Plan:** 02.2-06 next (4/6 plans complete)
 **Status:** IN PROGRESS - executing stabilization plans
 
 **Progress:**
 
-[█████████░] 91%
+[██████████] 100%
 [=====>..............] 25% (Phase 2 in progress)
 ```
 
@@ -76,6 +76,8 @@
 | Phase 02.2 P02 | 3 min | 4 tasks | 8 files |
 | Phase 02.2 P03 | 2 min | 3 tasks | 5 files |
 | Phase 02.2 P04 | 4 min | 4 tasks | 4 files |
+| Phase 02.2 P06 | 2 min | 5 tasks | 4 files |
+| Phase 02.2 P05 | 3 min | 6 tasks | 5 files |
 
 ### Plan Execution Metrics
 
@@ -155,6 +157,13 @@
 - [Phase 02.2]: Always remove external abort listeners in both stream finally and cancel paths.
 - [Phase 02.2]: Use a singleton ModelEngine to deduplicate concurrent model load requests
 - [Phase 02.2]: Trigger default model initialization in App when entering /chat routes without a ready model
+- [Phase 02.2]: Wrap the full Routes tree with one shared ErrorBoundary for consistent crash recovery UX.
+- [Phase 02.2]: Keep diagnostics in development only while preserving user-facing recovery actions in production.
+- [Phase 02.2]: Re-throw inference failures with contextual messages to standardize downstream error handling.
+- [Phase 02.2]: Guard /chat conversation creation with useRef to prevent duplicate creation under rerenders/StrictMode
+- [Phase 02.2]: Deduplicate loaded conversations with a Map keyed by ID before rendering sidebar state
+- [Phase 02.2]: Handle conversation selection through route navigation only and let ChatDetailRoute own hydration
+- [Phase 02.2]: Use useAIChat stop() directly for stop-generation instead of local placeholder behavior
 
 ### Open Questions
 
@@ -188,9 +197,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 02.2-04 - added model engine deduplication, app route auto-load, and chat detail model loading guards
-**Next Action:** Execute 02.2-05 plan to continue stabilization work
-**Context Hash:** stabilization-phase-02.2-04-complete-20260218
+**Last Action:** Completed 02.2-05 - fixed ghost conversation creation loop, sidebar duplicates, and stop-generation wiring
+**Next Action:** Execute 02.2-06 plan to finish stabilization phase
+**Context Hash:** stabilization-phase-02.2-05-complete-20260218
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 
