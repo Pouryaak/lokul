@@ -5,7 +5,7 @@
  */
 
 import { Button } from "@/components/ui/Button";
-import { FlickeringGrid } from "@/components/ui/flickering-grid";
+import { PerspectiveGrid } from "@/components/ui/perspective-grid";
 import { ChevronDown, Github, Sparkles } from "lucide-react";
 
 /**
@@ -29,14 +29,12 @@ export function HeroSection({ onStart }: HeroSectionProps) {
 
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center bg-[#FFF8F0] px-4 py-20">
-      {/* Flickering grid background */}
-      <FlickeringGrid
-        className="absolute inset-0 z-0"
-        color="rgb(255, 107, 53)"
-        squareSize={8}
-        gridGap={6}
-        flickerChance={0.3}
-        maxOpacity={0.15}
+      {/* Perspective grid background */}
+      <PerspectiveGrid
+        className="absolute inset-0 z-0 bg-[#FFF8F0]"
+        backgroundColor="#FFF8F0"
+        gridSize={35}
+        fadeRadius={75}
       />
 
       {/* Main content */}

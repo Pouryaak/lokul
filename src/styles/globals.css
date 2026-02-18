@@ -196,3 +196,17 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+
+/* Perspective Grid Tile Hover Effects - Primary Orange Color */
+.tile:nth-child(4n):hover { background-color: rgba(255, 107, 53, 0.9); }
+.tile:nth-child(4n + 1):hover { background-color: rgba(255, 107, 53, 0.7); }
+.tile:nth-child(4n + 2):hover { background-color: rgba(255, 107, 53, 0.8); }
+.tile:nth-child(4n + 3):hover { background-color: rgba(255, 107, 53, 0.6); }
+.tile:nth-child(7n):hover { background-color: rgba(255, 107, 53, 0.75); }
+.tile:nth-child(7n + 3):hover { background-color: rgba(255, 107, 53, 0.85); }
+.tile:nth-child(7n + 5):hover { background-color: rgba(255, 107, 53, 0.65); }
+.tile:nth-child(7n + 6):hover { background-color: rgba(255, 107, 53, 0.95); }
+.tile:nth-child(11n + 1):hover { background-color: rgba(255, 107, 53, 0.8); }
+.tile:nth-child(11n + 4):hover { background-color: rgba(255, 107, 53, 0.7); }
+.tile:nth-child(11n + 7):hover { background-color: rgba(255, 107, 53, 0.9); }
+.tile:nth-child(11n + 10):hover { background-color: rgba(255, 107, 53, 0.6); }

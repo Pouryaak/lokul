@@ -8,6 +8,7 @@
 import { useState, useCallback } from "react";
 import { User, Bot, Copy, Check, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MarkdownMessage } from "./MarkdownMessage";
 import type { Message } from "@/types/index";
 
 /**
@@ -101,12 +102,23 @@ export function MessageBubble({
               : "border border-gray-200 bg-white text-gray-900"
           )}
         >
-          <p className="whitespace-pre-wrap text-sm leading-relaxed">
-            {message.content}
-            {isStreaming && (
-              <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-current" />
-            )}
-          </p>
+          {isUser ? (
+            // User messages - plain text
+            <p className="whitespace-pre-wrap text-sm leading-relaxed">
+              {message.content}
+              {isStreaming && (
+                <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-current" />
+              )}
+            </p>
+          ) : (
+            // AI messages - markdown rendering
+            <div className="text-sm">
+              <MarkdownMessage content={message.content} />
+              {isStreaming && (
+                <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-gray-400" />
+              )}
+            </div>
+          )}
         </div>
 
         {/* Actions Row */}
