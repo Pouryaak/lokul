@@ -77,60 +77,16 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
     /** Signal to abort the request if needed */
     abortSignal: AbortSignal | undefined;
   } & ChatRequestOptions): Promise<ReadableStream<UIMessageChunk>> {
-    // Create a new AbortController for this request
     const requestAbortController = new AbortController();
     this.abortController = requestAbortController;
-
-    let cleanupAbortListener: (() => void) | null = null;
-
-    // Link with external abort signal if provided
-    if (abortSignal) {
-      const abortHandler = () => {
-        this.abortController?.abort();
-      };
-
-      abortSignal.addEventListener("abort", abortHandler);
-      cleanupAbortListener = () => {
-        abortSignal.removeEventListener("abort", abortHandler);
-      };
-    }
-
-    // Convert UIMessages to WebLLM format
+    const cleanupAbortListener = this.linkAbortSignal(abortSignal, requestAbortController);
     const webLLMMessages = this.convertToWebLLMMessages(messages);
-
     const cancelReason = getCancelReason(abortSignal?.reason);
-
-    const stream = new ReadableStream<UIMessageChunk>({
-      start: async (controller) => {
-        try {
-          const result = await this.streamResponse(controller, webLLMMessages, {
-            signal: requestAbortController.signal,
-            cancelReason,
-          });
-
-          if (result.kind === "err") {
-            controller.enqueue({
-              type: "error",
-              errorText: getUserMessage(result.error),
-            });
-          }
-
-          controller.close();
-        } finally {
-          stopTokenTracking();
-          cleanupAbortListener?.();
-          cleanupAbortListener = null;
-        }
-      },
-      cancel: () => {
-        // Clean up when the stream is cancelled
-        cleanupAbortListener?.();
-        cleanupAbortListener = null;
-        this.abort();
-      },
+    return this.createChunkStream(webLLMMessages, {
+      requestAbortController,
+      cancelReason,
+      cleanupAbortListener,
     });
-
-    return stream;
   }
 
   private async streamResponse(
@@ -196,6 +152,57 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
     } catch (error) {
       return err(toAppError(error));
     }
+  }
+
+  private linkAbortSignal(
+    abortSignal: AbortSignal | undefined,
+    requestAbortController: AbortController
+  ): () => void {
+    if (!abortSignal) {
+      return () => undefined;
+    }
+
+    const abortHandler = () => {
+      requestAbortController.abort();
+    };
+
+    abortSignal.addEventListener("abort", abortHandler);
+    return () => {
+      abortSignal.removeEventListener("abort", abortHandler);
+    };
+  }
+
+  private createChunkStream(
+    webLLMMessages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
+    options: {
+      requestAbortController: AbortController;
+      cancelReason: CancellationReason;
+      cleanupAbortListener: () => void;
+    }
+  ): ReadableStream<UIMessageChunk> {
+    return new ReadableStream<UIMessageChunk>({
+      start: async (controller) => {
+        try {
+          const result = await this.streamResponse(controller, webLLMMessages, {
+            signal: options.requestAbortController.signal,
+            cancelReason: options.cancelReason,
+          });
+
+          if (result.kind === "err") {
+            controller.enqueue({ type: "error", errorText: getUserMessage(result.error) });
+          }
+
+          controller.close();
+        } finally {
+          stopTokenTracking();
+          options.cleanupAbortListener();
+        }
+      },
+      cancel: () => {
+        options.cleanupAbortListener();
+        this.abort();
+      },
+    });
   }
 
   /**
