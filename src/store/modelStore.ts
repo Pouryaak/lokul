@@ -110,10 +110,12 @@ export const useModelStore = create<ModelState>()(
             downloadProgress: null,
           });
         } catch (err) {
-          const errorMessage = err instanceof Error ? err.message : "Failed to load model";
+          const errorName = err instanceof Error ? err.name : "Error";
+          const errorMessage = err instanceof Error ? err.message : "Unknown error";
+          const fullErrorMessage = `Failed to load model '${modelId}': [${errorName}] ${errorMessage}`;
 
           set({
-            error: errorMessage,
+            error: fullErrorMessage,
             isLoading: false,
             loadingStep: "error",
             downloadProgress: null,
