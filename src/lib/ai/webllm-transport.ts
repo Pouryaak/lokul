@@ -189,6 +189,10 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
    * Calls inferenceManager.abort() and aborts the internal AbortController.
    */
   abort(): void {
+    if (import.meta.env.DEV) {
+      console.info("[WebLLMTransport] Abort requested");
+    }
+
     // Abort the inference manager
     inferenceManager.abort();
 
