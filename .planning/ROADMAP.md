@@ -9,7 +9,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Core Infrastructure** - Foundation for local AI inference with Web Workers, GPU detection, and offline capability
+- [x] **Phase 1: Core Infrastructure** - Foundation for local AI inference with Web Workers, GPU detection, and offline capability
 - [ ] **Phase 2: Chat Interface** - Streaming chat with markdown, conversation storage, and basic performance monitoring
 - [ ] **Phase 3: Model Management** - Three-tier model system (Quick/Smart/Genius) with download manager
 - [ ] **Phase 4: Memory System** - Three-tier memory (Core Facts + Daily Context + Recent Messages) with auto-compaction
@@ -21,8 +21,8 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Core Infrastructure | 0/4 | Not started | - |
-| 2. Chat Interface | 0/4 | Not started | - |
+| 1. Core Infrastructure | 4/4 | Complete | 2026-02-17 |
+| 2. Chat Interface | 0/4 | Planned | - |
 | 3. Model Management | 0/3 | Not started | - |
 | 4. Memory System | 0/3 | Not started | - |
 | 5. Polish & PWA | 0/3 | Not started | - |
@@ -52,10 +52,10 @@
 **Plans:** 4 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Type definitions, Dexie storage layer, settings persistence, WebGPU detection
-- [ ] 01-02-PLAN.md — Web Worker for AI inference, model configurations, inference manager, model store
-- [ ] 01-03-PLAN.md — First-run experience: landing page, WebGPU errors, loading progress UI
-- [ ] 01-04-PLAN.md — PWA/Service Worker, offline indicator, performance panel, health monitoring
+- [x] 01-01-PLAN.md — Type definitions, Dexie storage layer, settings persistence, WebGPU detection
+- [x] 01-02-PLAN.md — Web Worker for AI inference, model configurations, inference manager, model store
+- [x] 01-03-PLAN.md — First-run experience: landing page, WebGPU errors, loading progress UI
+- [x] 01-04-PLAN.md — PWA/Service Worker, offline indicator, performance panel, health monitoring
 
 ---
 
@@ -82,7 +82,15 @@ Plans:
 11. Warning appears if memory usage exceeds 75%
 12. Suggestion to switch to Quick Mode shown if performance degrades
 
-**Plans:** TBD
+**Plans:** 4 plans in 2 waves
+
+**Wave 1** (parallel):
+- [ ] 02-01-PLAN.md — Chat state management (chatStore, conversation storage, useChat/useConversations hooks)
+- [ ] 02-02-PLAN.md — Chat UI components (MessageInput, MessageBubble, MessageList, ChatToolbar, WelcomeScreen)
+
+**Wave 2** (depends on Wave 1):
+- [ ] 02-03-PLAN.md — Markdown rendering and ChatInterface assembly
+- [ ] 02-04-PLAN.md — Conversation sidebar with history management and performance monitoring
 
 ---
 
@@ -221,4 +229,4 @@ Phases needing deeper research during planning:
 
 ---
 
-*Last updated: 2026-02-17*
+*Last updated: 2026-02-18*
