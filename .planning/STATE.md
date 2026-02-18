@@ -2,7 +2,7 @@
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
 **Status:** Milestone complete
-**Updated:** 2026-02-18 (16:44 UTC)
+**Updated:** 2026-02-18 (16:53 UTC)
 
 ---
 
@@ -27,12 +27,12 @@
 ## Current Position
 
 **Phase:** Phase 2.2 - Stabilization & Refactor
-**Plan:** 02.2-03 next (2/6 plans complete)
+**Plan:** 02.2-04 next (3/6 plans complete)
 **Status:** IN PROGRESS - executing stabilization plans
 
 **Progress:**
 
-[████████░░] 82%
+[█████████░] 91%
 [=====>..............] 25% (Phase 2 in progress)
 ```
 
@@ -74,6 +74,8 @@
 | Phase 02.1-ai-sdk-ui-migration-with-routing P02.1-06 | 3m | 3 tasks | 3 files |
 | Phase 02.2 P01 | 1 min | 3 tasks | 4 files |
 | Phase 02.2 P02 | 3 min | 4 tasks | 8 files |
+| Phase 02.2 P03 | 2 min | 3 tasks | 5 files |
+| Phase 02.2 P04 | 4 min | 4 tasks | 4 files |
 
 ### Plan Execution Metrics
 
@@ -148,6 +150,11 @@
 - [Phase 02.2]: Implemented dependency-free Result and AppError infrastructure to standardize explicit failure handling
 - [Phase 02.2]: Use route params (/chat/:id) as active conversation state instead of chatStore selectors
 - [Phase 02.2]: Keep useConversations focused on IndexedDB list operations only, removing imperative chat load/clear concerns
+- [Phase 02.2]: Use shared debounce utility in useAIChat instead of inline timeout management.
+- [Phase 02.2]: Preserve route conversation IDs by creating missing conversations with explicit id.
+- [Phase 02.2]: Always remove external abort listeners in both stream finally and cancel paths.
+- [Phase 02.2]: Use a singleton ModelEngine to deduplicate concurrent model load requests
+- [Phase 02.2]: Trigger default model initialization in App when entering /chat routes without a ready model
 
 ### Open Questions
 
@@ -181,9 +188,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 02.2-02 - removed legacy chatStore/useChat and superseded chat components; AI SDK UI is now single chat-state source
-**Next Action:** Execute 02.2-03 plan to continue stabilization work
-**Context Hash:** stabilization-phase-02.2-02-complete-20260218
+**Last Action:** Completed 02.2-03 - added debounced persistence and transport abort listener cleanup
+**Next Action:** Execute 02.2-04 plan to continue stabilization work
+**Context Hash:** stabilization-phase-02.2-03-complete-20260218
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 
