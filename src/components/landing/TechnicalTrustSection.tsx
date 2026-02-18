@@ -1,133 +1,310 @@
 /**
- * TechnicalTrustSection Component - Dark section with proof points
+ * TechnicalTrustSection Component - Premium privacy verification experience
  *
- * Shows technical proof of privacy: open source, zero network, architecture.
+ * Features interactive verification steps with animated reveals
+ * and immersive scroll effects.
  */
 
-import { GitBranch, WifiOff, Cpu, Check } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Shield, Lock, Eye, FileCode, Sparkles, CheckCircle2, ChevronRight } from "lucide-react";
 
 /**
- * Proof point data structure
+ * Verification step data
  */
-interface ProofPoint {
-  icon: React.ReactNode;
+interface VerificationStep {
+  id: string;
+  icon: typeof Shield;
   title: string;
-  points: string[];
-  buttonText: string;
-  buttonAction: () => void;
+  status: string;
+  details: string[];
 }
 
-/**
- * Proof points data
- */
-const proofPoints: ProofPoint[] = [
+const verificationSteps: VerificationStep[] = [
   {
-    icon: <GitBranch className="h-8 w-8 text-[#FF6B35]" />,
-    title: "All Code is Public",
-    points: [
-      "Every line of code is on GitHub.",
-      "Audit it yourself. Fork it. Modify it.",
-      "No hidden tracking. No secret servers.",
-      "What you see is what you get.",
+    id: "opensource",
+    icon: FileCode,
+    title: "Open Source Verified",
+    status: "Auditable",
+    details: [
+      "100% of code available on GitHub",
+      "MIT License - fork and modify freely",
+      "No hidden tracking mechanisms",
+      "Community reviewed and vetted",
     ],
-    buttonText: "View Source Code →",
-    buttonAction: () => window.open("https://github.com/lokul/lokul", "_blank"),
   },
   {
-    icon: <WifiOff className="h-8 w-8 text-[#FF6B35]" />,
-    title: "Test It Yourself",
-    points: [
-      "1. Open browser dev tools",
-      "2. Go to Network tab",
-      "3. Use Lokul",
-      "4. Watch: Zero requests sent",
-      "Your browser doesn't lie. If data was being sent, you'd see it.",
+    id: "network",
+    icon: Eye,
+    title: "Zero Network Activity",
+    status: "Air-gapped",
+    details: [
+      "No data transmission during chat",
+      "DevTools Network tab shows zero requests",
+      "Works offline completely",
+      "Your ISP sees nothing",
     ],
-    buttonText: "See How to Test →",
-    buttonAction: () => {
-      const faqSection = document.getElementById("faq");
-      if (faqSection) {
-        faqSection.scrollIntoView({ behavior: "smooth" });
-      }
-    },
   },
   {
-    icon: <Cpu className="h-8 w-8 text-[#FF6B35]" />,
-    title: "Can't Send Data (By Design)",
-    points: [
-      "There's no server to send data to.",
-      "Everything runs client-side.",
-      "WebGPU processes AI in your browser.",
-      "IndexedDB stores conversations locally.",
-      "It's not about trust. It's about math.",
+    id: "architecture",
+    icon: Lock,
+    title: "Privacy by Architecture",
+    status: "Bulletproof",
+    details: [
+      "WebGPU processes locally in browser",
+      "IndexedDB stores data on device only",
+      "No server infrastructure exists",
+      "Mathematically impossible to leak",
     ],
-    buttonText: "Read Technical Docs →",
-    buttonAction: () => window.open("https://docs.lokul.app", "_blank"),
   },
 ];
 
 /**
- * Technical Trust section with dark theme and proof points
+ * Animated verification row
  */
-export function TechnicalTrustSection() {
+function VerificationRow({
+  step,
+  index,
+  isVisible,
+  isActive,
+  onHover,
+}: {
+  step: VerificationStep;
+  index: number;
+  isVisible: boolean;
+  isActive: boolean;
+  onHover: () => void;
+}) {
+  const Icon = step.icon;
+
   return (
-    <section className="bg-[#1A1A1A] py-20 md:py-32">
-      <div className="mx-auto max-w-[860px] px-4">
-        {/* Header */}
-        <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
-            "How Do I Know It's Really Private?"
-          </h2>
-          <p className="text-xl text-gray-400">Fair question. Here's the proof:</p>
+    <div
+      className={`group relative transition-all duration-700 ${
+        isVisible ? "translate-x-0 opacity-100" : "translate-x-8 opacity-0"
+      }`}
+      style={{ transitionDelay: `${index * 200}ms` }}
+      onMouseEnter={onHover}
+    >
+      <div
+        className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-500 ${
+          isActive
+            ? "border-[#FF6B35]/50 bg-[#FF6B35]/5"
+            : "border-gray-800 bg-[#1A1A1A] hover:border-gray-700"
+        }`}
+      >
+        {/* Scanning line animation */}
+        <div
+          className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#FF6B35] to-transparent transition-opacity duration-500 ${
+            isActive ? "opacity-100" : "opacity-0"
+          }`}
+        />
+
+        <div className="flex items-center gap-6 p-6 md:p-8">
+          {/* Icon */}
+          <div
+            className={`flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-500 ${
+              isActive
+                ? "bg-[#FF6B35]/20 text-[#FF6B35]"
+                : "bg-gray-800 text-gray-500 group-hover:text-[#FF6B35]"
+            }`}
+          >
+            <Icon className="h-8 w-8" />
+          </div>
+
+          {/* Content */}
+          <div className="flex-1">
+            <div className="mb-2 flex items-center gap-3">
+              <h3 className="text-xl font-bold text-white">{step.title}</h3>
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-semibold transition-all duration-500 ${
+                  isActive
+                    ? "bg-[#FF6B35]/20 text-[#FF6B35]"
+                    : "bg-gray-800 text-gray-500"
+                }`}
+              >
+                {step.status}
+              </span>
+            </div>
+
+            {/* Expandable details */}
+            <div
+              className={`grid transition-all duration-500 ${
+                isActive ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              }`}
+            >
+              <div className="overflow-hidden">
+                <div className="mt-4 grid gap-2 md:grid-cols-2">
+                  {step.details.map((detail, dIndex) => (
+                    <div
+                      key={dIndex}
+                      className="flex items-center gap-2 text-sm text-gray-400"
+                    >
+                      <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-[#FF6B35]" />
+                      {detail}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Arrow indicator */}
+          <ChevronRight
+            className={`h-6 w-6 flex-shrink-0 transition-all duration-500 ${
+              isActive
+                ? "translate-x-1 rotate-90 text-[#FF6B35]"
+                : "text-gray-600 group-hover:text-gray-400"
+            }`}
+          />
         </div>
 
-        {/* Proof Points Grid */}
-        <div className="mb-16 grid grid-cols-1 gap-8 md:grid-cols-3">
-          {proofPoints.map((proof, index) => (
-            <div
-              key={index}
-              className="rounded-xl border border-gray-700 bg-[#262626] p-8 transition-colors hover:border-[#FF6B35]/50"
-            >
-              {/* Icon */}
-              <div className="mb-4">{proof.icon}</div>
+        {/* Progress bar at bottom */}
+        <div className="h-1 bg-gray-800">
+          <div
+            className={`h-full bg-gradient-to-r from-[#FF6B35] to-[#FFB84D] transition-all duration-700 ${
+              isActive ? "w-full" : "w-0"
+            }`}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
-              {/* Title */}
-              <h3 className="mb-4 flex items-center gap-2 text-xl font-bold text-white">
-                <Check className="h-5 w-5 text-green-500" />
-                {proof.title}
-              </h3>
+/**
+ * Technical Trust section with security audit aesthetic
+ */
+export function TechnicalTrustSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+  const [isScanning, setIsScanning] = useState(false);
 
-              {/* Points */}
-              <ul className="mb-6 space-y-2">
-                {proof.points.map((point, pIndex) => (
-                  <li key={pIndex} className="text-sm text-gray-400">
-                    {point}
-                  </li>
-                ))}
-              </ul>
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          // Auto-scan through steps
+          setIsScanning(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
 
-              {/* Button */}
-              <button
-                onClick={proof.buttonAction}
-                className="cursor-pointer rounded-lg border border-[#FF6B35] px-4 py-2 text-sm text-white transition-colors hover:bg-[#FF6B35]/10"
-              >
-                {proof.buttonText}
-              </button>
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-scan effect
+  useEffect(() => {
+    if (!isScanning || !isVisible) return;
+
+    const interval = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % verificationSteps.length);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [isScanning, isVisible]);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden bg-[#1A1A1A] py-16 md:py-24"
+    >
+      {/* Warm gradient glows */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-0 top-0 h-[500px] w-[500px] rounded-full bg-[#FF6B35]/10 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-[#FFB84D]/5 blur-[120px]" />
+      </div>
+
+      <div className="relative mx-auto max-w-[1000px] px-4">
+        {/* Header */}
+        <div
+          className={`mb-12 transition-all duration-700 md:mb-16 ${
+            isVisible
+              ? "translate-y-0 opacity-100"
+              : "translate-y-8 opacity-0"
+          }`}
+        >
+          {/* Badge */}
+          <div className="mb-6 flex justify-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#FF6B35]/10 px-4 py-2">
+              <Shield className="h-4 w-4 text-[#FF6B35]" />
+              <span className="text-sm font-medium text-[#FF6B35]">
+                Verified & Auditable
+              </span>
             </div>
+          </div>
+
+          {/* Title */}
+          <div className="text-center">
+            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl lg:text-5xl">
+              How Do I Know It&apos;s{" "}
+              <span className="relative">
+                <span className="relative z-10">Really</span>
+                <span className="absolute bottom-1 left-0 right-0 h-3 bg-[#FF6B35]/30" />
+              </span>{" "}
+              Private?
+            </h2>
+            <p className="text-lg text-gray-400">
+              Three verifiable proofs that your data stays yours.
+            </p>
+          </div>
+        </div>
+
+        {/* Verification Steps */}
+        <div className="mb-12 space-y-4">
+          {verificationSteps.map((step, index) => (
+            <VerificationRow
+              key={step.id}
+              step={step}
+              index={index}
+              isVisible={isVisible}
+              isActive={activeStep === index}
+              onHover={() => {
+                setIsScanning(false);
+                setActiveStep(index);
+              }}
+            />
           ))}
         </div>
 
-        {/* Bottom Section */}
-        <div className="border-t border-gray-700 pt-12 text-center">
-          <p className="mb-6 text-gray-400">
-            Still skeptical? Good. That's the right attitude for privacy.
-          </p>
-          <button
-            onClick={() => window.open("https://discord.gg/lokul", "_blank")}
-            className="cursor-pointer rounded-lg border border-[#FF6B35] px-6 py-3 text-[#FF6B35] transition-colors hover:bg-[#FF6B35]/10"
-          >
-            Join Our Discord - Ask us anything
-          </button>
+        {/* Trust badge */}
+        <div
+          className={`text-center transition-all duration-700 ${
+            isVisible
+              ? "translate-y-0 opacity-100"
+              : "translate-y-8 opacity-0"
+          }`}
+          style={{ transitionDelay: "800ms" }}
+        >
+          <div className="inline-flex flex-col items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FF6B35]/10">
+                <Sparkles className="h-6 w-6 text-[#FF6B35]" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-bold text-white">
+                  Still skeptical? Good.
+                </p>
+                <p className="text-xs text-gray-500">
+                  That&apos;s the right attitude for privacy.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() =>
+                window.open("https://github.com/pouryaak/lokul", "_blank")
+              }
+              className="group flex cursor-pointer items-center gap-2 rounded-xl bg-white px-8 py-4 text-sm font-semibold text-[#1A1A1A] transition-all hover:bg-[#FF6B35] hover:text-white"
+            >
+              Audit the Code Yourself
+              <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </button>
+          </div>
         </div>
       </div>
     </section>

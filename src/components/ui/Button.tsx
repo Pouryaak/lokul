@@ -17,6 +17,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        default:
+          "bg-primary text-primary-foreground hover:bg-primary/90",
         primary:
           "bg-gradient-to-r from-[#FF6B35] to-[#FFB84D] text-white shadow-[0_0_30px_rgba(255,107,53,0.4)] hover:shadow-[0_0_40px_rgba(255,107,53,0.6)] hover:-translate-y-0.5",
         cta:
@@ -28,18 +30,23 @@ const buttonVariants = cva(
         ghost: "bg-transparent text-[#FF6B35] hover:bg-[#FFF8F0] hover:-translate-y-0.5",
         white:
           "bg-white text-[#FF6B35] shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1",
+        destructive:
+          "bg-destructive text-white hover:bg-destructive/90",
+        link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
+        default: "h-9 px-4 py-2 text-sm rounded-lg",
         sm: "h-9 px-4 text-sm rounded-lg",
         md: "h-11 px-6 text-base rounded-xl",
         lg: "h-14 px-8 text-lg rounded-xl",
         xl: "h-16 px-12 text-lg rounded-xl",
         "2xl": "h-20 px-16 text-2xl font-bold rounded-2xl",
+        icon: "size-9 rounded-lg",
       },
     },
     defaultVariants: {
-      variant: "primary",
-      size: "md",
+      variant: "default",
+      size: "default",
     },
   }
 );
@@ -112,3 +119,5 @@ export function Button({
     </button>
   );
 }
+
+export { buttonVariants };

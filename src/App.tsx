@@ -9,8 +9,8 @@ import { HeroSection } from "./components/landing/HeroSection";
 import { HowItWorksSection } from "./components/landing/HowItWorksSection";
 import { ProblemSolutionSection } from "./components/landing/ProblemSolutionSection";
 import { TechnicalTrustSection } from "./components/landing/TechnicalTrustSection";
-import { TestimonialsSection } from "./components/landing/TestimonialsSection";
-import { UseCasesSection } from "./components/landing/UseCasesSection";
+// import { TestimonialsSection } from "./components/landing/TestimonialsSection";
+import { ModelsSection } from "./components/landing/ModelsSection";
 import { LoadingScreen } from "./components/onboarding/LoadingScreen";
 import { PerformancePanel } from "./components/performance/PerformancePanel";
 import { StatusIndicator } from "./components/performance/StatusIndicator";
@@ -171,13 +171,14 @@ export function App() {
       {/* Landing Page Sections */}
       <HeroSection onStart={handleStart} />
       <ProblemSolutionSection />
+      <ModelsSection />
       <DemoSection />
       <HowItWorksSection />
       <ComparisonSection />
-      <UseCasesSection />
       <TechnicalTrustSection />
       <FAQSection />
-      <TestimonialsSection />
+      {/* TestimonialsSection hidden for now - will add back later */}
+      {/* <TestimonialsSection /> */}
       <FinalCTASection onStart={handleStart} />
       <FooterSection />
     </div>

@@ -1,11 +1,12 @@
 /**
- * FAQSection Component - Accordion FAQ with 6 questions
+ * FAQSection Component - Premium interactive FAQ with stunning design
  *
- * Expandable accordion items for common questions.
+ * Features animated accordion, scroll-triggered reveals, and premium CTAs.
  */
 
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronDown, HelpCircle, MessageCircle, Mail, BookOpen } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 /**
  * FAQ item data structure
@@ -156,95 +157,243 @@ const faqItems: FAQItem[] = [
 ];
 
 /**
- * FAQ Accordion Item component
+ * FAQ Accordion Item component with premium animations
  */
 interface AccordionItemProps {
   item: FAQItem;
   isOpen: boolean;
   onToggle: () => void;
+  index: number;
+  isVisible: boolean;
 }
 
-function AccordionItem({ item, isOpen, onToggle }: AccordionItemProps) {
+function AccordionItem({ item, isOpen, onToggle, index, isVisible }: AccordionItemProps) {
   return (
-    <div className="border-b border-gray-200 last:border-b-0">
-      <button
-        onClick={onToggle}
-        className="-mx-4 flex w-full cursor-pointer items-center justify-between px-4 py-6 text-left transition-colors hover:bg-gray-50"
-        aria-expanded={isOpen}
-      >
-        <span className="flex items-center gap-3 text-lg font-medium text-[#1A1A1A]">
-          <span className="text-[#FF6B35]">❓</span>
-          {item.question}
-        </span>
-        <ChevronDown
-          className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        />
-      </button>
+    <div
+      className={`transition-all duration-700 ${
+        isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+      }`}
+      style={{ transitionDelay: `${index * 100}ms` }}
+    >
       <div
-        className={`overflow-hidden transition-all duration-200 ${
-          isOpen ? "max-h-[1000px] pb-6" : "max-h-0"
+        className={`group rounded-2xl border-2 transition-all duration-300 ${
+          isOpen
+            ? "border-[#FF6B35]/30 bg-white shadow-[0_8px_30px_rgba(255,107,53,0.12)]"
+            : "border-transparent bg-white/60 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:border-[#FF6B35]/20 hover:bg-white hover:shadow-[0_8px_30px_rgba(255,107,53,0.08)]"
         }`}
       >
-        <div className="pr-4 pl-8">{item.content}</div>
+        <button
+          onClick={onToggle}
+          className="flex w-full cursor-pointer items-center justify-between p-6 text-left"
+          aria-expanded={isOpen}
+        >
+          <span className="flex items-center gap-4">
+            <div
+              className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
+                isOpen
+                  ? "bg-[#FF6B35] text-white shadow-[0_4px_15px_rgba(255,107,53,0.4)]"
+                  : "bg-[#FF6B35]/10 text-[#FF6B35] group-hover:bg-[#FF6B35]/20"
+              }`}
+            >
+              <HelpCircle className="h-5 w-5" />
+            </div>
+            <span
+              className={`text-lg font-semibold transition-colors duration-200 ${
+                isOpen ? "text-[#1A1A1A]" : "text-gray-700 group-hover:text-[#1A1A1A]"
+              }`}
+            >
+              {item.question}
+            </span>
+          </span>
+          <div
+            className={`ml-4 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
+              isOpen
+                ? "bg-[#FF6B35]/10 text-[#FF6B35]"
+                : "bg-gray-100 text-gray-400 group-hover:bg-[#FF6B35]/10 group-hover:text-[#FF6B35]"
+            }`}
+          >
+            <ChevronDown
+              className={`h-5 w-5 transition-transform duration-300 ${
+                isOpen ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+        </button>
+        <div
+          className={`grid transition-all duration-300 ${
+            isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          }`}
+        >
+          <div className="overflow-hidden">
+            <div className="border-t border-gray-100 px-6 pb-6 pt-4">
+              <div className="pl-14">{item.content}</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 /**
- * FAQ section with accordion
+ * Premium FAQ section with animated accordion
  */
 export function FAQSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, rootMargin: "-50px" }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const scrollToCTA = () => {
+    const ctaSection = document.getElementById("final-cta");
+    if (ctaSection) {
+      ctaSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <section id="faq" className="bg-[#FFF8F0] py-20 md:py-32">
-      <div className="mx-auto max-w-[860px] px-4">
+    <section
+      id="faq"
+      ref={sectionRef}
+      className="relative overflow-hidden bg-[#FFF8F0] py-16 md:py-24"
+    >
+      {/* Background decoration */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-1/4 -left-20 h-80 w-80 rounded-full bg-[#FF6B35]/5 blur-3xl" />
+        <div className="absolute -right-20 bottom-1/4 h-80 w-80 rounded-full bg-[#FFB84D]/5 blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto max-w-[900px] px-4">
         {/* Header */}
-        <div className="mb-12 text-center">
-          <h2 className="mb-4 text-4xl font-bold text-[#1A1A1A] md:text-5xl">Questions?</h2>
+        <div
+          className={`mb-12 text-center transition-all duration-700 md:mb-16 ${
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+          }`}
+        >
+          {/* Badge */}
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/20 bg-white px-4 py-2 shadow-sm">
+            <HelpCircle className="h-4 w-4 text-[#FF6B35]" />
+            <span className="text-sm font-medium text-[#FF6B35]">FAQ</span>
+          </div>
+
+          <h2 className="mb-4 text-4xl font-bold text-[#1A1A1A] md:text-5xl">
+            Questions?{" "}
+            <span className="relative">
+              <span className="relative z-10">Answered.</span>
+              <span className="absolute right-0 bottom-1 left-0 h-3 bg-[#FF6B35]/20" />
+            </span>
+          </h2>
+          <p className="mx-auto max-w-xl text-lg text-gray-600">
+            Everything you need to know about Lokul. Can&apos;t find what you&apos;re looking for?
+            Reach out to our community.
+          </p>
         </div>
 
         {/* Accordion */}
-        <div className="mb-12 rounded-2xl bg-white p-6 shadow-lg">
+        <div className="mb-16 space-y-4">
           {faqItems.map((item, index) => (
             <AccordionItem
               key={index}
               item={item}
               isOpen={openIndex === index}
               onToggle={() => handleToggle(index)}
+              index={index}
+              isVisible={isVisible}
             />
           ))}
         </div>
 
-        {/* Bottom CTAs */}
-        <div className="text-center">
-          <p className="mb-6 text-gray-600">Still have questions?</p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <button
-              onClick={() => window.open("https://discord.gg/lokul", "_blank")}
-              className="cursor-pointer rounded-lg border-2 border-[#FF6B35] px-6 py-3 text-[#FF6B35] transition-colors hover:bg-[#FF6B35]/10"
-            >
-              Join Discord
-            </button>
-            <button
-              onClick={() => window.open("mailto:hello@lokul.app", "_blank")}
-              className="cursor-pointer rounded-lg border-2 border-[#FF6B35] px-6 py-3 text-[#FF6B35] transition-colors hover:bg-[#FF6B35]/10"
-            >
-              Email Us
-            </button>
-            <button
-              onClick={() => window.open("https://docs.lokul.app", "_blank")}
-              className="cursor-pointer rounded-lg border-2 border-[#FF6B35] px-6 py-3 text-[#FF6B35] transition-colors hover:bg-[#FF6B35]/10"
-            >
-              Read Docs
-            </button>
+        {/* Bottom CTAs - Premium Support Cards */}
+        <div
+          className={`transition-all duration-700 ${
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+          }`}
+          style={{ transitionDelay: "600ms" }}
+        >
+          <div className="mb-8 text-center">
+            <p className="text-lg font-medium text-[#1A1A1A]">Still have questions?</p>
+            <p className="text-gray-500">We&apos;re here to help. Choose your preferred way to connect.</p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            {/* Discord Card */}
+            <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FF6B35] to-[#FFB84D]" />
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF6B35]/10 text-[#FF6B35] transition-all duration-300 group-hover:bg-[#FF6B35] group-hover:text-white group-hover:shadow-[0_8px_20px_rgba(255,107,53,0.4)]">
+                <MessageCircle className="h-6 w-6" />
+              </div>
+              <h3 className="mb-2 font-bold text-[#1A1A1A]">Join Discord</h3>
+              <p className="mb-4 text-sm text-gray-500">Get help from the community and team</p>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => window.open("https://discord.gg/lokul", "_blank")}
+              >
+                Join Server
+              </Button>
+            </div>
+
+            {/* Email Card */}
+            <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FF6B35] to-[#FFB84D]" />
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF6B35]/10 text-[#FF6B35] transition-all duration-300 group-hover:bg-[#FF6B35] group-hover:text-white group-hover:shadow-[0_8px_20px_rgba(255,107,53,0.4)]">
+                <Mail className="h-6 w-6" />
+              </div>
+              <h3 className="mb-2 font-bold text-[#1A1A1A]">Email Us</h3>
+              <p className="mb-4 text-sm text-gray-500">Private support for sensitive questions</p>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => window.open("mailto:hello@lokul.app", "_blank")}
+              >
+                Send Email
+              </Button>
+            </div>
+
+            {/* Docs Card */}
+            <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FF6B35] to-[#FFB84D]" />
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF6B35]/10 text-[#FF6B35] transition-all duration-300 group-hover:bg-[#FF6B35] group-hover:text-white group-hover:shadow-[0_8px_20px_rgba(255,107,53,0.4)]">
+                <BookOpen className="h-6 w-6" />
+              </div>
+              <h3 className="mb-2 font-bold text-[#1A1A1A]">Read Docs</h3>
+              <p className="mb-4 text-sm text-gray-500">Detailed guides and API reference</p>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => window.open("https://docs.lokul.app", "_blank")}
+              >
+                View Docs
+              </Button>
+            </div>
+          </div>
+
+          {/* Final CTA */}
+          <div className="mt-12 text-center">
+            <Button variant="cta" size="lg" onClick={scrollToCTA}>
+              Try Lokul Free — No Signup
+            </Button>
           </div>
         </div>
       </div>

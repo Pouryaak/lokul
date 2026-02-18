@@ -33,8 +33,8 @@ const footerColumns: FooterColumn[] = [
       { label: "Try Demo", href: "#demo" },
       { label: "How It Works", href: "#how-it-works" },
       { label: "Pricing (Free!)", href: "#pricing" },
-      { label: "Roadmap", href: "https://github.com/lokul/lokul/projects", external: true },
-      { label: "Changelog", href: "https://github.com/lokul/lokul/releases", external: true },
+      { label: "Roadmap", href: "https://github.com/pouryaak/lokul/projects", external: true },
+      { label: "Changelog", href: "https://github.com/pouryaak/lokul/releases", external: true },
     ],
   },
   {
@@ -74,7 +74,7 @@ interface SocialLink {
 const socialLinks: SocialLink[] = [
   {
     icon: <Github className="h-5 w-5" />,
-    href: "https://github.com/lokul/lokul",
+    href: "https://github.com/pouryaak/lokul",
     label: "GitHub",
   },
   {
@@ -178,12 +178,18 @@ export function FooterSection() {
 
             {/* Made with love */}
             <p className="text-sm text-gray-500">
-              Made with <span className="text-red-500">♥</span> for privacy
+              Made with <span className="text-red-500">♥</span> for privacy by{" "}
+              <a
+                className="font-semibold text-[#FF6B35] hover:underline"
+                href="https://pourya.space"
+              >
+                Pourya Akrami
+              </a>
             </p>
 
             {/* Star on GitHub */}
             <a
-              href="https://github.com/lokul/lokul"
+              href="https://github.com/pouryaak/lokul"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-gray-400 transition-colors hover:text-[#FF6B35]"
