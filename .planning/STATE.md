@@ -27,8 +27,8 @@
 ## Current Position
 
 **Phase:** Phase 2.1 in progress
-**Plan:** 02.1-03 complete (3 of ? plans in Phase 2.1)
-**Status:** React Router configured with /chat and /chat/[id] routes
+**Plan:** 02.1-05 complete (5 of ? plans in Phase 2.1)
+**Status:** Message actions, conversation clearing, and welcome screen complete
 
 **Progress:**
 
@@ -48,10 +48,12 @@
   - [x] 02-03: Markdown rendering and ChatInterface integration
   - [x] 02-04: Conversation sidebar with performance monitoring
   - [x] 02-05: Fix model download failure (gap closure)
-- [~] Phase 2.1: AI SDK UI Migration with Routing (3/? plans complete)
+- [~] Phase 2.1: AI SDK UI Migration with Routing (5/? plans complete)
   - [x] 02.1-01: AI SDK UI transport layer (WebLLMTransport, useAIChat)
   - [x] 02.1-02: Chat layout infrastructure (sidebar, ChatLayout)
   - [x] 02.1-03: React Router configuration (/chat, /chat/[id])
+  - [x] 02.1-04: AI SDK UI integration with routed chat interface
+  - [x] 02.1-05: Message actions, conversation clearing, welcome screen
 - [ ] Phase 3: Model Management
 - [ ] Phase 4: Memory System
 - [ ] Phase 5: Polish & PWA
@@ -83,6 +85,7 @@
 | 02.1-01 | 15 min | 3 | 3 | 2026-02-18 |
 | 02.1-02 | 25 min | 3 | 11 | 2026-02-18 |
 | 02.1-03 | 20 min | 3 | 6 | 2026-02-18 |
+| 02.1-05 | 25 min | 3 | 3 | 2026-02-18 |
 
 ---
 
@@ -120,6 +123,9 @@
 | 2026-02-18 | Use BrowserRouter for client-side routing | Enables URL-based navigation and deep linking |
 | 2026-02-18 | Auto-create conversation at /chat | User gets fresh conversation without extra clicks |
 | 2026-02-18 | Use sonner for toast notifications | Lightweight, modern toast library with rich colors |
+| 2026-02-18 | Add MessageAvatar to ai-elements | Required for consistent avatar display in AI SDK UI patterns |
+| 2026-02-18 | Use native confirm() for destructive actions | Simple, consistent browser behavior for clear conversation |
+| 2026-02-18 | Privacy-focused suggested prompts | Align welcome screen with Lokul's core privacy value |
 
 ### Open Questions
 
@@ -143,18 +149,18 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 02.1-03 React Router configuration - /chat and /chat/[id] routes with toast notifications
-**Next Action:** Phase 2.1 Plan 04 - Integrate AI SDK UI with routed chat interface
-**Context Hash:** routing-20260218
+**Last Action:** Completed 02.1-05 Message actions, conversation clearing, and welcome screen
+**Next Action:** Phase 2.1 Plan 06 - Integration testing and verification
+**Context Hash:** chat-actions-20260218
 
 **Key Files:**
 - `/Users/poak/Documents/personal-project/Lokul/.planning/PROJECT.md` - Project definition
 - `/Users/poak/Documents/personal-project/Lokul/.planning/REQUIREMENTS.md` - v1 requirements (56 total)
 - `/Users/poak/Documents/personal-project/Lokul/.planning/ROADMAP.md` - Phase structure
-- `/Users/poak/Documents/personal-project/Lokul/src/routes/ChatRoute.tsx` - Route for creating new conversations
-- `/Users/poak/Documents/personal-project/Lokul/src/routes/ChatDetailRoute.tsx` - Route for loading existing conversations
-- `/Users/poak/Documents/personal-project/Lokul/src/App.tsx` - Router configuration with BrowserRouter
-- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02.1-ai-sdk-ui-migration-with-routing/02.1-03-SUMMARY.md` - Latest plan summary (routing)
+- `/Users/poak/Documents/personal-project/Lokul/src/components/Chat/AIChatInterface.tsx` - Main chat interface with message actions
+- `/Users/poak/Documents/personal-project/Lokul/src/components/ai-elements/message.tsx` - AI SDK UI message components
+- `/Users/poak/Documents/personal-project/Lokul/src/components/Chat/WelcomeScreen.tsx` - Welcome screen with suggested prompts
+- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02.1-ai-sdk-ui-migration-with-routing/02.1-05-SUMMARY.md` - Latest plan summary
 
 ---
 
