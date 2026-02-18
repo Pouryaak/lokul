@@ -27,12 +27,12 @@
 ## Current Position
 
 **Phase:** Phase 2.1 in progress
-**Plan:** 02.1-05 complete (5 of ? plans in Phase 2.1)
-**Status:** Message actions, conversation clearing, and welcome screen complete
+**Plan:** 02.1-07 complete (7 of 7 plans in Phase 2.1)
+**Status:** Performance integration complete - all Phase 2.1 plans finished
 
 **Progress:**
 
-```
+[██████████] 100%
 [=====>..............] 25% (Phase 2 in progress)
 ```
 
@@ -48,12 +48,14 @@
   - [x] 02-03: Markdown rendering and ChatInterface integration
   - [x] 02-04: Conversation sidebar with performance monitoring
   - [x] 02-05: Fix model download failure (gap closure)
-- [~] Phase 2.1: AI SDK UI Migration with Routing (5/? plans complete)
+- [x] Phase 2.1: AI SDK UI Migration with Routing (7/7 plans complete)
   - [x] 02.1-01: AI SDK UI transport layer (WebLLMTransport, useAIChat)
   - [x] 02.1-02: Chat layout infrastructure (sidebar, ChatLayout)
   - [x] 02.1-03: React Router configuration (/chat, /chat/[id])
   - [x] 02.1-04: AI SDK UI integration with routed chat interface
   - [x] 02.1-05: Message actions, conversation clearing, welcome screen
+  - [x] 02.1-06: Integration testing and verification
+  - [x] 02.1-07: Performance integration (StatusIndicator, PerformancePanel, model selector)
 - [ ] Phase 3: Model Management
 - [ ] Phase 4: Memory System
 - [ ] Phase 5: Polish & PWA
@@ -68,6 +70,7 @@
 | First message time | < 60s | N/A | Not started |
 | Response time | < 3s | N/A | Not started |
 | Crash rate | < 5% | N/A | Not started |
+| Phase 02.1-ai-sdk-ui-migration-with-routing P02.1-06 | 3m | 3 tasks | 3 files |
 
 ### Plan Execution Metrics
 
@@ -87,6 +90,8 @@
 | 02.1-03 | 20 min | 3 | 6 | 2026-02-18 |
 | 02.1-04 | 10 min | 3 | 30+ | 2026-02-18 |
 | 02.1-05 | 25 min | 3 | 3 | 2026-02-18 |
+| 02.1-06 | 20 min | 3 | 4 | 2026-02-18 |
+| 02.1-07 | 3 min | 3 | 5 | 2026-02-18 |
 
 ---
 
@@ -127,6 +132,10 @@
 | 2026-02-18 | Add MessageAvatar to ai-elements | Required for consistent avatar display in AI SDK UI patterns |
 | 2026-02-18 | Use native confirm() for destructive actions | Simple, consistent browser behavior for clear conversation |
 | 2026-02-18 | Privacy-focused suggested prompts | Align welcome screen with Lokul's core privacy value |
+| 2026-02-18 | Performance components in ChatLayout | Better component composition, layout owns its UI |
+| 2026-02-18 | Token tracking in metrics module | High-frequency token counting without React overhead |
+| 2026-02-18 | Model selector creates new conversation | Per user decision: changing model = new chat |
+- [Phase 02.1]: Use TextUIPart type from ai package for message part filtering in persistence layer
 
 ### Open Questions
 
@@ -150,9 +159,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 02.1-05 Message actions, conversation clearing, and welcome screen
-**Next Action:** Phase 2.1 Plan 06 - Integration testing and verification
-**Context Hash:** chat-actions-20260218
+**Last Action:** Completed 02.1-07 Performance integration with AI SDK UI
+**Next Action:** Phase 3 - Model Management
+**Context Hash:** performance-integration-20260218
 
 **Key Files:**
 - `/Users/poak/Documents/personal-project/Lokul/.planning/PROJECT.md` - Project definition
@@ -161,7 +170,9 @@ None currently.
 - `/Users/poak/Documents/personal-project/Lokul/src/components/Chat/AIChatInterface.tsx` - Main chat interface with message actions
 - `/Users/poak/Documents/personal-project/Lokul/src/components/ai-elements/message.tsx` - AI SDK UI message components
 - `/Users/poak/Documents/personal-project/Lokul/src/components/Chat/WelcomeScreen.tsx` - Welcome screen with suggested prompts
-- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02.1-ai-sdk-ui-migration-with-routing/02.1-05-SUMMARY.md` - Latest plan summary
+- `/Users/poak/Documents/personal-project/Lokul/src/components/chat-layout/ChatLayout.tsx` - Chat layout with performance components
+- `/Users/poak/Documents/personal-project/Lokul/src/components/chat-layout/AppSidebar.tsx` - Sidebar with model selector
+- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02.1-ai-sdk-ui-migration-with-routing/02.1-07-SUMMARY.md` - Latest plan summary
 
 ---
 
