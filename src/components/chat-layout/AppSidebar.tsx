@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Plus, Settings, MessageSquare, AlertTriangle, Zap, X, Loader2, Cpu } from "lucide-react";
+import { Plus, Settings, MessageSquare, Loader2, Cpu } from "lucide-react";
 import { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useConversations } from "@/hooks/useConversations";
@@ -213,58 +213,6 @@ function ModelSelector({ isCollapsed }: { isCollapsed: boolean }) {
 }
 
 /**
- * Warning banners for memory and performance
- */
-function WarningBanners({
-  isCollapsed,
-  memoryWarning,
-  performanceSuggestion,
-  onDismissSuggestion,
-}: {
-  isCollapsed: boolean;
-  memoryWarning: boolean;
-  performanceSuggestion: string | null;
-  onDismissSuggestion: () => void;
-}) {
-  if (isCollapsed || (!memoryWarning && !performanceSuggestion)) {
-    return null;
-  }
-
-  return (
-    <div className="space-y-2 px-3 py-2">
-      {memoryWarning && (
-        <div className="flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-          <div className="flex-1">
-            <p className="font-medium text-amber-800">High Memory Usage</p>
-            <p className="text-xs text-amber-700">
-              Memory usage is above 75%. Consider closing other tabs or restarting the app.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {performanceSuggestion && (
-        <div className="flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-sm">
-          <Zap className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
-          <div className="flex-1">
-            <p className="font-medium text-blue-800">Performance Tip</p>
-            <p className="text-xs text-blue-700">{performanceSuggestion}</p>
-          </div>
-          <button
-            onClick={onDismissSuggestion}
-            className="shrink-0 rounded p-1 hover:bg-blue-100"
-            aria-label="Dismiss suggestion"
-          >
-            <X className="h-3 w-3 text-blue-600" />
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/**
  * New Chat List Item (Claude-style)
  */
 function NewChatItem({ onClick, isCollapsed }: { onClick: () => void; isCollapsed: boolean }) {
@@ -334,13 +282,7 @@ export function AppSidebar({
   const isCollapsed = state === "collapsed";
   const { id: currentConversationId } = useParams<{ id: string }>();
 
-  const {
-    conversations,
-    isLoading,
-    memoryWarning,
-    performanceSuggestion,
-    clearPerformanceSuggestion,
-  } = useConversations();
+  const { conversations, isLoading } = useConversations();
 
   const handleNewChat = useCallback(() => {
     onNewChat?.();
@@ -389,14 +331,6 @@ export function AppSidebar({
       <div className={cn("px-3", isCollapsed && "py-2")}>
         <ModelSelector isCollapsed={isCollapsed} />
       </div>
-
-      {/* Warning Banners */}
-      <WarningBanners
-        isCollapsed={isCollapsed}
-        memoryWarning={memoryWarning}
-        performanceSuggestion={performanceSuggestion}
-        onDismissSuggestion={clearPerformanceSuggestion}
-      />
 
       {/* Conversation List */}
       <SidebarContent className="gap-4 px-2 py-4">
