@@ -129,6 +129,9 @@ export interface Conversation {
   /** Timestamp when the conversation was last updated (Unix milliseconds) */
   updatedAt: number;
 
+  /** Monotonic storage version for optimistic concurrency */
+  version: number;
+
   /** Optional conversation settings */
   settings?: ConversationSettings;
 }
@@ -398,6 +401,31 @@ export interface AsyncResult<T> {
 
   /** Error message (if failure) */
   error?: string;
+}
+
+/**
+ * Standard cancellation reason taxonomy for async operations
+ */
+export type CancellationReason = "user_stop" | "route_change" | "model_switch" | "shutdown";
+
+/**
+ * Save options for compare-and-swap persistence writes
+ */
+export interface ConversationSaveOptions {
+  expectedVersion?: number;
+  idempotencyKey?: string;
+  idempotencyWindowMs?: number;
+  signal?: AbortSignal;
+  cancelReason?: CancellationReason;
+}
+
+/**
+ * Explicit metadata surfaced on optimistic concurrency conflicts
+ */
+export interface PersistenceConflictDetails {
+  conversationId: string;
+  expectedVersion: number;
+  actualVersion: number;
 }
 
 /**
