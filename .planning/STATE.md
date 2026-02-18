@@ -32,7 +32,7 @@
 
 **Progress:**
 
-[██████████] 100%
+[█████████░] 93%
 [======>.............] 40% (Phase 2.2 complete, preparing Phase 3)
 ```
 
@@ -80,6 +80,7 @@
 | Phase 02.2 P05 | 3 min | 6 tasks | 5 files |
 | Phase 02.2 P10 | 5m | 3 tasks | 7 files |
 | Phase 02.2 P11 | 7m | 3 tasks | 6 files |
+| Phase 03-model-management P01 | 7m | 2 tasks | 7 files |
 
 ### Plan Execution Metrics
 
@@ -173,6 +174,8 @@
 - [Phase 02.2]: Scope architecture-fit rule to core application paths and document temporary legacy exceptions explicitly.
 - [Phase 02.2]: Run architecture-check before full lint so function-size regressions fail early in local and CI flows.
 - [Phase 03 prep]: Phase 3 must preserve 02.2 reliability guardrails (cancellation, persistence ordering semantics, no sidebar route-flicker regressions) per `.planning/phases/03-model-management/03-NOTES.md`.
+- [Phase 03-model-management]: Delegate in-chat model switch requests from modelStore to conversationModelStore when an active conversation exists.
+- [Phase 03-model-management]: Persist model-target changes without touching updatedAt so sidebar ordering remains message-activity-driven.
 
 ### Open Questions
 
