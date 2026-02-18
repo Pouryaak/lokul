@@ -172,6 +172,7 @@
 - [Phase 02.2]: Move persistence orchestration into dedicated helper hooks so useAIChat remains a thin integration boundary.
 - [Phase 02.2]: Scope architecture-fit rule to core application paths and document temporary legacy exceptions explicitly.
 - [Phase 02.2]: Run architecture-check before full lint so function-size regressions fail early in local and CI flows.
+- [Phase 03 prep]: Phase 3 must preserve 02.2 reliability guardrails (cancellation, persistence ordering semantics, no sidebar route-flicker regressions) per `.planning/phases/03-model-management/03-NOTES.md`.
 
 ### Open Questions
 

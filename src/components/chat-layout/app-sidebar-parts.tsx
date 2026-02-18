@@ -118,9 +118,16 @@ export function ModelSelector({ isCollapsed }: { isCollapsed: boolean }) {
 
   const handleModelChange = useCallback(
     async (modelId: string) => {
+      if (import.meta.env.DEV) {
+        console.info("[ModelSelector] Change requested", {
+          from: currentModel?.id ?? null,
+          to: modelId,
+        });
+      }
+
       await loadModel(modelId);
     },
-    [loadModel]
+    [currentModel?.id, loadModel]
   );
 
   if (isCollapsed) {

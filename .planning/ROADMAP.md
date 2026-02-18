@@ -189,7 +189,9 @@ Plans:
 6. Model switch happens without page reload (seamless transition)
 7. After first successful chat, user sees prompt to download Smart Mode
 
-**Plans:** TBD
+**Plans:**
+
+- `03-NOTES.md` - Phase 3 guardrails and 02.2 stabilization carry-forward notes
 
 ---
 

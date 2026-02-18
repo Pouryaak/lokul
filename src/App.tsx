@@ -22,6 +22,14 @@ import { RootLayout } from "./routes/RootLayout";
 import { useModelStore } from "./store/modelStore";
 import { selectHasCompletedSetup, useSettingsStore } from "./store/settingsStore";
 
+function logModelBootstrap(scope: string, payload: Record<string, unknown>): void {
+  if (!import.meta.env.DEV) {
+    return;
+  }
+
+  console.info(`[ModelBootstrap:${scope}]`, payload);
+}
+
 function LandingPage() {
   const navigate = useNavigate();
   const handleStart = useCallback(() => navigate("/loading"), [navigate]);
@@ -54,7 +62,13 @@ function LoadingPage() {
   const completeSetup = useSettingsStore((state) => state.completeSetup);
 
   useEffect(() => {
+    logModelBootstrap("LoadingPage.effect", {
+      hasCurrentModel: Boolean(currentModel),
+      loadingStep,
+    });
+
     if (!currentModel && loadingStep === "idle") {
+      logModelBootstrap("LoadingPage.autoload", { modelId: QUICK_MODEL.id });
       loadModel(QUICK_MODEL.id);
     }
   }, [currentModel, loadingStep, loadModel]);
@@ -126,7 +140,15 @@ function AppContent() {
   useEffect(() => {
     const isChatRoute = window.location.pathname.startsWith("/chat");
 
+    logModelBootstrap("AppContent.effect", {
+      pathname: window.location.pathname,
+      isChatRoute,
+      hasCurrentModel: Boolean(currentModel),
+      loadingStep,
+    });
+
     if (isChatRoute && !currentModel && loadingStep === "idle") {
+      logModelBootstrap("AppContent.autoload", { modelId: QUICK_MODEL.id });
       loadModel(QUICK_MODEL.id);
     }
   }, [currentModel, loadingStep, loadModel]);
