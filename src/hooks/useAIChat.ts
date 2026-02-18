@@ -3,10 +3,15 @@
  *
  * Wrapper hook that configures useChat from @ai-sdk/react with the WebLLM transport.
  * This is the bridge between the existing model store and AI SDK UI.
+ * Includes automatic persistence to IndexedDB.
  */
 
+import { useEffect } from "react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
+import type { TextUIPart } from "ai";
 import { WebLLMTransport } from "@/lib/ai/webllm-transport";
+import { getConversation, saveConversation } from "@/lib/storage/conversations";
+import type { Message } from "@/types/index";
 
 /**
  * Options for the useAIChat hook
@@ -17,7 +22,7 @@ export interface UseAIChatOptions {
   /** The model ID to use for inference */
   modelId: string;
   /** Initial messages to populate the chat */
-  messages?: UIMessage[];
+  initialMessages?: UIMessage[];
 }
 
 /**
@@ -51,7 +56,7 @@ export interface UseAIChatOptions {
  * @returns useChat helpers (messages, sendMessage, status, error, etc.)
  */
 export function useAIChat(options: UseAIChatOptions) {
-  const { conversationId, modelId, messages } = options;
+  const { conversationId, modelId, initialMessages } = options;
 
   // Create WebLLM transport instance with the specified model
   const transport = new WebLLMTransport({ modelId });
@@ -60,8 +65,43 @@ export function useAIChat(options: UseAIChatOptions) {
   const chatHelpers = useChat({
     id: conversationId,
     transport,
-    messages,
+    messages: initialMessages,
   });
+
+  const { messages } = chatHelpers;
+
+  // Persist messages to IndexedDB when they change
+  useEffect(() => {
+    if (messages.length === 0) return;
+
+    const persistMessages = async () => {
+      try {
+        const conversation = await getConversation(conversationId);
+        if (!conversation) return;
+
+        // Convert UIMessages to storage format
+        const storageMessages: Message[] = messages.map((msg): Message => ({
+          id: msg.id,
+          role: msg.role,
+          content: msg.parts
+            .filter((p): p is TextUIPart => p.type === "text")
+            .map((p) => p.text)
+            .join(""),
+          timestamp: Date.now(),
+          conversationId,
+        }));
+
+        conversation.messages = storageMessages;
+        conversation.updatedAt = Date.now();
+
+        await saveConversation(conversation);
+      } catch (error) {
+        console.error("Failed to persist conversation:", error);
+      }
+    };
+
+    persistMessages();
+  }, [messages, conversationId]);
 
   return chatHelpers;
 }
