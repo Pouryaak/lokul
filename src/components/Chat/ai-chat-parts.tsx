@@ -3,9 +3,12 @@ import type { UIMessage } from "@ai-sdk/react";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import {
   PromptInput,
+  PromptInputFooter,
   PromptInputTextarea,
+  PromptInputTools,
   PromptInputSubmit,
 } from "@/components/ai-elements/prompt-input";
+import { InputModelSelector } from "@/components/model/InputModelSelector";
 import { cn } from "@/lib/utils";
 
 interface ErrorBannerProps {
@@ -109,18 +112,24 @@ export function ConversationMessages({ messages }: { messages: UIMessage[] }) {
 }
 
 interface InputSectionProps {
+  conversationId?: string;
   status: "submitted" | "streaming" | "ready" | "error";
   onSubmit: (message: { text: string }) => Promise<void>;
   onStop: () => void;
 }
 
-export function InputSection({ status, onSubmit, onStop }: InputSectionProps) {
+export function InputSection({ conversationId = "", status, onSubmit, onStop }: InputSectionProps) {
   return (
     <div className="border-t border-gray-200 bg-white px-4 py-4">
       <div className="mx-auto max-w-3xl">
         <PromptInput onSubmit={onSubmit}>
           <PromptInputTextarea placeholder="Message Lokul..." className="min-h-[60px]" />
-          <PromptInputSubmit status={status} onStop={onStop} />
+          <PromptInputFooter>
+            <PromptInputTools>
+              <InputModelSelector conversationId={conversationId} />
+            </PromptInputTools>
+            <PromptInputSubmit status={status} onStop={onStop} />
+          </PromptInputFooter>
         </PromptInput>
 
         <p className="mt-2 text-center text-xs text-gray-400">

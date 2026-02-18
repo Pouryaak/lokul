@@ -18,7 +18,6 @@ import {
   ConversationItem,
   EmptyState,
   LoadingState,
-  ModelSelector,
   NewChatItem,
   SettingsButton,
   SidebarLogo,
@@ -144,10 +143,6 @@ export function AppSidebar({
   return (
     <Sidebar variant="inset" collapsible="icon" className={className}>
       <SidebarHeaderContent isCollapsed={isCollapsed} />
-
-      <div className={cn("px-3", isCollapsed && "py-2")}>
-        <ModelSelector isCollapsed={isCollapsed} />
-      </div>
 
       <ConversationSection
         conversations={conversations}

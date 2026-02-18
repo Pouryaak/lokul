@@ -1,15 +1,6 @@
-import { Plus, Settings, MessageSquare, Loader2, Cpu } from "lucide-react";
-import { memo, useCallback, type ReactNode } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Plus, Settings, MessageSquare, Loader2 } from "lucide-react";
+import { memo, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { MODELS } from "@/lib/ai/models";
-import { useCurrentModel, useModelStore } from "@/store/modelStore";
 import type { Conversation } from "@/types/index";
 import { formatRelativeTime } from "./sidebar-time";
 
@@ -111,54 +102,6 @@ export const ConversationItem = memo(function ConversationItem({
     </button>
   );
 });
-
-export function ModelSelector({ isCollapsed }: { isCollapsed: boolean }) {
-  const currentModel = useCurrentModel();
-  const loadModel = useModelStore((state) => state.loadModel);
-
-  const handleModelChange = useCallback(
-    async (modelId: string) => {
-      if (import.meta.env.DEV) {
-        console.info("[ModelSelector] Change requested", {
-          from: currentModel?.id ?? null,
-          to: modelId,
-        });
-      }
-
-      await loadModel(modelId);
-    },
-    [currentModel?.id, loadModel]
-  );
-
-  if (isCollapsed) {
-    return (
-      <div className="flex justify-center py-2">
-        <Cpu className="h-4 w-4 text-gray-500" />
-      </div>
-    );
-  }
-
-  return (
-    <Select value={currentModel?.id || ""} onValueChange={handleModelChange}>
-      <SelectTrigger className="w-full">
-        <div className="flex items-center gap-2">
-          <Cpu className="h-4 w-4 text-gray-500" />
-          <SelectValue placeholder="Select model" />
-        </div>
-      </SelectTrigger>
-      <SelectContent>
-        {MODELS.map((model) => (
-          <SelectItem key={model.id} value={model.id}>
-            <div className="flex flex-col">
-              <span className="font-medium">{model.name}</span>
-              <span className="text-xs text-gray-500">{model.description}</span>
-            </div>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
 
 interface SidebarButtonProps {
   isCollapsed: boolean;
