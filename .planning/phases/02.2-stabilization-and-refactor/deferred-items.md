@@ -20,3 +20,15 @@
 - `npm run lint` fails on pre-existing `no-duplicate-imports` violations across many `src/components/ai-elements/*` files.
 - `npm run lint` also fails on pre-existing `src/lib/utils/debounce.ts` (`@typescript-eslint/no-this-alias`) introduced outside this plan's scoped files.
 - These lint errors are outside Task 1-4 scope (`model-engine`, `modelStore`, `App`, `ChatDetailRoute`) and were not fixed in this plan.
+
+### 2026-02-18 - Plan 02.2-10 lint baseline issues (out of scope)
+
+- `npm run lint` fails on pre-existing `no-duplicate-imports` violations across `src/components/ai-elements/*` and `src/components/sidebar-02/*`.
+- `npm run lint` still fails on pre-existing `src/lib/utils/debounce.ts` (`@typescript-eslint/no-this-alias`).
+- These issues are outside plan 02.2-10 task scope (persistence cancellation wiring, Result-first orchestration, retry/dismiss recovery UX) and were intentionally deferred.
+
+### 2026-02-18 - Plan 02.2-11 full lint baseline issues (out of scope)
+
+- Updated architecture gate (`architecture-check`) passes for scoped application paths, but repository-wide `npm run lint` still fails on pre-existing duplicate imports in `src/components/ai-elements/*` and `src/components/sidebar-02/*`.
+- `npm run lint` also fails on pre-existing `src/lib/utils/debounce.ts` (`@typescript-eslint/no-this-alias`).
+- These failures pre-date plan 02.2-11 and are outside this plan's scoped decomposition/config work; they remain deferred.
