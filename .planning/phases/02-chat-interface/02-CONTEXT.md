@@ -16,6 +16,7 @@ Chat interface for local AI conversations with streaming responses, message hist
 ### Component Libraries
 - **Use pre-built AI component libraries rather than building from scratch**
 - blocks.so/ai - for chat UI blocks
+- blocks.so/sidebar - for conversation sidebar
 - prompt-kit.com - for message components (thinking-bar, blocks, markdown)
 - shadcn.io/ai - for AI-themed shadcn components
 - kibo-ui.com/code-block - for syntax-highlighted code blocks
@@ -51,6 +52,7 @@ Chat interface for local AI conversations with streaming responses, message hist
 - Message actions: regenerate, edit, delete
 
 ### Sidebar & Conversation History
+- **Use blocks.so/sidebar component for the conversation sidebar**
 - Title only (minimal) in conversation list
 - Simple heuristic from user message for title generation (first 20 chars)
 - Titles must be editable by user (like ChatGPT)
@@ -77,6 +79,7 @@ Chat interface for local AI conversations with streaming responses, message hist
   - prompt-kit.com/docs/markdown
   - kibo-ui.com/components/code-block
   - blocks.so/ai
+  - blocks.so/sidebar
   - shadcn.io/ai
 
 </specifics>
