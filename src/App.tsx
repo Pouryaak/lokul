@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useNavigate, Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ChatLayout } from "./components/chat-layout/ChatLayout";
 import { ComparisonSection } from "./components/landing/ComparisonSection";
 import { DemoSection } from "./components/landing/DemoSection";
@@ -180,22 +181,24 @@ function AppContent() {
   }, [currentModel, loadingStep, loadModel]);
 
   return (
-    <Routes>
-      {/* Landing page routes */}
-      <Route path="/" element={<RootLayout />}>
-        <Route index element={<LandingPage />} />
-        <Route path="loading" element={<LoadingPage />} />
-      </Route>
+    <ErrorBoundary>
+      <Routes>
+        {/* Landing page routes */}
+        <Route path="/" element={<RootLayout />}>
+          <Route index element={<LandingPage />} />
+          <Route path="loading" element={<LoadingPage />} />
+        </Route>
 
-      {/* Chat routes */}
-      <Route path="chat" element={<ChatLayoutWrapper />}>
-        <Route index element={<ChatRoute />} />
-        <Route path=":id" element={<ChatDetailRoute />} />
-      </Route>
+        {/* Chat routes */}
+        <Route path="chat" element={<ChatLayoutWrapper />}>
+          <Route index element={<ChatRoute />} />
+          <Route path=":id" element={<ChatDetailRoute />} />
+        </Route>
 
-      {/* Catch-all redirect to landing */}
-      <Route path="*" element={<LandingPage />} />
-    </Routes>
+        {/* Catch-all redirect to landing */}
+        <Route path="*" element={<LandingPage />} />
+      </Routes>
+    </ErrorBoundary>
   );
 }
 
