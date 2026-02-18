@@ -2,7 +2,7 @@
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
 **Status:** Milestone complete
-**Updated:** 2026-02-18 (13:55 UTC)
+**Updated:** 2026-02-18 (14:04 UTC)
 
 ---
 
@@ -27,8 +27,8 @@
 ## Current Position
 
 **Phase:** Phase 2.1 in progress
-**Plan:** 02.1-01 complete (1 of ? plans in Phase 2.1)
-**Status:** AI SDK UI transport layer complete with WebLLM custom transport
+**Plan:** 02.1-02 complete (2 of ? plans in Phase 2.1)
+**Status:** Chat layout infrastructure complete with collapsible sidebar
 
 **Progress:**
 
@@ -48,8 +48,9 @@
   - [x] 02-03: Markdown rendering and ChatInterface integration
   - [x] 02-04: Conversation sidebar with performance monitoring
   - [x] 02-05: Fix model download failure (gap closure)
-- [~] Phase 2.1: AI SDK UI Migration with Routing (1/? plans complete)
+- [~] Phase 2.1: AI SDK UI Migration with Routing (2/? plans complete)
   - [x] 02.1-01: AI SDK UI transport layer (WebLLMTransport, useAIChat)
+  - [x] 02.1-02: Chat layout infrastructure (sidebar, ChatLayout)
 - [ ] Phase 3: Model Management
 - [ ] Phase 4: Memory System
 - [ ] Phase 5: Polish & PWA
@@ -79,6 +80,7 @@
 | 02-04 | 35 min | 4 | 6 | 2026-02-18 |
 | 02-05 | 15 min | 3 | 3 | 2026-02-18 |
 | 02.1-01 | 15 min | 3 | 3 | 2026-02-18 |
+| 02.1-02 | 25 min | 3 | 11 | 2026-02-18 |
 
 ---
 
@@ -110,6 +112,9 @@
 | 2026-02-18 | Model IDs must include -MLC suffix | WebLLM v0.2.80 requires -MLC suffix for prebuilt model IDs to download correctly |
 | 2026-02-18 | Use ChatTransport interface for WebLLM integration | Standard AI SDK UI pattern for custom transports |
 | 2026-02-18 | Yield text-start, text-delta, text-end chunks | Required for proper streaming UI updates in AI SDK UI |
+| 2026-02-18 | Use shadcn sidebar primitives for chat layout | Provides collapsible sidebar with built-in state management |
+| 2026-02-18 | Add asChild support to Button component | Required for shadcn sidebar composition patterns |
+| 2026-02-18 | Consolidate Button.tsx casing (capital B) | Resolves TypeScript file casing conflict |
 
 ### Open Questions
 
@@ -133,17 +138,17 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 02.1-01 AI SDK UI transport layer - WebLLMTransport and useAIChat hook
-**Next Action:** Phase 2.1 Plan 02 - Integrate useAIChat into chat components
-**Context Hash:** ai-sdk-transport-20260218
+**Last Action:** Completed 02.1-02 Chat layout infrastructure - AppSidebar and ChatLayout components
+**Next Action:** Phase 2.1 Plan 03 - Add routing support (/chat, /chat/[id])
+**Context Hash:** chat-layout-20260218
 
 **Key Files:**
 - `/Users/poak/Documents/personal-project/Lokul/.planning/PROJECT.md` - Project definition
 - `/Users/poak/Documents/personal-project/Lokul/.planning/REQUIREMENTS.md` - v1 requirements (56 total)
 - `/Users/poak/Documents/personal-project/Lokul/.planning/ROADMAP.md` - Phase structure
-- `/Users/poak/Documents/personal-project/Lokul/src/lib/ai/webllm-transport.ts` - WebLLM custom transport
-- `/Users/poak/Documents/personal-project/Lokul/src/hooks/useAIChat.ts` - AI SDK UI hook wrapper
-- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02.1-ai-sdk-ui-migration-with-routing/02.1-01-SUMMARY.md` - Latest plan summary (transport layer)
+- `/Users/poak/Documents/personal-project/Lokul/src/components/chat-layout/AppSidebar.tsx` - App sidebar with conversation list
+- `/Users/poak/Documents/personal-project/Lokul/src/components/chat-layout/ChatLayout.tsx` - Layout wrapper with sidebar
+- `/Users/poak/Documents/personal-project/Lokul/.planning/phases/02.1-ai-sdk-ui-migration-with-routing/02.1-02-SUMMARY.md` - Latest plan summary (chat layout)
 
 ---
 
