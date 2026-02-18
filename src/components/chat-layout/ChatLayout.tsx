@@ -7,13 +7,18 @@
  * Based on @blocks/sidebar-02 pattern from shadcn.
  */
 
+import { useState } from "react";
+import { Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   SidebarProvider,
   SidebarTrigger,
   SidebarInset,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/Button";
 import { AppSidebar } from "./AppSidebar";
+import { StatusIndicator } from "@/components/performance/StatusIndicator";
+import { PerformancePanel } from "@/components/performance/PerformancePanel";
 
 /**
  * Props for the ChatLayout component
@@ -60,6 +65,8 @@ export function ChatLayout({
   open,
   onOpenChange,
 }: ChatLayoutProps) {
+  const [showPerformancePanel, setShowPerformancePanel] = useState(false);
+
   return (
     <SidebarProvider
       defaultOpen={defaultOpen}
@@ -73,7 +80,7 @@ export function ChatLayout({
       {/* Main content area */}
       <SidebarInset
         className={cn(
-          "flex flex-col overflow-hidden",
+          "relative flex flex-col overflow-hidden",
           "bg-[#FFF8F0]", // Lokul warm cream background
           className
         )}
@@ -87,6 +94,33 @@ export function ChatLayout({
 
         {/* Main content */}
         <main className="flex-1 overflow-hidden">{children}</main>
+
+        {/* Performance Toggle Button - Top Right */}
+        <div className="absolute top-4 right-4 z-40">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowPerformancePanel(!showPerformancePanel)}
+            aria-label={
+              showPerformancePanel
+                ? "Hide performance panel"
+                : "Show performance panel"
+            }
+            aria-pressed={showPerformancePanel}
+          >
+            <Activity className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Performance Panel - Right Side */}
+        {showPerformancePanel && (
+          <div className="absolute top-16 right-4 z-40">
+            <PerformancePanel onClose={() => setShowPerformancePanel(false)} />
+          </div>
+        )}
+
+        {/* Status Indicator - Bottom Left */}
+        <StatusIndicator />
       </SidebarInset>
     </SidebarProvider>
   );

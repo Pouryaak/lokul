@@ -1,5 +1,4 @@
-import { Activity } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -20,9 +19,7 @@ import { ModelsSection } from "./components/landing/ModelsSection";
 import { ProblemSolutionSection } from "./components/landing/ProblemSolutionSection";
 import { TechnicalTrustSection } from "./components/landing/TechnicalTrustSection";
 import { LoadingScreen } from "./components/onboarding/LoadingScreen";
-import { PerformancePanel } from "./components/performance/PerformancePanel";
 import { StatusIndicator } from "./components/performance/StatusIndicator";
-import { Button } from "./components/ui/Button";
 import { ChatDetailRoute } from "./routes/ChatDetailRoute";
 import { ChatRoute } from "./routes/ChatRoute";
 import { RootLayout } from "./routes/RootLayout";
@@ -116,10 +113,9 @@ function LoadingPage() {
 }
 
 /**
- * ChatLayoutWrapper component - Wraps chat routes with layout and performance panel
+ * ChatLayoutWrapper component - Wraps chat routes with layout
  */
 function ChatLayoutWrapper() {
-  const [showPerformancePanel, setShowPerformancePanel] = useState(false);
   const navigate = useNavigate();
 
   // Handle new chat
@@ -128,38 +124,9 @@ function ChatLayoutWrapper() {
   }, [navigate]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#FFF8F0]">
-      <ChatLayout onNewChat={handleNewChat}>
-        <Outlet />
-      </ChatLayout>
-
-      {/* Performance Toggle Button - Top Right */}
-      <div className="fixed top-4 right-4 z-40">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowPerformancePanel(!showPerformancePanel)}
-          aria-label={
-            showPerformancePanel
-              ? "Hide performance panel"
-              : "Show performance panel"
-          }
-          aria-pressed={showPerformancePanel}
-        >
-          <Activity className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Performance Panel - Right Side */}
-      {showPerformancePanel && (
-        <div className="fixed top-16 right-4 z-40">
-          <PerformancePanel onClose={() => setShowPerformancePanel(false)} />
-        </div>
-      )}
-
-      {/* Status Indicator - Bottom Left */}
-      <StatusIndicator />
-    </div>
+    <ChatLayout onNewChat={handleNewChat}>
+      <Outlet />
+    </ChatLayout>
   );
 }
 
