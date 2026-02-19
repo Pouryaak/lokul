@@ -118,7 +118,7 @@ export function AppSidebar({
   onConversationClick,
   className,
 }: AppSidebarProps) {
-  const { state } = useSidebar();
+  const { isMobile, setOpenMobile, state } = useSidebar();
   const isCollapsed = state === "collapsed";
   const navigate = useNavigate();
   const { id: currentConversationId } = useParams<{ id: string }>();
@@ -126,10 +126,17 @@ export function AppSidebar({
 
   const handleNewChat = useCallback(() => {
     onNewChat?.();
-  }, [onNewChat]);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }, [isMobile, onNewChat, setOpenMobile]);
 
   const handleConversationClick = useCallback(
     (id: string) => {
+      if (isMobile) {
+        setOpenMobile(false);
+      }
+
       if (onConversationClick) {
         onConversationClick(id);
         return;
@@ -137,7 +144,7 @@ export function AppSidebar({
 
       navigate(`/chat/${id}`);
     },
-    [navigate, onConversationClick]
+    [isMobile, navigate, onConversationClick, setOpenMobile]
   );
 
   return (
