@@ -42,12 +42,14 @@ function ErrorState({ title, description }: { title: string; description: string
 }
 
 function toInitialMessages(conversation: Conversation): UIMessage[] {
-  return conversation.messages.map((message) => ({
-    id: message.id,
-    role: message.role,
-    content: message.content,
-    parts: [{ type: "text", text: message.content }],
-  }));
+  return conversation.messages
+    .filter((message) => message.content.trim().length > 0)
+    .map((message) => ({
+      id: message.id,
+      role: message.role,
+      content: message.content,
+      parts: [{ type: "text", text: message.content }],
+    }));
 }
 
 export function ChatDetailRoute() {

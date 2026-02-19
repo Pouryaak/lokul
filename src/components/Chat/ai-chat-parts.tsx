@@ -1,15 +1,16 @@
-import { AlertCircle, Bot, MessageSquare, RefreshCw, User, X } from "lucide-react";
-import type { UIMessage } from "@ai-sdk/react";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputFooter,
+  PromptInputSubmit,
   PromptInputTextarea,
   PromptInputTools,
-  PromptInputSubmit,
 } from "@/components/ai-elements/prompt-input";
 import { InputModelSelector } from "@/components/model/InputModelSelector";
 import { cn } from "@/lib/utils";
+import type { UIMessage } from "@ai-sdk/react";
+import { AlertCircle, Bot, MessageSquare, RefreshCw, User, X } from "lucide-react";
+import { Shimmer } from "../ai-elements/shimmer";
 
 interface ErrorBannerProps {
   message: string;
@@ -92,7 +93,25 @@ function MessageBody({ message }: { message: UIMessage }) {
   );
 }
 
-export function ConversationMessages({ messages }: { messages: UIMessage[] }) {
+interface ConversationMessagesProps {
+  messages: UIMessage[];
+  status: "submitted" | "streaming" | "ready" | "error";
+}
+
+function PendingAssistantMessage() {
+  return (
+    <div className="group flex gap-4 py-6">
+      <MessageAvatar role="assistant" />
+      <div className="flex items-center">
+        <Shimmer>Thinking...</Shimmer>
+      </div>
+    </div>
+  );
+}
+
+export function ConversationMessages({ messages, status }: ConversationMessagesProps) {
+  const showPendingAssistant = status === "submitted";
+
   return (
     <>
       {messages.map((message) => (
@@ -107,6 +126,7 @@ export function ConversationMessages({ messages }: { messages: UIMessage[] }) {
           <MessageBody message={message} />
         </div>
       ))}
+      {showPendingAssistant ? <PendingAssistantMessage /> : null}
     </>
   );
 }

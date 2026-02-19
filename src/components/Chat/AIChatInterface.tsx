@@ -118,7 +118,7 @@ export function AIChatInterface({
       <Conversation className="flex-1">
         <ConversationContent className="pb-40">
           {hasMessages ? (
-            <ConversationMessages messages={messages} />
+            <ConversationMessages messages={messages} status={status} />
           ) : (
             <ConversationEmptyState
               icon={<EmptyChatState />}

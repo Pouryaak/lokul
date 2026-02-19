@@ -5,7 +5,7 @@
  * persistence orchestration.
  */
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import { WebLLMTransport } from "@/lib/ai/webllm-transport";
 import { useChatPersistence, type PersistenceRecoveryState } from "@/hooks/use-ai-chat-persistence";
@@ -43,6 +43,26 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
     initialMessageCount: initialMessages?.length ?? 0,
     stopChat: chatHelpers.stop,
   });
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) {
+      return;
+    }
+
+    console.info("[useAIChat] state", {
+      conversationId,
+      modelId,
+      status: chatHelpers.status,
+      messageCount: chatHelpers.messages.length,
+      error: chatHelpers.error?.message ?? null,
+    });
+  }, [
+    chatHelpers.error?.message,
+    chatHelpers.messages.length,
+    chatHelpers.status,
+    conversationId,
+    modelId,
+  ]);
 
   return {
     messages: chatHelpers.messages,
