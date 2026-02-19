@@ -1,11 +1,6 @@
 import type { MLCEngineInterface } from "@mlc-ai/web-llm";
 import type { Message } from "@/types/index";
-import {
-  abortedError,
-  memoryExtractionError,
-  type AppError,
-  type MemoryError,
-} from "@/lib/utils/errors";
+import { abortedError, memoryExtractionError, type AppError } from "@/lib/utils/errors";
 import { err, ok, type Result } from "@/types/result";
 import type { ExtractedFact } from "./types";
 
@@ -94,6 +89,10 @@ export async function extractFacts(
 ): Promise<Result<ExtractedFact[], AppError>> {
   const minConfidence = options.minConfidence ?? 0.75;
 
+  if (messages.length < 2) {
+    return ok([]);
+  }
+
   if (options.signal?.aborted) {
     return err(abortedError(options.signal.reason));
   }
@@ -119,8 +118,6 @@ export async function extractFacts(
     const filtered = parsedFacts.filter((fact) => fact.confidence >= minConfidence);
     return ok(filtered);
   } catch (error) {
-    return err(
-      memoryExtractionError("Failed to extract facts from conversation", error) as MemoryError
-    );
+    return err(memoryExtractionError("Failed to extract facts from conversation", error));
   }
 }

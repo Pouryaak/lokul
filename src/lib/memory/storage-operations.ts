@@ -118,11 +118,14 @@ export async function processExtractedFacts(
       assertNotAborted(options);
 
       if (fact.updatesPrevious) {
-        const conflicting = currentFacts.find((existing) => isPotentialConflict(existing, fact));
+        // updates_previous marks this extraction as a replacement candidate for same-category facts.
+        const conflictCandidate = currentFacts.find((existing) =>
+          isPotentialConflict(existing, fact)
+        );
 
-        if (conflicting) {
+        if (conflictCandidate) {
           const resolved = await resolveConflictingFact(
-            conflicting.id,
+            conflictCandidate.id,
             fact,
             conversationId,
             options
