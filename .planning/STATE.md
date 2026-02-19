@@ -1,8 +1,8 @@
 # State: Lokul
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
-**Status:** Milestone complete
-**Updated:** 2026-02-19 (12:10 UTC)
+**Status:** Phase 5 in progress
+**Updated:** 2026-02-19 (23:20 UTC)
 
 ---
 
@@ -26,14 +26,14 @@
 
 ## Current Position
 
-**Phase:** Phase 4 - Memory System
-**Plan:** 04-06 complete (6/6 plans complete)
-**Status:** PHASE 4 COMPLETE - memory clear/undo reliability and first-click undo interaction fixes delivered
+**Phase:** Phase 5 - Polish & PWA
+**Plan:** 05-02 complete (1/4 plans complete)
+**Status:** CHAT-10 long-thread chunk loading delivered with bottom-first route entry preserved
 
 **Progress:**
 
-[████████░░] 83%
-[====================] 100% (Phase 4 complete)
+[████████░░] 85%
+[=====---------------] 25% (Phase 5 in progress)
 
 **Phases:**
 - [x] Phase 1: Core Infrastructure (4/4 plans complete)
@@ -58,7 +58,7 @@
 - [x] Phase 2.2: Stabilization & Refactor (6/6 plans complete)
 - [x] Phase 3: Model Management (3/3 plans complete)
 - [x] Phase 4: Memory System (6/6 plans complete)
-- [ ] Phase 5: Polish & PWA
+- [ ] Phase 5: Polish & PWA (1/4 plans complete)
 
 ---
 
@@ -88,6 +88,7 @@
 | Phase 04-memory-system P04 | 3 min | 3 tasks | 5 files |
 | Phase 04-memory-system P05 | 2 min | 3 tasks | 4 files |
 | Phase 04-memory-system P06 | 2 min | 2 tasks | 2 files |
+| Phase 05 P02 | 3 min | 3 tasks | 3 files |
 
 ### Plan Execution Metrics
 
@@ -206,6 +207,8 @@
 - [Phase 04-memory-system]: Add extractFacts short-history no-op guard and remove unnecessary MemoryError casting for deterministic extraction behavior.
 - [Phase 04-memory-system]: Track pending clear-all operations at module scope and fan out state changes to hook instances so undo remains reliable if panel focus changes.
 - [Phase 04-memory-system]: Prevent Sheet outside-interaction dismissal when the interaction originates from Sonner toast elements to preserve one-click undo UX.
+- [Phase 05]: Use a dedicated useConversationHistoryWindow hook with thresholded activation for long-thread rendering
+- [Phase 05]: Pass explicit startAtBottom route hint from ChatDetailRoute so existing conversations open at latest messages
 
 ### Open Questions
 
@@ -239,9 +242,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 04-06 with clear-all undo lifecycle hardening and first-click undo interaction fixes in Memory Panel
-**Next Action:** Transition to Phase 5 planning/execution (Polish & PWA)
-**Context Hash:** phase-04-memory-system-06-complete-20260219
+**Last Action:** Completed 05-02 with long-thread chunk-window loading and bottom-first route entry behavior
+**Next Action:** Execute 05-03 plan for chat export/import UX integration
+**Context Hash:** phase-05-polish-and-pwa-02-complete-20260219
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 
