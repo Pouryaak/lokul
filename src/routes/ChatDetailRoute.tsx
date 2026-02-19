@@ -138,6 +138,7 @@ export function ChatDetailRoute() {
       conversationId={conversation.id}
       modelId={runtimeModelId}
       initialMessages={toInitialMessages(conversation)}
+      startAtBottom
     />
   );
 }
