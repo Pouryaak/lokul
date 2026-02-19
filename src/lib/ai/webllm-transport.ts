@@ -19,6 +19,9 @@ import { err, ok, type Result } from "@/types/result";
 import { inferenceManager } from "./inference";
 import { modelEngine } from "./model-engine";
 import type { CancellationReason } from "@/types/index";
+import { getMemoryFacts } from "@/lib/storage/memory";
+import { buildContextWithMemory } from "@/lib/memory/context-builder";
+import { compactContext } from "@/lib/memory/compaction";
 
 const DEFAULT_CANCEL_REASON: CancellationReason = "user_stop";
 const CHUNK_STALL_TIMEOUT_MS = 20000;
@@ -162,7 +165,7 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
     const requestAbortController = new AbortController();
     this.abortController = requestAbortController;
     const cleanupAbortListener = this.linkAbortSignal(abortSignal, requestAbortController);
-    const webLLMMessages = this.convertToWebLLMMessages(messages);
+    const webLLMMessages = await this.prepareMessagesForInference(messages);
     const cancelReason = getCancelReason(abortSignal?.reason);
 
     return this.createChunkStream(webLLMMessages, {
@@ -170,6 +173,62 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
       cancelReason,
       cleanupAbortListener,
     });
+  }
+
+  private async prepareMessagesForInference(
+    messages: UIMessage[]
+  ): Promise<Array<{ role: "system" | "user" | "assistant"; content: string }>> {
+    const conversationMessages = this.convertToWebLLMMessages(messages);
+    const currentMessage = [...conversationMessages]
+      .reverse()
+      .find((message) => message.role === "user")?.content;
+
+    try {
+      const memoryResult = await getMemoryFacts();
+      if (memoryResult.kind === "err") {
+        if (import.meta.env.DEV) {
+          console.warn(
+            "[Memory] Failed to load memory facts for prompt injection",
+            memoryResult.error
+          );
+        }
+        return conversationMessages;
+      }
+
+      const context = buildContextWithMemory(
+        conversationMessages,
+        memoryResult.value,
+        this.modelId,
+        {
+          currentMessage,
+        }
+      );
+
+      if (import.meta.env.DEV && context.percentUsed >= 70) {
+        console.info(
+          `[Memory] Context usage at ${context.percentUsed.toFixed(1)}%; monitoring for compaction.`
+        );
+      }
+
+      if (context.percentUsed < 80) {
+        return context.messages;
+      }
+
+      const compacted = compactContext(conversationMessages, memoryResult.value, this.modelId);
+      if (import.meta.env.DEV) {
+        console.info(
+          `[Memory] Compaction applied (${compacted.stage}); context now ${compacted.percentUsed.toFixed(1)}%`
+        );
+      }
+
+      return compacted.messages;
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.warn("[Memory] Memory prompt injection failed; continuing without memory", error);
+      }
+
+      return conversationMessages;
+    }
   }
 
   private async streamResponse(
