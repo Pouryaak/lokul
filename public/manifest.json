@@ -9,8 +9,13 @@
   "icons": [
     {
       "src": "/lokul-logo.png",
-      "sizes": "any",
-      "type": "image/svg+xml"
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/lokul-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }

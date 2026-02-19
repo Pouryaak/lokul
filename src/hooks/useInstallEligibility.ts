@@ -97,21 +97,18 @@ export function useInstallEligibility(): UseInstallEligibilityResult {
       }
     };
 
+    const handleFirstSuccessfulChat = () => {
+      setHasFirstSuccessfulChat(true);
+    };
+
     window.addEventListener("storage", handleStorage);
+    window.addEventListener("lokul:first-successful-chat", handleFirstSuccessfulChat);
+
     return () => {
       window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("lokul:first-successful-chat", handleFirstSuccessfulChat);
     };
   }, []);
-
-  useEffect(() => {
-    if (hasFirstSuccessfulChat) {
-      return;
-    }
-
-    if (getFirstSuccessfulChat()) {
-      setHasFirstSuccessfulChat(true);
-    }
-  }, [hasFirstSuccessfulChat]);
 
   useEffect(() => {
     setInstallState(

@@ -26,6 +26,7 @@ import {
 import { err, ok, type Result } from "@/types/result";
 import type { CancellationReason, Message } from "@/types/index";
 import type { TextUIPart } from "ai";
+import { FIRST_SUCCESSFUL_CHAT_STORAGE_KEY } from "@/types/pwa";
 
 const PERSISTENCE_DEBOUNCE_MS = 500;
 const NEW_CONVERSATION_TITLE = "New Conversation";
@@ -128,6 +129,30 @@ function toRecoveryState(error: AppError): PersistenceRecoveryState {
   };
 }
 
+function hasCompletedFirstChat(messages: UIMessage[]): boolean {
+  if (messages.length === 0) {
+    return false;
+  }
+
+  const hasUserMessage = messages.some(
+    (message) => message.role === "user" && getTextFromMessage(message).trim().length > 0
+  );
+  const hasAssistantMessage = messages.some(
+    (message) => message.role === "assistant" && getTextFromMessage(message).trim().length > 0
+  );
+
+  return hasUserMessage && hasAssistantMessage;
+}
+
+function markFirstSuccessfulChatComplete(): void {
+  try {
+    localStorage.setItem(FIRST_SUCCESSFUL_CHAT_STORAGE_KEY, "1");
+    window.dispatchEvent(new Event("lokul:first-successful-chat"));
+  } catch {
+    // Ignore storage failures in restricted contexts.
+  }
+}
+
 function assignConversationSnapshot(
   conversationId: string,
   nextMessages: UIMessage[],
@@ -202,6 +227,11 @@ export function useChatPersistence(options: UseChatPersistenceOptions): UseChatP
     async (nextMessages: UIMessage[], reason: unknown) => {
       pendingMessagesRef.current = nextMessages;
       const result = await persistMessages(nextMessages, reason);
+
+      if (result.kind === "ok" && hasCompletedFirstChat(nextMessages)) {
+        markFirstSuccessfulChatComplete();
+      }
+
       handlePersistenceResult(result);
     },
     [handlePersistenceResult, pendingMessagesRef, persistMessages]
