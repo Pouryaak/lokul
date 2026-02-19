@@ -62,7 +62,7 @@ Each task was committed atomically:
 2. **Task 2: Memory Storage CRUD Operations** - `8523c90` (feat)
 3. **Task 3: Fact Extraction Service** - `c06e26c` (feat)
 
-**Plan metadata:** `pending` (will be added after state updates)
+**Plan metadata:** `f47bfe5` (docs)
 
 ## Files Created/Modified
 - `src/lib/storage/db.ts` - upgraded Dexie schema to v2 with migration transformation for legacy memory rows.
