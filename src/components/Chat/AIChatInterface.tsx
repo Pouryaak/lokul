@@ -2,9 +2,10 @@
  * AIChatInterface Component - Main chat container using AI SDK UI
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { UIMessage } from "@ai-sdk/react";
 import { toast } from "sonner";
+import { useStickToBottomContext } from "use-stick-to-bottom";
 import {
   Conversation,
   ConversationContent,
@@ -16,12 +17,14 @@ import { useMemoryExtraction } from "@/hooks/useMemoryExtraction";
 import type { Message, MessageRole } from "@/types/index";
 import { cn } from "@/lib/utils";
 import { ConversationMessages, EmptyChatState, ErrorBanner, InputSection } from "./ai-chat-parts";
+import { useConversationHistoryWindow } from "./conversation-history-window";
 
 interface AIChatInterfaceProps {
   conversationId: string;
   modelId: string;
   initialMessages?: UIMessage[];
   className?: string;
+  startAtBottom?: boolean;
 }
 
 function isExtractableRole(role: string): role is MessageRole {
@@ -76,6 +79,7 @@ export function AIChatInterface({
   modelId,
   initialMessages,
   className,
+  startAtBottom = true,
 }: AIChatInterfaceProps) {
   const {
     messages,
@@ -124,6 +128,10 @@ export function AIChatInterface({
 
   useErrorToasts(error, resetDismissedError);
 
+  const historyResetKey = useMemo(() => {
+    return `${conversationId}:${initialMessages?.length ?? 0}`;
+  }, [conversationId, initialMessages?.length]);
+
   return (
     <div className={cn("relative flex h-full flex-col overflow-hidden bg-[#FFF8F0]", className)}>
       {activeError && (
@@ -141,17 +149,13 @@ export function AIChatInterface({
       )}
 
       <Conversation className="flex-1">
-        <ConversationContent className="pb-40">
-          {hasMessages ? (
-            <ConversationMessages messages={messages} status={status} />
-          ) : (
-            <ConversationEmptyState
-              icon={<EmptyChatState />}
-              title="Start a conversation"
-              description="Type a message below to begin chatting with Lokul"
-            />
-          )}
-        </ConversationContent>
+        <ConversationHistoryContent
+          messages={messages}
+          status={status}
+          hasMessages={hasMessages}
+          startAtBottom={startAtBottom}
+          historyResetKey={historyResetKey}
+        />
         <ConversationScrollButton />
       </Conversation>
 
@@ -163,5 +167,76 @@ export function AIChatInterface({
         onStop={stop}
       />
     </div>
+  );
+}
+
+interface ConversationHistoryContentProps {
+  messages: UIMessage[];
+  status: "submitted" | "streaming" | "ready" | "error";
+  hasMessages: boolean;
+  startAtBottom: boolean;
+  historyResetKey: string;
+}
+
+function ConversationHistoryContent({
+  messages,
+  status,
+  hasMessages,
+  startAtBottom,
+  historyResetKey,
+}: ConversationHistoryContentProps) {
+  const { scrollRef, state } = useStickToBottomContext();
+  const hasAttemptedTopLoadRef = useRef(false);
+  const scrollElement = scrollRef.current;
+  const { visibleMessages, hasOlderMessages, maybeLoadOlder } = useConversationHistoryWindow({
+    messages,
+    scrollElement,
+    resetKey: historyResetKey,
+    startAtBottom,
+  });
+
+  useEffect(() => {
+    hasAttemptedTopLoadRef.current = false;
+  }, [historyResetKey]);
+
+  useEffect(() => {
+    if (!scrollElement || !hasOlderMessages) {
+      hasAttemptedTopLoadRef.current = false;
+      return;
+    }
+
+    const scrollTop = state.scrollTop ?? scrollElement.scrollTop;
+    if (scrollTop > 120) {
+      hasAttemptedTopLoadRef.current = false;
+      return;
+    }
+
+    if (hasAttemptedTopLoadRef.current) {
+      return;
+    }
+
+    const loaded = maybeLoadOlder({
+      scrollTop,
+      scrollHeight: scrollElement.scrollHeight,
+      clientHeight: scrollElement.clientHeight,
+    });
+
+    if (loaded) {
+      hasAttemptedTopLoadRef.current = true;
+    }
+  }, [hasOlderMessages, maybeLoadOlder, scrollElement, state.scrollTop]);
+
+  return (
+    <ConversationContent className="pb-40">
+      {hasMessages ? (
+        <ConversationMessages messages={visibleMessages} status={status} />
+      ) : (
+        <ConversationEmptyState
+          icon={<EmptyChatState />}
+          title="Start a conversation"
+          description="Type a message below to begin chatting with Lokul"
+        />
+      )}
+    </ConversationContent>
   );
 }
