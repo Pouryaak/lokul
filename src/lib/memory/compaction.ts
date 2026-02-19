@@ -11,6 +11,8 @@ import {
 const COMPACTION_THRESHOLD = 0.8;
 const MESSAGES_TO_KEEP_START = 2;
 const MESSAGES_TO_KEEP_END = 6;
+const FINAL_MESSAGES_TO_KEEP = 4;
+const FINAL_MESSAGE_CHAR_BUDGET = 1200;
 
 const CONTEXT_WINDOW_FALLBACK: Record<string, number> = {
   "phi-2-q4f16_1-MLC": 2048,
@@ -30,6 +32,7 @@ interface CompactionSnapshot {
 }
 
 let lastCompactionSnapshot: CompactionSnapshot | null = null;
+// Intentional module-level singleton state so UI listeners observe global compaction activity.
 const listeners = new Set<(snapshot: CompactionSnapshot | null) => void>();
 
 function getModelContextWindow(modelId: string): number {
@@ -119,17 +122,36 @@ export function compactContext(
   messages: InferenceMessage[];
   memories: MemoryFact[];
   stage: "none" | "stage1" | "stage2";
+  fallback: "none" | "final-trim" | "final-truncate";
   memoryTokens: number;
   totalTokens: number;
   percentUsed: number;
+  overLimit: boolean;
+  limits: {
+    contextWindow: number;
+    thresholdRatio: number;
+    targetTokens: number;
+  };
 } {
   const contextWindow = getModelContextWindow(modelId);
+  const limits = {
+    contextWindow,
+    thresholdRatio: COMPACTION_THRESHOLD,
+    targetTokens: Math.floor(contextWindow * COMPACTION_THRESHOLD),
+  };
   const initial = buildContextWithMemory(messages, memories, modelId, {
     baseSystemPrompt: options.baseSystemPrompt,
   });
 
   if (!shouldCompact(initial.totalTokens, contextWindow)) {
-    return { ...initial, memories, stage: "none" };
+    return {
+      ...initial,
+      memories,
+      stage: "none",
+      fallback: "none",
+      overLimit: false,
+      limits,
+    };
   }
 
   const trimmed = stageOneTrimHistory(messages);
@@ -143,7 +165,14 @@ export function compactContext(
   publishCompaction("stage1", Math.max(0, initial.totalTokens - stageOne.totalTokens));
 
   if (!shouldCompact(stageOne.totalTokens, contextWindow)) {
-    return { ...stageOne, memories, stage: "stage1" };
+    return {
+      ...stageOne,
+      memories,
+      stage: "stage1",
+      fallback: "none",
+      overLimit: false,
+      limits,
+    };
   }
 
   const memoryBudget = calculateMemoryBudget(modelId, stageOne.totalTokens);
@@ -157,7 +186,75 @@ export function compactContext(
   });
   publishCompaction("stage2", Math.max(0, stageOne.totalTokens - stageTwo.totalTokens));
 
-  return { ...stageTwo, memories: reduced.memories, stage: "stage2" };
+  if (!shouldCompact(stageTwo.totalTokens, contextWindow)) {
+    return {
+      ...stageTwo,
+      memories: reduced.memories,
+      stage: "stage2",
+      fallback: "none",
+      overLimit: false,
+      limits,
+    };
+  }
+
+  const finalTrimmedMessages = applyFinalHistoryTrim(stageTwo.messages);
+  const finalTrimmed = buildContextWithMemory(finalTrimmedMessages, reduced.memories, modelId, {
+    baseSystemPrompt: options.baseSystemPrompt,
+  });
+
+  if (!shouldCompact(finalTrimmed.totalTokens, contextWindow)) {
+    return {
+      ...finalTrimmed,
+      memories: reduced.memories,
+      stage: "stage2",
+      fallback: "final-trim",
+      overLimit: false,
+      limits,
+    };
+  }
+
+  const finalTruncatedMessages = applyFinalMessageTruncation(finalTrimmed.messages);
+  const finalTruncated = buildContextWithMemory(finalTruncatedMessages, reduced.memories, modelId, {
+    baseSystemPrompt: options.baseSystemPrompt,
+  });
+
+  return {
+    ...finalTruncated,
+    memories: reduced.memories,
+    stage: "stage2",
+    fallback: "final-truncate",
+    overLimit: shouldCompact(finalTruncated.totalTokens, contextWindow),
+    limits,
+  };
+}
+
+function applyFinalHistoryTrim(messages: InferenceMessage[]): InferenceMessage[] {
+  const systemMessage = messages.find((message) => message.role === "system");
+  const conversationMessages = messages.filter((message) => message.role !== "system");
+
+  if (conversationMessages.length <= FINAL_MESSAGES_TO_KEEP) {
+    return messages;
+  }
+
+  const keptConversation = conversationMessages.slice(-FINAL_MESSAGES_TO_KEEP);
+  return systemMessage ? [systemMessage, ...keptConversation] : keptConversation;
+}
+
+function applyFinalMessageTruncation(messages: InferenceMessage[]): InferenceMessage[] {
+  return messages.map((message) => {
+    if (message.role === "system") {
+      return message;
+    }
+
+    if (message.content.length <= FINAL_MESSAGE_CHAR_BUDGET) {
+      return message;
+    }
+
+    return {
+      ...message,
+      content: `${message.content.slice(0, FINAL_MESSAGE_CHAR_BUDGET)}...`,
+    };
+  });
 }
 
 export function useCompactionStatus(): {
