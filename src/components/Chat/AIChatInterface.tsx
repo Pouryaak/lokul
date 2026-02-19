@@ -2,7 +2,7 @@
  * AIChatInterface Component - Main chat container using AI SDK UI
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { UIMessage } from "@ai-sdk/react";
 import { toast } from "sonner";
 import {
@@ -12,6 +12,8 @@ import {
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 import { useAIChat } from "@/hooks/useAIChat";
+import { useMemoryExtraction } from "@/hooks/useMemoryExtraction";
+import type { Message, MessageRole } from "@/types/index";
 import { cn } from "@/lib/utils";
 import { ConversationMessages, EmptyChatState, ErrorBanner, InputSection } from "./ai-chat-parts";
 
@@ -20,6 +22,24 @@ interface AIChatInterfaceProps {
   modelId: string;
   initialMessages?: UIMessage[];
   className?: string;
+}
+
+function isExtractableRole(role: string): role is MessageRole {
+  return role === "user" || role === "assistant" || role === "system";
+}
+
+function getMessageText(message: UIMessage): string {
+  const textFromParts = message.parts
+    .filter((part): part is { type: "text"; text: string } => part.type === "text")
+    .map((part) => part.text)
+    .join("\n")
+    .trim();
+
+  if (textFromParts.length > 0) {
+    return textFromParts;
+  }
+
+  return "";
 }
 
 function useErrorToasts(error: Error | undefined, onResetDismissed: () => void): void {
@@ -72,6 +92,20 @@ export function AIChatInterface({
     initialMessages,
   });
   const [dismissedError, setDismissedError] = useState<string | null>(null);
+  const extractionMessages = useMemo<Message[]>(() => {
+    return messages
+      .filter((message) => isExtractableRole(message.role))
+      .map((message, index) => ({
+        id: message.id,
+        role: message.role,
+        content: getMessageText(message),
+        timestamp: index,
+        conversationId,
+      }))
+      .filter((message) => message.content.length > 0);
+  }, [conversationId, messages]);
+
+  useMemoryExtraction(conversationId, extractionMessages);
 
   const hasMessages = messages.length > 0;
   const chatErrorMessage =
