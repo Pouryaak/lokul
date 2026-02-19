@@ -28,7 +28,7 @@
 | 2.1. AI SDK UI Migration | 7/7 | Complete | 2026-02-18 |
 | 2.2. Stabilization & Refactor | 6/6 | Complete | 2026-02-18 |
 | 3. Model Management | 3/3 | Complete | 2026-02-19 |
-| 4. Memory System | 0/3 | Planning complete | - |
+| 4. Memory System | 3/6 | Gap closure planned | - |
 | 5. Polish & PWA | 0/3 | Not started | - |
 
 ---
@@ -219,16 +219,21 @@ Plans:
 6. User can edit Core Facts directly
 7. User can clear all memory with confirmation
 
-**Plans:** 3 plans in 3 waves
+**Plans:** 6 plans in 4 waves
 
 **Wave 1** (foundation):
-- [ ] 04-01-PLAN.md — Storage layer and extraction service (Dexie schema v2, memory CRUD, fact extraction via LLM)
+- [x] 04-01-PLAN.md — Storage layer and extraction service (Dexie schema v2, memory CRUD, fact extraction via LLM)
 
 **Wave 2** (context management):
-- [ ] 04-02-PLAN.md — Context management and compaction (token budgeting, two-stage compaction at 80%, eviction)
+- [x] 04-02-PLAN.md — Context management and compaction (token budgeting, two-stage compaction at 80%, eviction)
 
 **Wave 3** (UI, depends on Wave 1+2):
-- [ ] 04-03-PLAN.md — Memory Panel UI (header pill, overlay sheet, cards, editing, pinning, clear-all with undo)
+- [x] 04-03-PLAN.md — Memory Panel UI (header pill, overlay sheet, cards, editing, pinning, clear-all with undo)
+
+**Wave 4** (gap closure):
+- [ ] 04-04-PLAN.md — Wire extraction into active chat flow and harden extraction lifecycle/cleanup behavior
+- [ ] 04-05-PLAN.md — Add hard post-compaction safety guard and coordinated prune+evict maintenance on write paths
+- [ ] 04-06-PLAN.md — Fix clear-all undo reliability and first-click undo UX in Memory Panel
 
 ---
 
