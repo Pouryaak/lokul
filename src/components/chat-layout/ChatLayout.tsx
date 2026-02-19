@@ -249,6 +249,7 @@ function ChatLayoutContent({
         }
         rightActions={
           <>
+            <StatusIndicator />
             <DownloadManager />
             <Button
               variant="outline"
@@ -272,9 +273,6 @@ function ChatLayoutContent({
           <PerformancePanel onClose={() => setShowPerformancePanel(false)} />
         </div>
       )}
-
-      <StatusIndicator />
-
       <MemoryPanel open={isMemoryPanelOpen} onClose={closeMemoryPanel} />
     </SidebarInset>
   );

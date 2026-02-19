@@ -14,7 +14,6 @@ import { ModelsSection } from "./components/landing/ModelsSection";
 import { ProblemSolutionSection } from "./components/landing/ProblemSolutionSection";
 import { TechnicalTrustSection } from "./components/landing/TechnicalTrustSection";
 import { LoadingScreen } from "./components/onboarding/LoadingScreen";
-import { StatusIndicator } from "./components/performance/StatusIndicator";
 import { SMART_MODEL, getModelById } from "./lib/ai/models";
 import { ChatDetailRoute } from "./routes/ChatDetailRoute";
 import { ChatRoute } from "./routes/ChatRoute";
@@ -78,18 +77,15 @@ function LoadingPage() {
   }, [cancelDownload, resetModel, navigate]);
 
   return (
-    <>
-      <LoadingScreen
-        onCancel={handleCancel}
-        onReady={() => navigate("/chat")}
-        modelName={bootstrapModel.name}
-        modelSizeMB={bootstrapModel.sizeMB}
-        progress={downloadProgress}
-        loadingStep={loadingStep}
-        error={modelError}
-      />
-      <StatusIndicator />
-    </>
+    <LoadingScreen
+      onCancel={handleCancel}
+      onReady={() => navigate("/chat")}
+      modelName={bootstrapModel.name}
+      modelSizeMB={bootstrapModel.sizeMB}
+      progress={downloadProgress}
+      loadingStep={loadingStep}
+      error={modelError}
+    />
   );
 }
 

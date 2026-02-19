@@ -1,24 +1,14 @@
-/**
- * StatusIndicator - Offline/Online status badge
- *
- * Shows the current offline capability status of the app.
- * Fixed position at bottom-left of the screen.
- *
- * States:
- * - checking: Verifying offline capability
- * - offline-ready: App is cached and works offline
- * - online-required: First-time setup needs internet
- */
-
 import { useEffect, useState } from "react";
-import { Loader2, CheckCircle2, WifiOff } from "lucide-react";
-// @ts-expect-error - virtual:pwa-register/react doesn't have types
+import { CheckCircle2, Download, Wifi, WifiOff } from "lucide-react";
 import { useRegisterSW } from "virtual:pwa-register/react";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
+import { useInstallEligibility } from "@/hooks/useInstallEligibility";
 
 /**
  * Status state for the indicator
  */
-type StatusState = "checking" | "offline-ready" | "online-required";
+type StatusState = "online" | "offline" | "offline-ready" | "installed";
 
 /**
  * Props for StatusIndicator component
@@ -40,90 +30,101 @@ interface StatusIndicatorProps {
  * ```
  */
 export function StatusIndicator({ className = "" }: StatusIndicatorProps) {
-  const [status, setStatus] = useState<StatusState>("checking");
-  const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
+  const [status, setStatus] = useState<StatusState>(navigator.onLine ? "online" : "offline");
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const { isEligible, isInstalled, promptInstall } = useInstallEligibility();
 
-  // Use vite-plugin-pwa's SW registration hook
-  const { offlineReady } = useRegisterSW({
+  const {
+    offlineReady: [offlineReady],
+  } = useRegisterSW({
     onRegisteredSW(_swUrl: string, r: ServiceWorkerRegistration | undefined) {
       if (r) {
-        // Service Worker is registered
-        setStatus("offline-ready");
+        setStatus(navigator.onLine ? "offline-ready" : "offline");
       }
     },
     onRegisterError(_error: Error) {
-      setStatus("online-required");
+      setStatus(navigator.onLine ? "online" : "offline");
     },
   });
 
-  // Track online/offline status
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    const handleOnline = () => {
+      setIsOnline(true);
+      setStatus(offlineReady ? "offline-ready" : "online");
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      setStatus("offline");
+    };
 
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
-
-    // Check if SW is already registered
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.ready
-        .then(() => {
-          setStatus("offline-ready");
-        })
-        .catch(() => {
-          setStatus("online-required");
-        });
-    } else {
-      setStatus("online-required");
-    }
 
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
-  }, []);
-
-  // Update status when offlineReady changes
-  useEffect(() => {
-    if (offlineReady) {
-      setStatus("offline-ready");
-    }
   }, [offlineReady]);
 
-  // Render based on status
-  if (status === "checking") {
-    return (
-      <div
-        className={`bg-muted text-muted-foreground fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full px-3 py-2 text-sm shadow-lg ${className}`}
-        title="Verifying offline capability"
-      >
-        <Loader2 className="h-4 w-4 animate-spin" />
-        <span>Checking...</span>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (isInstalled) {
+      setStatus("installed");
+      return;
+    }
 
-  if (status === "offline-ready") {
-    return (
-      <div
-        className={`fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700 shadow-lg ${className}`}
-        title="App cached for offline use"
-      >
-        <CheckCircle2 className="h-4 w-4" />
-        <span>Works Offline</span>
-        {!isOnline && <span className="ml-1 text-xs opacity-75">(Offline Mode)</span>}
-      </div>
-    );
-  }
+    if (!isOnline) {
+      setStatus("offline");
+      return;
+    }
 
-  // online-required status
+    setStatus(offlineReady ? "offline-ready" : "online");
+  }, [isInstalled, isOnline, offlineReady]);
+
+  const handleInstall = async () => {
+    await promptInstall();
+  };
+
+  const statusConfig: Record<
+    StatusState,
+    { label: string; icon: React.ComponentType<{ className?: string }> }
+  > = {
+    online: { label: "Online", icon: Wifi },
+    offline: { label: "Offline", icon: WifiOff },
+    "offline-ready": { label: "Offline Ready", icon: CheckCircle2 },
+    installed: { label: "Installed", icon: CheckCircle2 },
+  };
+
+  const currentStatus = statusConfig[status];
+  const StatusIcon = currentStatus.icon;
+
   return (
-    <div
-      className={`fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700 shadow-lg ${className}`}
-      title="First-time setup needs internet"
-    >
-      <WifiOff className="h-4 w-4" />
-      <span>Online Required</span>
+    <div className={cn("flex items-center gap-2", className)}>
+      <div
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
+          status === "offline"
+            ? "border-amber-300 bg-amber-50 text-amber-700"
+            : "border-emerald-200 bg-emerald-50 text-emerald-700"
+        )}
+        title={currentStatus.label}
+      >
+        <StatusIcon className="h-3.5 w-3.5" />
+        <span className="hidden sm:inline">{currentStatus.label}</span>
+      </div>
+
+      {isEligible && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7 gap-1.5 px-2 text-xs"
+          onClick={handleInstall}
+          aria-label="Install Lokul app"
+        >
+          <Download className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Install</span>
+        </Button>
+      )}
     </div>
   );
 }
