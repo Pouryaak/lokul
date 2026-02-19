@@ -25,15 +25,10 @@ interface AIChatInterfaceProps {
 function useErrorToasts(error: Error | undefined, onResetDismissed: () => void): void {
   useEffect(() => {
     if (error) {
+      onResetDismissed();
       toast.error(error.message || "An error occurred");
     }
-  }, [error]);
-
-  useEffect(() => {
-    if (error?.message) {
-      onResetDismissed();
-    }
-  }, [error?.message, onResetDismissed]);
+  }, [error, onResetDismissed]);
 }
 
 function useSubmitHandler(sendMessage: (message: { text: string }) => Promise<void>) {
@@ -85,13 +80,9 @@ export function AIChatInterface({
     persistenceRecovery?.message && dismissedError !== persistenceRecovery.message
       ? persistenceRecovery.message
       : null;
-  const activeError = persistenceErrorMessage ?? chatErrorMessage;
+  const activeError = chatErrorMessage ?? persistenceErrorMessage;
 
   const handleSubmit = useSubmitHandler(sendMessage);
-
-  const handleStop = useCallback(() => {
-    stop();
-  }, [stop]);
 
   const resetDismissedError = useCallback(() => {
     setDismissedError(null);
@@ -135,7 +126,7 @@ export function AIChatInterface({
         conversationId={conversationId}
         status={status}
         onSubmit={handleSubmit}
-        onStop={handleStop}
+        onStop={stop}
       />
     </div>
   );

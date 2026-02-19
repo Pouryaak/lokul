@@ -22,16 +22,8 @@ import type { CancellationReason } from "@/types/index";
 
 const DEFAULT_CANCEL_REASON: CancellationReason = "user_stop";
 const CHUNK_STALL_TIMEOUT_MS = 20000;
-const CHUNK_ABORT_SENTINEL = "__ABORTED__" as const;
+const CHUNK_ABORT_SENTINEL = Symbol("chunk-aborted");
 const DRAIN_WAIT_TIMEOUT_MS = 4000;
-
-function logTransport(scope: string, payload: Record<string, unknown>): void {
-  if (!import.meta.env.DEV) {
-    return;
-  }
-
-  console.info(`[WebLLMTransport:${scope}]`, payload);
-}
 
 async function nextChunkWithTimeout(
   iterator: AsyncIterator<string>,
@@ -122,7 +114,6 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
 
   /** AbortController for cancellation support */
   private abortController: AbortController | null = null;
-  private requestCounter = 0;
   private needsRecoveryAfterAbort = false;
   private pendingDrain: Promise<void> | null = null;
 
@@ -158,18 +149,13 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
     /** Signal to abort the request if needed */
     abortSignal: AbortSignal | undefined;
   } & ChatRequestOptions): Promise<ReadableStream<UIMessageChunk>> {
-    this.requestCounter += 1;
-    const requestId = `${this.modelId}:${this.requestCounter}`;
-
     if (this.pendingDrain) {
-      logTransport("drain-wait-start", { requestId });
-      const drained = await waitForDrainCompletion(this.pendingDrain);
-      logTransport("drain-wait-done", { requestId, drained });
+      await waitForDrainCompletion(this.pendingDrain);
       this.pendingDrain = null;
     }
 
     if (this.needsRecoveryAfterAbort) {
-      const recovered = await this.recoverAfterStall(requestId);
+      const recovered = await this.recoverAfterStall();
       this.needsRecoveryAfterAbort = !recovered;
     }
 
@@ -179,28 +165,17 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
     const webLLMMessages = this.convertToWebLLMMessages(messages);
     const cancelReason = getCancelReason(abortSignal?.reason);
 
-    const lastMessage = webLLMMessages[webLLMMessages.length - 1];
-    logTransport("send-start", {
-      requestId,
-      modelId: this.modelId,
-      messageCount: webLLMMessages.length,
-      lastRole: lastMessage?.role ?? null,
-      lastLength: lastMessage?.content.length ?? 0,
-      cancelReason,
-    });
-
     return this.createChunkStream(webLLMMessages, {
       requestAbortController,
       cancelReason,
       cleanupAbortListener,
-      requestId,
     });
   }
 
   private async streamResponse(
     controller: ReadableStreamDefaultController<UIMessageChunk>,
     webLLMMessages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
-    options: { signal: AbortSignal; cancelReason: CancellationReason; requestId: string }
+    options: { signal: AbortSignal; cancelReason: CancellationReason }
   ): Promise<Result<void, AppError>> {
     const messageId = crypto.randomUUID();
     startTokenTracking();
@@ -209,10 +184,6 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
       const tokenStreamResult = await this.createTokenStream(webLLMMessages, options);
 
       if (tokenStreamResult.kind === "err") {
-        logTransport("stream-init-error", {
-          requestId: options.requestId,
-          error: tokenStreamResult.error.message,
-        });
         return tokenStreamResult;
       }
 
@@ -220,7 +191,6 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
         controller,
         tokenStreamResult.value,
         messageId,
-        options.requestId,
         options.signal
       );
 
@@ -231,7 +201,6 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
       if (!streamResult.value.stalled) {
         if (streamResult.value.tokenCount > 0) {
           controller.enqueue({ type: "text-end", id: messageId });
-          logTransport("stream-close", { requestId: options.requestId, messageId });
         }
 
         return ok(undefined);
@@ -240,7 +209,7 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
       this.needsRecoveryAfterAbort = true;
 
       if (attempt === 0 && streamResult.value.tokenCount === 0) {
-        const recovered = await this.recoverAfterStall(options.requestId);
+        const recovered = await this.recoverAfterStall();
         if (recovered) {
           this.needsRecoveryAfterAbort = false;
           continue;
@@ -255,20 +224,13 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
 
   private async createTokenStream(
     webLLMMessages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
-    options: { signal: AbortSignal; cancelReason: CancellationReason; requestId: string }
+    options: { signal: AbortSignal; cancelReason: CancellationReason }
   ): Promise<Result<AsyncGenerator<string>, AppError>> {
     if (!inferenceManager.isLoaded()) {
       const engineState = modelEngine.getState();
 
       if (engineState.kind === "loading") {
         const isReady = await modelEngine.waitForReadyModel(engineState.modelId);
-
-        logTransport("wait-for-ready", {
-          requestId: options.requestId,
-          targetModelId: engineState.modelId,
-          isReady,
-          aborted: options.signal.aborted,
-        });
 
         if (!isReady || options.signal.aborted || !inferenceManager.isLoaded()) {
           return err(
@@ -294,7 +256,6 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
     controller: ReadableStreamDefaultController<UIMessageChunk>,
     tokenStream: AsyncGenerator<string>,
     messageId: string,
-    requestId: string,
     requestSignal: AbortSignal
   ): Promise<Result<{ tokenCount: number; stalled: boolean }, AppError>> {
     let tokenCount = 0;
@@ -310,20 +271,14 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
         );
 
         if (nextChunk === CHUNK_ABORT_SENTINEL) {
-          logTransport("stream-aborted", { requestId, messageId, tokenCount });
           this.pendingDrain = drainIterator(iterator);
           break;
         }
 
         if (nextChunk === null) {
+          this.pendingDrain = null;
           inferenceManager.abort();
           this.needsRecoveryAfterAbort = true;
-          logTransport("stream-stalled", {
-            requestId,
-            messageId,
-            tokenCount,
-            timeoutMs: CHUNK_STALL_TIMEOUT_MS,
-          });
           return ok({ tokenCount, stalled: true });
         }
 
@@ -335,7 +290,6 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
 
         if (!started) {
           controller.enqueue({ type: "text-start", id: messageId });
-          logTransport("stream-open", { requestId, messageId });
           started = true;
         }
 
@@ -348,37 +302,22 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
         });
       }
 
-      logTransport("stream-finished", { requestId, messageId, tokenCount });
-
       return ok({ tokenCount, stalled: false });
     } catch (error) {
-      logTransport("stream-error", {
-        requestId,
-        messageId,
-        tokenCount,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
       return err(toAppError(error));
     }
   }
 
-  private async recoverAfterStall(requestId: string): Promise<boolean> {
+  private async recoverAfterStall(): Promise<boolean> {
     try {
-      logTransport("recover-start", { requestId, modelId: this.modelId });
       const result = await inferenceManager.initializeSafe(this.modelId);
 
       if (result.kind === "err") {
         throw result.error;
       }
 
-      logTransport("recover-success", { requestId, modelId: this.modelId });
       return true;
-    } catch (error) {
-      logTransport("recover-failed", {
-        requestId,
-        modelId: this.modelId,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
+    } catch {
       return false;
     }
   }
@@ -407,7 +346,6 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
       requestAbortController: AbortController;
       cancelReason: CancellationReason;
       cleanupAbortListener: () => void;
-      requestId: string;
     }
   ): ReadableStream<UIMessageChunk> {
     return new ReadableStream<UIMessageChunk>({
@@ -416,7 +354,6 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
           const result = await this.streamResponse(controller, webLLMMessages, {
             signal: options.requestAbortController.signal,
             cancelReason: options.cancelReason,
-            requestId: options.requestId,
           });
 
           if (result.kind === "err") {
@@ -431,7 +368,6 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
         }
       },
       cancel: () => {
-        logTransport("stream-cancel", { requestId: options.requestId });
         options.cleanupAbortListener();
         this.abort();
       },
@@ -464,10 +400,6 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
    * Calls inferenceManager.abort() and aborts the internal AbortController.
    */
   abort(): void {
-    if (import.meta.env.DEV) {
-      console.info("[WebLLMTransport] Abort requested");
-    }
-
     // Abort the inference manager
     inferenceManager.abort();
 
@@ -496,13 +428,6 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
         content: this.extractTextContent(message).trim(),
       }))
       .filter((message) => message.content.length > 0);
-
-    if (import.meta.env.DEV && converted.length < messages.length) {
-      console.info("[WebLLMTransport] Dropped empty messages before inference", {
-        inputCount: messages.length,
-        sentCount: converted.length,
-      });
-    }
 
     return converted;
   }

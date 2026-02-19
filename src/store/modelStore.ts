@@ -12,14 +12,6 @@ import type { DownloadProgress } from "@/lib/ai/inference";
 import { MODELS, getModelById, type ModelConfig } from "@/lib/ai/models";
 import { useConversationModelStore } from "@/store/conversationModelStore";
 
-function logModelStore(scope: string, payload: Record<string, unknown>): void {
-  if (!import.meta.env.DEV) {
-    return;
-  }
-
-  console.info(`[ModelStore:${scope}]`, payload);
-}
-
 type LoadingStep = "idle" | "downloading" | "compiling" | "ready" | "error";
 
 interface ModelState {
@@ -56,17 +48,6 @@ export const useModelStore = create<ModelState>()(
     (set) => {
       modelEngine.subscribe((engineState) => {
         useConversationModelStore.getState().syncEngineState(engineState);
-
-        logModelStore("engine-state", {
-          kind: engineState.kind,
-          modelId:
-            engineState.kind === "ready"
-              ? engineState.model.id
-              : engineState.kind === "loading" || engineState.kind === "error"
-                ? engineState.modelId
-                : null,
-          error: engineState.kind === "error" ? engineState.error : null,
-        });
 
         if (engineState.kind === "idle") {
           set({
@@ -132,12 +113,6 @@ export const useModelStore = create<ModelState>()(
         availableModels: MODELS,
 
         loadModel: async (modelId: string) => {
-          logModelStore("load-requested", {
-            modelId,
-            currentModelId: modelEngine.getCurrentModel()?.id ?? null,
-            currentState: modelEngine.getState().kind,
-          });
-
           const model = getModelById(modelId);
           if (!model) {
             set({
@@ -156,13 +131,7 @@ export const useModelStore = create<ModelState>()(
 
           try {
             await modelEngine.loadModel(modelId);
-            logModelStore("load-succeeded", { modelId });
           } catch (err) {
-            logModelStore("load-failed", {
-              modelId,
-              error: err instanceof Error ? err.message : "Unknown error",
-            });
-
             if (import.meta.env.DEV) {
               console.error("[ModelStore] Load failed:", err);
             }

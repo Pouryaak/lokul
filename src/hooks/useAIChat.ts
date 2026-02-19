@@ -30,6 +30,13 @@ export interface UseAIChatReturn {
 export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
   const { conversationId, modelId, initialMessages } = options;
   const transport = useMemo(() => new WebLLMTransport({ modelId }), [modelId]);
+
+  useEffect(() => {
+    return () => {
+      transport.abort();
+    };
+  }, [transport]);
+
   const chatHelpers = useChat({
     id: conversationId,
     transport,
@@ -43,26 +50,6 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
     initialMessageCount: initialMessages?.length ?? 0,
     stopChat: chatHelpers.stop,
   });
-
-  useEffect(() => {
-    if (!import.meta.env.DEV) {
-      return;
-    }
-
-    console.info("[useAIChat] state", {
-      conversationId,
-      modelId,
-      status: chatHelpers.status,
-      messageCount: chatHelpers.messages.length,
-      error: chatHelpers.error?.message ?? null,
-    });
-  }, [
-    chatHelpers.error?.message,
-    chatHelpers.messages.length,
-    chatHelpers.status,
-    conversationId,
-    modelId,
-  ]);
 
   return {
     messages: chatHelpers.messages,
