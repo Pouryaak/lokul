@@ -14,7 +14,35 @@ interface ParsedExtractionPayload {
 }
 
 const FACT_FALLBACK_REGEX =
-  /"fact"\s*:\s*"((?:\\.|[^"\\])*)"[\s\S]*?"category"\s*:\s*"(identity|preference|project)"[\s\S]*?"confidence"\s*:\s*("high"|"medium"|"low"|-?\d+(?:\.\d+)?)/gi;
+  /"fact"\s*:\s*"((?:\\.|[^"\\])*)"[\s\S]*?"category"\s*:\s*"(identity|preference|project|identity\|preference\|project)"[\s\S]*?"confidence"\s*:\s*("high"|"medium"|"low"|-?\d+(?:\.\d+)?)/gi;
+
+function inferCategoryFromFact(fact: string): ExtractedFact["category"] {
+  const normalized = fact.toLowerCase();
+
+  if (
+    normalized.includes("my name") ||
+    normalized.includes("i am") ||
+    normalized.includes("i'm") ||
+    normalized.includes("i live")
+  ) {
+    return "identity";
+  }
+
+  if (
+    normalized.includes("project") ||
+    normalized.includes("job") ||
+    normalized.includes("career") ||
+    normalized.includes("apply") ||
+    normalized.includes("visa") ||
+    normalized.includes("move") ||
+    normalized.includes("goal") ||
+    normalized.includes("planning")
+  ) {
+    return "project";
+  }
+
+  return "preference";
+}
 
 function toConfidence(value: unknown): number | null {
   if (typeof value === "number") {
@@ -61,7 +89,17 @@ function normalizeExtractedFacts(payload: ParsedExtractionPayload): ExtractedFac
         return null;
       }
 
-      if (!isValidCategory(fact.category)) {
+      const normalizedFact = fact.fact.trim();
+      const shouldInferCategory =
+        typeof fact.category === "string" &&
+        fact.category.toLowerCase() === "identity|preference|project";
+      const category = isValidCategory(fact.category)
+        ? fact.category
+        : shouldInferCategory
+          ? inferCategoryFromFact(normalizedFact)
+          : null;
+
+      if (!category) {
         return null;
       }
 
@@ -70,10 +108,12 @@ function normalizeExtractedFacts(payload: ParsedExtractionPayload): ExtractedFac
         return null;
       }
 
+      const normalizedConfidence = shouldInferCategory && confidence <= 0 ? 0.8 : confidence;
+
       return {
-        fact: fact.fact.trim(),
-        category: fact.category,
-        confidence,
+        fact: normalizedFact,
+        category,
+        confidence: normalizedConfidence,
         updatesPrevious: fact.updates_previous === true || fact.updates_previous === "true",
       };
     })
@@ -110,15 +150,21 @@ function salvageFactsFromText(content: string): ExtractedFact[] {
 
   for (const match of content.matchAll(FACT_FALLBACK_REGEX)) {
     const rawFact = match[1];
-    const category = match[2];
+    const categoryRaw = match[2];
     const rawConfidence = match[3].replace(/^"|"$/g, "");
     const confidence = toConfidence(rawConfidence);
+    const fact = decodeQuotedText(rawFact).trim();
+    const shouldInferCategory = categoryRaw.toLowerCase() === "identity|preference|project";
+    const category = isValidCategory(categoryRaw)
+      ? categoryRaw
+      : shouldInferCategory
+        ? inferCategoryFromFact(fact)
+        : null;
 
-    if (!isValidCategory(category) || confidence === null) {
+    if (!category || confidence === null) {
       continue;
     }
 
-    const fact = decodeQuotedText(rawFact).trim();
     if (!fact) {
       continue;
     }
@@ -129,7 +175,7 @@ function salvageFactsFromText(content: string): ExtractedFact[] {
     facts.push({
       fact,
       category,
-      confidence,
+      confidence: shouldInferCategory && confidence <= 0 ? 0.8 : confidence,
       updatesPrevious,
     });
   }
@@ -209,25 +255,26 @@ function tryParseExtraction(content: string): ExtractedFact[] {
 export function createExtractionPrompt(
   messages: Message[]
 ): Array<{ role: "system" | "user" | "assistant"; content: string }> {
-  const systemPrompt =
-    "Extract memorable facts from this conversation. " +
-    'Return ONLY minified JSON with format: {"facts":[{"fact":"...","category":"identity|preference|project","confidence":0.0-1.0,"updates_previous":false}]}. ' +
-    "Never include prose, markdown, code fences, or explanations. " +
-    "Rules: include at most 3 high-confidence facts stated directly by the user; identity = personal info, preference = likes/dislikes and style, project = current work/goals/tasks; set updates_previous to true for contradictions.";
+  const userTurns = messages
+    .filter((message) => message.role === "user")
+    .slice(-8)
+    .map((message) => `- ${message.content.trim()}`)
+    .filter((line) => line.length > 2)
+    .join("\n");
 
-  const transcript = messages
-    .slice(-10)
-    .map((message) => `${message.role.toUpperCase()}: ${message.content}`)
-    .join("\n\n");
+  const systemPrompt =
+    "You are a fact extractor. " +
+    'Return ONLY minified JSON with this structure: {"facts":[{"fact":"short statement","category":"project","confidence":0.85,"updates_previous":false}]}. ' +
+    'For each fact, category must be exactly one of "identity", "preference", or "project". ' +
+    "Rules: use only user-authored statements, keep fact text under 12 words, extract at most 5 facts, and set updates_previous=true only for contradictions against earlier user statements. " +
+    'If no reliable facts are present, return {"facts":[]}. ' +
+    "Output raw JSON only. No prose, no markdown, no code fences.";
 
   return [
     { role: "system", content: systemPrompt },
     {
       role: "user",
-      content:
-        "Conversation transcript:\n" +
-        transcript +
-        "\n\nReturn ONLY the JSON object. Do not add prose.",
+      content: `Extract memorable facts from these user messages:\n\n${userTurns}\n\nJSON:`,
     },
   ];
 }
@@ -241,8 +288,9 @@ export async function extractFacts(
   } = {}
 ): Promise<Result<ExtractedFact[], AppError>> {
   const minConfidence = options.minConfidence ?? 0.75;
+  const userMessageCount = messages.filter((message) => message.role === "user").length;
 
-  if (messages.length < 2) {
+  if (userMessageCount < 2) {
     return ok([]);
   }
 
@@ -250,28 +298,53 @@ export async function extractFacts(
     return err(abortedError(options.signal.reason));
   }
 
-  try {
-    const completion = await engine.chat.completions.create({
-      messages: createExtractionPrompt(messages),
-      temperature: 0.1,
-      max_tokens: 500,
-      stream: false,
-      response_format: { type: "json_object" },
-    });
+  const extractionPrompt = createExtractionPrompt(messages);
 
-    if (options.signal?.aborted) {
-      return err(abortedError(options.signal.reason));
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const completion = await engine.chat.completions.create({
+        messages: extractionPrompt,
+        temperature: 0.1,
+        max_tokens: 800,
+        stream: false,
+      });
+
+      if (options.signal?.aborted) {
+        return err(abortedError(options.signal.reason));
+      }
+
+      const content = completion.choices[0]?.message?.content;
+      if (!content) {
+        return ok([]);
+      }
+
+      const parsedFacts = tryParseExtraction(content);
+      const filtered = parsedFacts.filter((fact) => fact.confidence >= minConfidence);
+      return ok(filtered);
+    } catch (error) {
+      const rawMessage =
+        error instanceof Error
+          ? `${error.name}: ${error.message}`
+          : typeof error === "string"
+            ? error
+            : JSON.stringify(error);
+      const isTransient =
+        rawMessage.includes("MessageOrderError") ||
+        rawMessage.includes("Message error should not be 0");
+
+      if (attempt === 0 && isTransient) {
+        if (import.meta.env.DEV) {
+          console.warn("[Memory] Transient extraction error, retrying once", rawMessage);
+        }
+        await new Promise((resolve) => {
+          window.setTimeout(resolve, 120);
+        });
+        continue;
+      }
+
+      return err(memoryExtractionError("Failed to extract facts from conversation", error));
     }
-
-    const content = completion.choices[0]?.message?.content;
-    if (!content) {
-      return ok([]);
-    }
-
-    const parsedFacts = tryParseExtraction(content);
-    const filtered = parsedFacts.filter((fact) => fact.confidence >= minConfidence);
-    return ok(filtered);
-  } catch (error) {
-    return err(memoryExtractionError("Failed to extract facts from conversation", error));
   }
+
+  return err(memoryExtractionError("Failed to extract facts from conversation"));
 }

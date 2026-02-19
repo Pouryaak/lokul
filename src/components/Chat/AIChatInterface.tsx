@@ -105,7 +105,7 @@ export function AIChatInterface({
       .filter((message) => message.content.length > 0);
   }, [conversationId, messages]);
 
-  useMemoryExtraction(conversationId, extractionMessages);
+  useMemoryExtraction(conversationId, extractionMessages, status);
 
   const hasMessages = messages.length > 0;
   const chatErrorMessage =

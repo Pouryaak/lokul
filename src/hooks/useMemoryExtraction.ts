@@ -8,7 +8,8 @@ const EXTRACTION_INTERVAL_MESSAGES = 5;
 
 export function useMemoryExtraction(
   conversationId: string,
-  messages: Message[]
+  messages: Message[],
+  chatStatus: "submitted" | "streaming" | "ready" | "error"
 ): {
   triggerExtraction: () => void;
   isExtracting: boolean;
@@ -20,12 +21,22 @@ export function useMemoryExtraction(
   const isMountedRef = useRef(true);
   const latestConversationIdRef = useRef(conversationId);
   const latestMessagesRef = useRef(messages);
+  const latestStatusRef = useRef(chatStatus);
   const lastExtractedMessageCountRef = useRef(0);
   const timeoutRef = useRef<number | null>(null);
 
   const runExtraction = useCallback(async () => {
     const latestMessages = latestMessagesRef.current;
     if (latestMessages.length < 2 || isExtractingRef.current) {
+      return;
+    }
+
+    if (latestStatusRef.current !== "ready") {
+      if (import.meta.env.DEV) {
+        console.info(
+          `[MemoryExtraction] Skipping extraction: chat status is ${latestStatusRef.current}`
+        );
+      }
       return;
     }
 
@@ -122,6 +133,10 @@ export function useMemoryExtraction(
   }, [messages]);
 
   useEffect(() => {
+    latestStatusRef.current = chatStatus;
+  }, [chatStatus]);
+
+  useEffect(() => {
     return () => {
       isMountedRef.current = false;
     };
@@ -129,7 +144,7 @@ export function useMemoryExtraction(
 
   useEffect(() => {
     const messagesSinceLast = messages.length - lastExtractedMessageCountRef.current;
-    if (messagesSinceLast >= EXTRACTION_INTERVAL_MESSAGES) {
+    if (messagesSinceLast >= EXTRACTION_INTERVAL_MESSAGES && chatStatus === "ready") {
       if (import.meta.env.DEV) {
         console.info(
           `[MemoryExtraction] Interval trigger: ${messagesSinceLast} new messages since last extraction`
@@ -137,7 +152,7 @@ export function useMemoryExtraction(
       }
       triggerExtraction();
     }
-  }, [messages.length, triggerExtraction]);
+  }, [chatStatus, messages.length, triggerExtraction]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -150,7 +165,13 @@ export function useMemoryExtraction(
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      triggerExtraction(true);
+      const pendingMessages =
+        latestMessagesRef.current.length - lastExtractedMessageCountRef.current;
+
+      if (pendingMessages > 0 && latestStatusRef.current === "ready") {
+        triggerExtraction(true);
+      }
+
       if (timeoutRef.current !== null) {
         window.clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
