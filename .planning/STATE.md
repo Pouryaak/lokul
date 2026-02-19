@@ -27,12 +27,12 @@
 ## Current Position
 
 **Phase:** Phase 5 - Polish & PWA
-**Plan:** 05-02 complete (1/4 plans complete)
-**Status:** CHAT-10 long-thread chunk loading delivered with bottom-first route entry preserved
+**Plan:** 05-02 complete (2/4 plans complete)
+**Status:** CHAT-09 responsive shell baseline delivered with mobile single-panel focus; CHAT-10 long-thread chunk loading remains in place
 
 **Progress:**
 
-[████████░░] 85%
+[██████████] 102%
 [=====---------------] 25% (Phase 5 in progress)
 
 **Phases:**
@@ -89,6 +89,7 @@
 | Phase 04-memory-system P05 | 2 min | 3 tasks | 4 files |
 | Phase 04-memory-system P06 | 2 min | 2 tasks | 2 files |
 | Phase 05 P02 | 3 min | 3 tasks | 3 files |
+| Phase 05-polish-and-pwa P01 | 4 min | 3 tasks | 4 files |
 
 ### Plan Execution Metrics
 
@@ -209,6 +210,8 @@
 - [Phase 04-memory-system]: Prevent Sheet outside-interaction dismissal when the interaction originates from Sonner toast elements to preserve one-click undo UX.
 - [Phase 05]: Use a dedicated useConversationHistoryWindow hook with thresholded activation for long-thread rendering
 - [Phase 05]: Pass explicit startAtBottom route hint from ChatDetailRoute so existing conversations open at latest messages
+- [Phase 05-polish-and-pwa]: Use a dedicated mobile panel controller to enforce mutual exclusivity between mobile overlays
+- [Phase 05-polish-and-pwa]: Preserve desktop panel interactions while routing mobile toggles through one shared mobilePanel state
 
 ### Open Questions
 
@@ -242,9 +245,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 05-02 with long-thread chunk-window loading and bottom-first route entry behavior
+**Last Action:** Completed 05-01 with compact responsive shell, mobile panel focus control, and chat-first drawer behavior
 **Next Action:** Execute 05-03 plan for chat export/import UX integration
-**Context Hash:** phase-05-polish-and-pwa-02-complete-20260219
+**Context Hash:** phase-05-polish-and-pwa-01-complete-20260219
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 
