@@ -6,6 +6,7 @@ import {
   memoryQuotaExceededError,
   type AppError,
 } from "@/lib/utils/errors";
+import { runMemoryMaintenance } from "@/lib/memory/eviction";
 import type { MemoryCategory, MemoryFact } from "@/lib/memory/types";
 import { err, ok, type Result } from "@/types/result";
 
@@ -33,6 +34,24 @@ function toMemoryError(error: unknown, message: string): AppError {
   }
 
   return memoryError(message, undefined, error);
+}
+
+async function runMaintenanceAfterWrite(signal?: AbortSignal): Promise<void> {
+  const maintenanceResult = await runMemoryMaintenance({ signal });
+
+  if (maintenanceResult.kind === "err") {
+    if (import.meta.env.DEV) {
+      console.warn("[Memory] Maintenance failed after write", maintenanceResult.error);
+    }
+    return;
+  }
+
+  if (import.meta.env.DEV) {
+    const { pruned, evicted, remaining } = maintenanceResult.value;
+    console.info(
+      `[Memory] Maintenance complete after write: pruned=${pruned}, evicted=${evicted}, remaining=${remaining}`
+    );
+  }
 }
 
 export function normalizeFactText(text: string): string {
@@ -93,6 +112,7 @@ export async function saveMemoryFact(
       return nextFact;
     });
 
+    await runMaintenanceAfterWrite(options.signal);
     return ok(result);
   } catch (error) {
     return err(toMemoryError(error, "Failed to save memory fact"));

@@ -3,14 +3,21 @@ import { abortedError, memoryError, type AppError } from "@/lib/utils/errors";
 import { err, ok, type Result } from "@/types/result";
 import type { MemoryCategory, MemoryFact } from "./types";
 
-const HARD_CAP = 150;
-const PRUNE_THRESHOLD = 120;
-const MAX_PINNED = 10;
+export const MEMORY_LIMITS = {
+  hardCap: 150,
+  pruneThreshold: 120,
+  maxPinned: 10,
+  expiryMs: {
+    project: 60 * 24 * 60 * 60 * 1000,
+    preference: 180 * 24 * 60 * 60 * 1000,
+    identity: 365 * 24 * 60 * 60 * 1000,
+  } satisfies Record<MemoryCategory, number>,
+} as const;
 
 const CATEGORY_EXPIRY: Record<MemoryCategory, number> = {
-  project: 60 * 24 * 60 * 60 * 1000,
-  preference: 180 * 24 * 60 * 60 * 1000,
-  identity: 365 * 24 * 60 * 60 * 1000,
+  project: MEMORY_LIMITS.expiryMs.project,
+  preference: MEMORY_LIMITS.expiryMs.preference,
+  identity: MEMORY_LIMITS.expiryMs.identity,
 };
 
 const CATEGORY_WEIGHTS: Record<MemoryCategory, number> = {
@@ -40,7 +47,7 @@ export async function evictFactsIfNeeded(
     const allFacts = await db.memory.toArray();
     assertNotAborted(options.signal);
 
-    if (allFacts.length <= PRUNE_THRESHOLD) {
+    if (allFacts.length <= MEMORY_LIMITS.pruneThreshold) {
       return ok({ evicted: 0, remaining: allFacts.length });
     }
 
@@ -49,13 +56,13 @@ export async function evictFactsIfNeeded(
       .filter((fact) => !fact.pinned)
       .sort((left, right) => calculateEvictionScore(right) - calculateEvictionScore(left));
 
-    if (import.meta.env.DEV && pinned.length > MAX_PINNED) {
+    if (import.meta.env.DEV && pinned.length > MEMORY_LIMITS.maxPinned) {
       console.warn(
-        `[Memory] Pinned facts exceed soft cap (${pinned.length}/${MAX_PINNED}); skipping pinned eviction.`
+        `[Memory] Pinned facts exceed soft cap (${pinned.length}/${MEMORY_LIMITS.maxPinned}); skipping pinned eviction.`
       );
     }
 
-    const targetRemovals = Math.max(0, allFacts.length - HARD_CAP);
+    const targetRemovals = Math.max(0, allFacts.length - MEMORY_LIMITS.pruneThreshold);
     const idsToDelete = nonPinned.slice(0, targetRemovals).map((fact) => fact.id);
 
     if (idsToDelete.length > 0) {
@@ -97,4 +104,24 @@ export async function pruneExpiredFacts(
   } catch (error) {
     return err(memoryError("Failed to prune expired memory facts", undefined, error));
   }
+}
+
+export async function runMemoryMaintenance(
+  options: { signal?: AbortSignal } = {}
+): Promise<Result<{ pruned: number; evicted: number; remaining: number }, AppError>> {
+  const prunedResult = await pruneExpiredFacts(options);
+  if (prunedResult.kind === "err") {
+    return prunedResult;
+  }
+
+  const evictionResult = await evictFactsIfNeeded(options);
+  if (evictionResult.kind === "err") {
+    return evictionResult;
+  }
+
+  return ok({
+    pruned: prunedResult.value,
+    evicted: evictionResult.value.evicted,
+    remaining: evictionResult.value.remaining,
+  });
 }
