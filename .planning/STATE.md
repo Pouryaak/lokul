@@ -86,6 +86,7 @@
 | Phase 04-memory-system P01 | 4 min | 3 tasks | 7 files |
 | Phase 04-memory-system P02 | 4 min | 4 tasks | 6 files |
 | Phase 04-memory-system P03 | 6 min | 5 tasks | 7 files |
+| Phase 04-memory-system P04 | 3 min | 3 tasks | 5 files |
 | Phase 04-memory-system P05 | 2 min | 3 tasks | 4 files |
 
 ### Plan Execution Metrics
@@ -110,6 +111,7 @@
 | 02.1-07 | 3 min | 3 | 5 | 2026-02-18 |
 | 04-02 | 4 min | 4 | 6 | 2026-02-19 |
 | 04-03 | 6 min | 5 | 7 | 2026-02-19 |
+| 04-04 | 3 min | 3 | 5 | 2026-02-19 |
 
 ---
 
@@ -197,6 +199,9 @@
 - [Phase 04-memory-system]: Expose compactContext over-limit state plus context-window targets so transport can enforce safe fallback deterministically.
 - [Phase 04-memory-system]: Apply transport-side no-memory fallback and token-target truncation before generation instead of relying on single-pass compaction.
 - [Phase 04-memory-system]: Treat prune-threshold as the eviction landing zone and trigger maintenance automatically after successful memory writes.
+- [Phase 04-memory-system]: Wire useMemoryExtraction from AIChatInterface with live AI SDK text-part mapping so extraction runs in active chat.
+- [Phase 04-memory-system]: Refactor useMemoryExtraction around latest-value refs to eliminate per-message listener churn while keeping fresh lifecycle data.
+- [Phase 04-memory-system]: Add extractFacts short-history no-op guard and remove unnecessary MemoryError casting for deterministic extraction behavior.
 
 ### Open Questions
 
