@@ -442,6 +442,59 @@ export interface PersistenceConflictDetails {
   actualVersion: number;
 }
 
+// ============================================================================
+// Conversation Transfer Types
+// ============================================================================
+
+export const CONVERSATION_BACKUP_SCHEMA_VERSION = 1;
+
+export interface ConversationBackupEnvelope {
+  schemaVersion: number;
+  exportedAt: number;
+  conversation: Conversation;
+}
+
+export type ConversationImportStep = "parse" | "schema" | "integrity" | "conflict" | "persist";
+
+export type ConversationImportErrorCode =
+  | "invalid_json"
+  | "invalid_schema"
+  | "invalid_messages"
+  | "conflict_unresolved"
+  | "persist_failed";
+
+export type ConversationConflictResolution = "replace" | "duplicate";
+
+export type ConversationImportResolution = "created" | "replaced" | "duplicated";
+
+export interface ConversationImportConflict {
+  existing: Conversation;
+  incoming: Conversation;
+}
+
+export interface ConversationImportOptions {
+  resolveConflict?: (
+    conflict: ConversationImportConflict
+  ) => Promise<ConversationConflictResolution> | ConversationConflictResolution;
+  generateConversationId?: () => string;
+  now?: () => number;
+}
+
+export interface ConversationImportSuccess {
+  ok: true;
+  resolution: ConversationImportResolution;
+  conversation: Conversation;
+}
+
+export interface ConversationImportFailure {
+  ok: false;
+  step: ConversationImportStep;
+  code: ConversationImportErrorCode;
+  message: string;
+}
+
+export type ConversationImportResult = ConversationImportSuccess | ConversationImportFailure;
+
 /**
  * Pagination parameters
  */
