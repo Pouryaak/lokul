@@ -29,8 +29,8 @@
 **Phase:** Phase 5 - Polish & PWA
 **Current Plan:** 4
 **Total Plans in Phase:** 4
-**Plan:** 05-03 complete (3/4 plans complete)
-**Status:** STOR-05 through STOR-08 delivered via per-chat transfer menu with guided JSON import validation and conflict resolution
+**Plan:** 05-04 complete (3/4 plans complete)
+**Status:** CHAT-09 install/offline polish delivered with first-successful-chat install gating, session-scoped dismissal suppression, and header status integration
 
 **Progress:**
 
@@ -256,9 +256,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 05-03 with per-chat import/export menu, transfer service, and conflict-aware JSON restore flow
-**Next Action:** Execute 05-04 plan for PWA install/offline polish completion
-**Context Hash:** phase-05-polish-and-pwa-03-complete-20260219
+**Last Action:** Completed 05-04 with install eligibility state machine, compact header status indicator, and manifest icon hardening
+**Next Action:** Execute 05-03 summary/state closure or run phase verification for Phase 5
+**Context Hash:** phase-05-polish-and-pwa-04-complete-20260219
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 
