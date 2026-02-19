@@ -10,9 +10,10 @@
 import { useEffect, useState } from "react";
 import { Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/Button";
 import { AppSidebar } from "./AppSidebar";
+import { CompactChatHeader } from "./compact-chat-header";
 import { StatusIndicator } from "@/components/performance/StatusIndicator";
 import { PerformancePanel } from "@/components/performance/PerformancePanel";
 import { DownloadManager } from "@/components/model/DownloadManager";
@@ -112,27 +113,30 @@ export function ChatLayout({
           className
         )}
       >
-        {/* Header - only performance button, no duplicate sidebar trigger */}
-        <header className="flex h-14 items-center justify-between border-b border-gray-200/50 bg-white/50 px-4 backdrop-blur-sm">
-          <div className="flex items-center gap-2">
-            <MemoryHeaderPill count={count} onClick={openPanel} />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <DownloadManager />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowPerformancePanel(!showPerformancePanel)}
-              aria-label={
-                showPerformancePanel ? "Hide performance panel" : "Show performance panel"
-              }
-              aria-pressed={showPerformancePanel}
-            >
-              <Activity className="h-4 w-4" />
-            </Button>
-          </div>
-        </header>
+        <CompactChatHeader
+          leftActions={
+            <>
+              <SidebarTrigger className="md:hidden" />
+              <MemoryHeaderPill count={count} onClick={openPanel} />
+            </>
+          }
+          rightActions={
+            <>
+              <DownloadManager />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPerformancePanel(!showPerformancePanel)}
+                aria-label={
+                  showPerformancePanel ? "Hide performance panel" : "Show performance panel"
+                }
+                aria-pressed={showPerformancePanel}
+              >
+                <Activity className="h-4 w-4" />
+              </Button>
+            </>
+          }
+        />
 
         {/* Main content */}
         <main className="flex-1 overflow-hidden">{children}</main>
