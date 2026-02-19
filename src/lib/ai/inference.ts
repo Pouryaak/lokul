@@ -239,6 +239,14 @@ export class InferenceManager {
   }
 
   /**
+   * Get current WebLLM engine instance.
+   * Used by memory extraction hooks to run sidecar prompts.
+   */
+  getEngine(): MLCEngineInterface | null {
+    return this.engine;
+  }
+
+  /**
    * Get the currently loaded model ID
    * @returns Model ID or null if no model loaded
    */
