@@ -20,13 +20,15 @@ import { inferenceManager } from "./inference";
 import { modelEngine } from "./model-engine";
 import type { CancellationReason } from "@/types/index";
 import { getMemoryFacts } from "@/lib/storage/memory";
-import { buildContextWithMemory } from "@/lib/memory/context-builder";
+import { buildContextWithMemory, estimateTokens } from "@/lib/memory/context-builder";
 import { compactContext } from "@/lib/memory/compaction";
 
 const DEFAULT_CANCEL_REASON: CancellationReason = "user_stop";
 const CHUNK_STALL_TIMEOUT_MS = 20000;
 const CHUNK_ABORT_SENTINEL = Symbol("chunk-aborted");
 const DRAIN_WAIT_TIMEOUT_MS = 4000;
+const TRANSPORT_FALLBACK_TARGET_RATIO = 0.8;
+const TRANSPORT_MIN_CONTEXT_WINDOW = 1;
 
 async function nextChunkWithTimeout(
   iterator: AsyncIterator<string>,
@@ -217,11 +219,35 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
       const compacted = compactContext(conversationMessages, memoryResult.value, this.modelId);
       if (import.meta.env.DEV) {
         console.info(
-          `[Memory] Compaction applied (${compacted.stage}); context now ${compacted.percentUsed.toFixed(1)}%`
+          `[Memory] Compaction applied (${compacted.stage}/${compacted.fallback}); context now ${compacted.percentUsed.toFixed(1)}%`
         );
       }
 
-      return compacted.messages;
+      if (!compacted.overLimit) {
+        return compacted.messages;
+      }
+
+      if (import.meta.env.DEV) {
+        console.warn(
+          `[Memory] Compaction remains over limit (${compacted.totalTokens}/${compacted.limits.targetTokens}); applying transport fallback.`
+        );
+      }
+
+      const fallbackMessages = this.applyOverLimitFallback(conversationMessages, currentMessage, {
+        targetTokens: compacted.limits.targetTokens,
+      });
+
+      if (import.meta.env.DEV) {
+        const fallbackTokens = fallbackMessages.reduce(
+          (sum, message) => sum + estimateTokens(message.content),
+          0
+        );
+        console.info(
+          `[Memory] Transport fallback prepared ${fallbackMessages.length} messages (${fallbackTokens} tokens).`
+        );
+      }
+
+      return fallbackMessages;
     } catch (error) {
       if (import.meta.env.DEV) {
         console.warn("[Memory] Memory prompt injection failed; continuing without memory", error);
@@ -229,6 +255,83 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
 
       return conversationMessages;
     }
+  }
+
+  private applyOverLimitFallback(
+    conversationMessages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
+    currentMessage: string | undefined,
+    options: { targetTokens: number }
+  ): Array<{ role: "system" | "user" | "assistant"; content: string }> {
+    const noMemoryContext = buildContextWithMemory(conversationMessages, [], this.modelId, {
+      currentMessage,
+    });
+
+    if (noMemoryContext.totalTokens <= options.targetTokens) {
+      return noMemoryContext.messages;
+    }
+
+    const systemMessage = noMemoryContext.messages.find((message) => message.role === "system");
+    const conversationOnly = noMemoryContext.messages.filter(
+      (message) => message.role !== "system"
+    );
+    const trimmedConversation = this.trimConversationToTokenTarget(
+      conversationOnly,
+      options.targetTokens
+    );
+
+    if (systemMessage) {
+      return [systemMessage, ...trimmedConversation];
+    }
+
+    return trimmedConversation;
+  }
+
+  private trimConversationToTokenTarget(
+    messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
+    targetTokens: number
+  ): Array<{ role: "system" | "user" | "assistant"; content: string }> {
+    const safeTarget = Math.max(targetTokens, TRANSPORT_MIN_CONTEXT_WINDOW);
+    const kept = [...messages];
+    let totalTokens = kept.reduce((sum, message) => sum + estimateTokens(message.content), 0);
+
+    while (kept.length > 1 && totalTokens > safeTarget * TRANSPORT_FALLBACK_TARGET_RATIO) {
+      const removed = kept.shift();
+      if (!removed) {
+        break;
+      }
+      totalTokens -= estimateTokens(removed.content);
+    }
+
+    if (kept.length === 0) {
+      return [];
+    }
+
+    if (totalTokens <= safeTarget * TRANSPORT_FALLBACK_TARGET_RATIO) {
+      return kept;
+    }
+
+    const lastIndex = kept.length - 1;
+    const last = kept[lastIndex];
+    const lastTokenCount = estimateTokens(last.content);
+    const overflow = Math.max(0, totalTokens - safeTarget);
+
+    if (overflow >= lastTokenCount) {
+      return [
+        {
+          ...last,
+          content: last.content.slice(0, 32),
+        },
+      ];
+    }
+
+    const allowedTokens = Math.max(16, lastTokenCount - overflow);
+    const allowedChars = allowedTokens * 4;
+    const truncatedLast = {
+      ...last,
+      content: last.content.slice(0, allowedChars),
+    };
+
+    return [...kept.slice(0, lastIndex), truncatedLast];
   }
 
   private async streamResponse(
