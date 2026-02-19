@@ -14,7 +14,7 @@
 - [x] **Phase 2.1: AI SDK UI Migration with Routing** - Add routing (/chat, /chat/[id]), integrate AI SDK UI with WebLLM, use ai-elements components
 - [x] **Phase 2.2: Stabilization & Refactor** (INSERTED) - Fix race conditions, establish error handling patterns, remove technical debt
 - [x] **Phase 3: Model Management** - Conversation-scoped model switching with Smart-default strategy and download manager
-- [ ] **Phase 4: Memory System** - Three-tier memory (Core Facts + Daily Context + Recent Messages) with auto-compaction
+- [x] **Phase 4: Memory System** - Three-tier memory (Core Facts + Daily Context + Recent Messages) with auto-compaction (completed 2026-02-19)
 - [ ] **Phase 5: Polish & PWA** - Performance panel, responsive design, export/import, and PWA features
 
 ---
@@ -28,7 +28,7 @@
 | 2.1. AI SDK UI Migration | 7/7 | Complete | 2026-02-18 |
 | 2.2. Stabilization & Refactor | 6/6 | Complete | 2026-02-18 |
 | 3. Model Management | 3/3 | Complete | 2026-02-19 |
-| 4. Memory System | 3/6 | Gap closure planned | - |
+| 4. Memory System | 3/6 | Complete    | 2026-02-19 |
 | 5. Polish & PWA | 0/3 | Not started | - |
 
 ---
@@ -219,7 +219,7 @@ Plans:
 6. User can edit Core Facts directly
 7. User can clear all memory with confirmation
 
-**Plans:** 6 plans in 4 waves
+**Plans:** 6/6 plans complete
 
 **Wave 1** (foundation):
 - [x] 04-01-PLAN.md — Storage layer and extraction service (Dexie schema v2, memory CRUD, fact extraction via LLM)

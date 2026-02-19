@@ -24,22 +24,22 @@
 
 ### Model Management (MODEL)
 
-- [ ] **MODEL-01**: App auto-loads Quick Mode (Phi-2 2.7B, ~80MB) on first visit
+- [x] **MODEL-01**: App auto-loads Quick Mode (Phi-2 2.7B, ~80MB) on first visit
 - [x] **MODEL-02**: User can see current active/requested model in chat controls (input selector + download manager)
 - [x] **MODEL-03**: User can switch to Smart Mode (Llama 3.2 3B, ~2.8GB) via dropdown
 - [x] **MODEL-04**: User can switch to Genius Mode (Mistral 7B, ~6.4GB) via dropdown
 - [x] **MODEL-05**: Download progress displays with percentage and time estimate
 - [x] **MODEL-06**: User can cancel an in-progress model download
-- [ ] **MODEL-07**: Downloaded models persist in cache across browser sessions
+- [x] **MODEL-07**: Downloaded models persist in cache across browser sessions
 - [x] **MODEL-08**: Model switch does not require page reload (seamless transition)
 
 ### Performance Monitoring (PERF)
 
-- [ ] **PERF-01**: Performance panel displays GPU status (Active/Inactive/Not Supported)
-- [ ] **PERF-02**: Performance panel shows memory usage (MB / total available)
+- [x] **PERF-01**: Performance panel displays GPU status (Active/Inactive/Not Supported)
+- [x] **PERF-02**: Performance panel shows memory usage (MB / total available)
 - [ ] **PERF-03**: Performance panel shows tokens per second during generation
 - [ ] **PERF-04**: Performance panel shows last response time (ms)
-- [ ] **PERF-05**: Visual indicator shows system health (Green/Yellow/Red)
+- [x] **PERF-05**: Visual indicator shows system health (Green/Yellow/Red)
 - [ ] **PERF-06**: Warning displayed if memory usage exceeds 75%
 - [ ] **PERF-07**: Suggestion to switch to Quick Mode shown if performance degrades
 
@@ -53,23 +53,23 @@
 - [ ] **STOR-06**: User can export current conversation as JSON (.json)
 - [ ] **STOR-07**: User can export current conversation as Text (.txt)
 - [ ] **STOR-08**: User can import conversation from JSON backup
-- [ ] **STOR-09**: Settings persist across sessions (theme, default model)
+- [x] **STOR-09**: Settings persist across sessions (theme, default model)
 
 ### Offline Mode (OFFL)
 
-- [ ] **OFFL-01**: Service Worker caches application assets for offline use
-- [ ] **OFFL-02**: Downloaded models remain available offline
-- [ ] **OFFL-03**: Clear indicator shows "✅ Works Offline" or "⚠️ Online Required"
-- [ ] **OFFL-04**: App functions without internet after first load (with cached model)
-- [ ] **OFFL-05**: PWA manifest allows "Add to Home Screen" installation
+- [x] **OFFL-01**: Service Worker caches application assets for offline use
+- [x] **OFFL-02**: Downloaded models remain available offline
+- [x] **OFFL-03**: Clear indicator shows "✅ Works Offline" or "⚠️ Online Required"
+- [x] **OFFL-04**: App functions without internet after first load (with cached model)
+- [x] **OFFL-05**: PWA manifest allows "Add to Home Screen" installation
 
 ### First-Run Experience (FIRST)
 
-- [ ] **FIRST-01**: Landing page displays "Start Chatting" button within 2 seconds
-- [ ] **FIRST-02**: Setup flow checks device capabilities (WebGPU support)
-- [ ] **FIRST-03**: Setup flow shows honest progress steps during Quick Mode load
-- [ ] **FIRST-04**: First message can be sent within 60 seconds of landing
-- [ ] **FIRST-05**: Clear error shown if WebGPU not supported (browser compatibility)
+- [x] **FIRST-01**: Landing page displays "Start Chatting" button within 2 seconds
+- [x] **FIRST-02**: Setup flow checks device capabilities (WebGPU support)
+- [x] **FIRST-03**: Setup flow shows honest progress steps during Quick Mode load
+- [x] **FIRST-04**: First message can be sent within 60 seconds of landing
+- [x] **FIRST-05**: Clear error shown if WebGPU not supported (browser compatibility)
 - [x] **FIRST-06**: New chats default to Smart Mode (prompt flow removed by approved scope update)
 
 ### Memory & Context (MEM)
@@ -131,19 +131,19 @@
 | CHAT-08 | Phase 2 | Complete |
 | CHAT-09 | Phase 5 | Pending |
 | CHAT-10 | Phase 5 | Pending |
-| MODEL-01 | Phase 1 | Pending |
+| MODEL-01 | Phase 1 | Complete |
 | MODEL-02 | Phase 3 | Complete |
 | MODEL-03 | Phase 3 | Complete |
 | MODEL-04 | Phase 3 | Complete |
 | MODEL-05 | Phase 3 | Complete |
 | MODEL-06 | Phase 3 | Complete |
-| MODEL-07 | Phase 1 | Pending |
+| MODEL-07 | Phase 1 | Complete |
 | MODEL-08 | Phase 3 | Complete |
-| PERF-01 | Phase 1 | Pending |
-| PERF-02 | Phase 1 | Pending |
+| PERF-01 | Phase 1 | Complete |
+| PERF-02 | Phase 1 | Complete |
 | PERF-03 | Phase 2 | Pending |
 | PERF-04 | Phase 2 | Pending |
-| PERF-05 | Phase 1 | Pending |
+| PERF-05 | Phase 1 | Complete |
 | PERF-06 | Phase 2 | Pending |
 | PERF-07 | Phase 2 | Pending |
 | STOR-01 | Phase 2 | Pending |
@@ -154,17 +154,17 @@
 | STOR-06 | Phase 5 | Pending |
 | STOR-07 | Phase 5 | Pending |
 | STOR-08 | Phase 5 | Pending |
-| STOR-09 | Phase 1 | Pending |
-| OFFL-01 | Phase 1 | Pending |
-| OFFL-02 | Phase 1 | Pending |
-| OFFL-03 | Phase 1 | Pending |
-| OFFL-04 | Phase 1 | Pending |
-| OFFL-05 | Phase 1 | Pending |
-| FIRST-01 | Phase 1 | Pending |
-| FIRST-02 | Phase 1 | Pending |
-| FIRST-03 | Phase 1 | Pending |
-| FIRST-04 | Phase 1 | Pending |
-| FIRST-05 | Phase 1 | Pending |
+| STOR-09 | Phase 1 | Complete |
+| OFFL-01 | Phase 1 | Complete |
+| OFFL-02 | Phase 1 | Complete |
+| OFFL-03 | Phase 1 | Complete |
+| OFFL-04 | Phase 1 | Complete |
+| OFFL-05 | Phase 1 | Complete |
+| FIRST-01 | Phase 1 | Complete |
+| FIRST-02 | Phase 1 | Complete |
+| FIRST-03 | Phase 1 | Complete |
+| FIRST-04 | Phase 1 | Complete |
+| FIRST-05 | Phase 1 | Complete |
 | FIRST-06 | Phase 3 | Complete |
 | MEM-01 | Phase 4 | Pending |
 | MEM-02 | Phase 4 | Pending |
