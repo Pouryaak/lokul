@@ -2,7 +2,7 @@
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
 **Status:** In progress
-**Updated:** 2026-02-19 (11:02 UTC)
+**Updated:** 2026-02-19 (12:04 UTC)
 
 ---
 
@@ -27,13 +27,13 @@
 ## Current Position
 
 **Phase:** Phase 4 - Memory System
-**Plan:** 04-03 complete (3/3 plans complete)
-**Status:** COMPLETE - memory UI panel, editable cards, pin/delete controls, undo flows, and chat-layout integration delivered
+**Plan:** 04-05 complete (4/6 plans complete)
+**Status:** IN PROGRESS - compaction hard guard and coordinated write-path memory maintenance delivered
 
 **Progress:**
 
-[████████░░] 80%
-[====================] 100% (Phase 4 complete)
+[████████░░] 83%
+[=============-------] 67% (Phase 4 in progress)
 ```
 
 **Phases:**
@@ -58,7 +58,7 @@
   - [x] 02.1-07: Performance integration (StatusIndicator, PerformancePanel, model selector)
 - [x] Phase 2.2: Stabilization & Refactor (6/6 plans complete)
 - [x] Phase 3: Model Management (3/3 plans complete)
-- [x] Phase 4: Memory System (3/3 plans complete)
+- [ ] Phase 4: Memory System (4/6 plans complete)
 - [ ] Phase 5: Polish & PWA
 
 ---
@@ -86,6 +86,7 @@
 | Phase 04-memory-system P01 | 4 min | 3 tasks | 7 files |
 | Phase 04-memory-system P02 | 4 min | 4 tasks | 6 files |
 | Phase 04-memory-system P03 | 6 min | 5 tasks | 7 files |
+| Phase 04-memory-system P05 | 2 min | 3 tasks | 4 files |
 
 ### Plan Execution Metrics
 
@@ -193,6 +194,9 @@
 - [Phase 04-memory-system]: Integrated memory UI into `src/components/chat-layout/ChatLayout.tsx` because legacy `src/components/chat/ChatHeader.tsx` and `src/components/chat/ChatLayout.tsx` paths have drifted.
 - [Phase 04-memory-system]: Used optimistic clear-all with delayed wipe and undo toast to keep destructive memory actions reversible.
 - [Phase 04-memory-system]: Auto-advanced verify checkpoint under `workflow.auto_advance=true` after preparing a runnable local verification environment.
+- [Phase 04-memory-system]: Expose compactContext over-limit state plus context-window targets so transport can enforce safe fallback deterministically.
+- [Phase 04-memory-system]: Apply transport-side no-memory fallback and token-target truncation before generation instead of relying on single-pass compaction.
+- [Phase 04-memory-system]: Treat prune-threshold as the eviction landing zone and trigger maintenance automatically after successful memory writes.
 
 ### Open Questions
 
@@ -226,9 +230,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 04-03 with memory panel UI, edit/pin/delete controls, undo flows, and chat-layout integration
-**Next Action:** Begin Phase 5 planning and transition verification
-**Context Hash:** phase-04-memory-system-03-complete-20260219
+**Last Action:** Completed 04-05 with compaction over-limit guardrails, transport fallback enforcement, and prune+evict write-path maintenance
+**Next Action:** Execute 04-06 and close remaining Phase 4 gaps
+**Context Hash:** phase-04-memory-system-05-complete-20260219
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 
