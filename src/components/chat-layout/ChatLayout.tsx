@@ -7,7 +7,7 @@
  * Based on @blocks/sidebar-02 pattern from shadcn.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
@@ -16,6 +16,10 @@ import { AppSidebar } from "./AppSidebar";
 import { StatusIndicator } from "@/components/performance/StatusIndicator";
 import { PerformancePanel } from "@/components/performance/PerformancePanel";
 import { DownloadManager } from "@/components/model/DownloadManager";
+import { MemoryHeaderPill } from "@/components/memory/MemoryHeaderPill";
+import { MemoryPanel } from "@/components/memory/MemoryPanel";
+import { useMemory } from "@/hooks/useMemory";
+import { useMemoryStore } from "@/store/memoryStore";
 
 /**
  * Props for the ChatLayout component
@@ -66,6 +70,25 @@ export function ChatLayout({
   onOpenChange,
 }: ChatLayoutProps) {
   const [showPerformancePanel, setShowPerformancePanel] = useState(false);
+  const { count } = useMemory();
+  const isPanelOpen = useMemoryStore((state) => state.isPanelOpen);
+  const openPanel = useMemoryStore((state) => state.openPanel);
+  const closePanel = useMemoryStore((state) => state.closePanel);
+  const togglePanel = useMemoryStore((state) => state.togglePanel);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === "m") {
+        event.preventDefault();
+        togglePanel();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [togglePanel]);
 
   return (
     <SidebarProvider
@@ -90,7 +113,11 @@ export function ChatLayout({
         )}
       >
         {/* Header - only performance button, no duplicate sidebar trigger */}
-        <header className="flex h-14 items-center justify-end border-b border-gray-200/50 bg-white/50 px-4 backdrop-blur-sm">
+        <header className="flex h-14 items-center justify-between border-b border-gray-200/50 bg-white/50 px-4 backdrop-blur-sm">
+          <div className="flex items-center gap-2">
+            <MemoryHeaderPill count={count} onClick={openPanel} />
+          </div>
+
           <div className="flex items-center gap-2">
             <DownloadManager />
             <Button
@@ -119,6 +146,8 @@ export function ChatLayout({
 
         {/* Status Indicator - Bottom Left */}
         <StatusIndicator />
+
+        <MemoryPanel open={isPanelOpen} onClose={closePanel} />
       </SidebarInset>
     </SidebarProvider>
   );
