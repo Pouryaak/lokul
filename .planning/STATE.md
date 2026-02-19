@@ -1,8 +1,8 @@
 # State: Lokul
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
-**Status:** Phase 5 in progress
-**Updated:** 2026-02-19 (23:20 UTC)
+**Status:** Phase complete — ready for verification
+**Updated:** 2026-02-19 (23:31 UTC)
 
 ---
 
@@ -27,13 +27,15 @@
 ## Current Position
 
 **Phase:** Phase 5 - Polish & PWA
-**Plan:** 05-02 complete (2/4 plans complete)
-**Status:** CHAT-09 responsive shell baseline delivered with mobile single-panel focus; CHAT-10 long-thread chunk loading remains in place
+**Current Plan:** 4
+**Total Plans in Phase:** 4
+**Plan:** 05-03 complete (3/4 plans complete)
+**Status:** STOR-05 through STOR-08 delivered via per-chat transfer menu with guided JSON import validation and conflict resolution
 
 **Progress:**
 
-[██████████] 102%
-[=====---------------] 25% (Phase 5 in progress)
+[████████░░] 75%
+[===============-----] 75% (Phase 5 in progress)
 
 **Phases:**
 - [x] Phase 1: Core Infrastructure (4/4 plans complete)
@@ -58,7 +60,7 @@
 - [x] Phase 2.2: Stabilization & Refactor (6/6 plans complete)
 - [x] Phase 3: Model Management (3/3 plans complete)
 - [x] Phase 4: Memory System (6/6 plans complete)
-- [ ] Phase 5: Polish & PWA (1/4 plans complete)
+- [ ] Phase 5: Polish & PWA (3/4 plans complete)
 
 ---
 
@@ -90,6 +92,8 @@
 | Phase 04-memory-system P06 | 2 min | 2 tasks | 2 files |
 | Phase 05 P02 | 3 min | 3 tasks | 3 files |
 | Phase 05-polish-and-pwa P01 | 4 min | 3 tasks | 4 files |
+| Phase 05-polish-and-pwa P03 | 5 min | 3 tasks | 5 files |
+| Phase 05 P04 | 4 min | 3 tasks | 9 files |
 
 ### Plan Execution Metrics
 
@@ -116,6 +120,7 @@
 | 04-04 | 3 min | 3 | 5 | 2026-02-19 |
 | 04-05 | 2 min | 3 | 4 | 2026-02-19 |
 | 04-06 | 2 min | 2 | 2 | 2026-02-19 |
+| 05-03 | 5 min | 3 | 5 | 2026-02-19 |
 
 ---
 
@@ -212,6 +217,12 @@
 - [Phase 05]: Pass explicit startAtBottom route hint from ChatDetailRoute so existing conversations open at latest messages
 - [Phase 05-polish-and-pwa]: Use a dedicated mobile panel controller to enforce mutual exclusivity between mobile overlays
 - [Phase 05-polish-and-pwa]: Preserve desktop panel interactions while routing mobile toggles through one shared mobilePanel state
+- [Phase 05-polish-and-pwa]: Use a schema-versioned backup envelope for JSON transfer compatibility.
+- [Phase 05-polish-and-pwa]: Keep transfer serialization/validation logic isolated from menu file download/upload handling.
+- [Phase 05-polish-and-pwa]: Require explicit replace-or-duplicate decisions before resolving import ID conflicts.
+- [Phase 05]: Install affordance stays hidden until first successful chat and deferred prompt availability are both true
+- [Phase 05]: Install prompt dismissals are session-scoped using sessionStorage so eligibility can return next session
+- [Phase 05]: Status indicator is rendered in header actions instead of floating overlay badges
 
 ### Open Questions
 
@@ -245,9 +256,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 05-01 with compact responsive shell, mobile panel focus control, and chat-first drawer behavior
-**Next Action:** Execute 05-03 plan for chat export/import UX integration
-**Context Hash:** phase-05-polish-and-pwa-01-complete-20260219
+**Last Action:** Completed 05-03 with per-chat import/export menu, transfer service, and conflict-aware JSON restore flow
+**Next Action:** Execute 05-04 plan for PWA install/offline polish completion
+**Context Hash:** phase-05-polish-and-pwa-03-complete-20260219
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 
