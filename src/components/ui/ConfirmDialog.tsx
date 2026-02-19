@@ -5,10 +5,17 @@
  * Supports multiple visual variants and customizable button text.
  */
 
-import { useEffect, useCallback } from "react";
 import { AlertTriangle, Info, AlertCircle } from "lucide-react";
 import { Button } from "./Button";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 /**
  * Props for the ConfirmDialog component
@@ -76,47 +83,6 @@ export function ConfirmDialog({
   variant = "warning",
 }: ConfirmDialogProps) {
   /**
-   * Handle keyboard events (Escape to close)
-   */
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    },
-    [onClose]
-  );
-
-  /**
-   * Handle confirm with Enter key
-   */
-  const handleConfirmKeyDown = useCallback(
-    (event: React.KeyboardEvent) => {
-      if (event.key === "Enter") {
-        onConfirm();
-      }
-    },
-    [onConfirm]
-  );
-
-  /**
-   * Add/remove keyboard listeners
-   */
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener("keydown", handleKeyDown);
-      return () => document.removeEventListener("keydown", handleKeyDown);
-    }
-  }, [isOpen, handleKeyDown]);
-
-  /**
-   * Don't render if not open
-   */
-  if (!isOpen) {
-    return null;
-  }
-
-  /**
    * Get button variant based on dialog variant
    */
   const getButtonVariant = () => {
@@ -132,67 +98,26 @@ export function ConfirmDialog({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="confirm-dialog-title"
-      aria-describedby="confirm-dialog-description"
-    >
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Dialog */}
-      <div
-        className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
-        onKeyDown={handleConfirmKeyDown}
-      >
-        {/* Icon */}
-        <div className="mb-4 flex justify-center">
+    <Dialog open={isOpen} onOpenChange={(open) => (open ? undefined : onClose())}>
+      <DialogContent className="max-w-md rounded-2xl p-6" showCloseButton={false}>
+        <div className="mb-2 flex justify-center">
           <VariantIcon variant={variant} />
         </div>
 
-        {/* Title */}
-        <h2
-          id="confirm-dialog-title"
-          className="mb-2 text-center text-lg font-semibold text-gray-900"
-        >
-          {title}
-        </h2>
+        <DialogHeader className="text-center sm:text-center">
+          <DialogTitle className="text-lg text-gray-900">{title}</DialogTitle>
+          <DialogDescription className="text-gray-600">{description}</DialogDescription>
+        </DialogHeader>
 
-        {/* Description */}
-        <p
-          id="confirm-dialog-description"
-          className="mb-6 text-center text-gray-600"
-        >
-          {description}
-        </p>
-
-        {/* Button row */}
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            size="md"
-            className="flex-1"
-            onClick={onClose}
-          >
+        <DialogFooter className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-2">
+          <Button variant="outline" size="md" className="w-full" onClick={onClose}>
             {cancelText}
           </Button>
-          <Button
-            variant={getButtonVariant()}
-            size="md"
-            className="flex-1"
-            onClick={onConfirm}
-            autoFocus
-          >
+          <Button variant={getButtonVariant()} size="md" className="w-full" onClick={onConfirm}>
             {confirmText}
           </Button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
