@@ -2,7 +2,7 @@
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
 **Status:** In progress
-**Updated:** 2026-02-19 (00:26 UTC)
+**Updated:** 2026-02-19 (10:44 UTC)
 
 ---
 
@@ -26,14 +26,14 @@
 
 ## Current Position
 
-**Phase:** Phase 3 - Model Management
-**Plan:** 03-03 complete (3/3 plans complete)
-**Status:** PHASE COMPLETE - conversation-scoped model orchestration, download manager UX, and queue/race safeguards delivered
+**Phase:** Phase 4 - Memory System
+**Plan:** 04-01 complete (1/3 plans complete)
+**Status:** IN PROGRESS - memory schema v2, Result-based memory CRUD, and LLM extraction foundation delivered
 
 **Progress:**
 
-[███████░░░] 70%
-[==============>.....] 60% (Phase 3 complete, preparing Phase 4)
+[███████░░░] 72%
+[===============>....] 67% (Phase 4 underway)
 ```
 
 **Phases:**
@@ -58,7 +58,7 @@
   - [x] 02.1-07: Performance integration (StatusIndicator, PerformancePanel, model selector)
 - [x] Phase 2.2: Stabilization & Refactor (6/6 plans complete)
 - [x] Phase 3: Model Management (3/3 plans complete)
-- [ ] Phase 4: Memory System
+- [ ] Phase 4: Memory System (1/3 plans complete)
 - [ ] Phase 5: Polish & PWA
 
 ---
@@ -83,6 +83,7 @@
 | Phase 03-model-management P01 | 7m | 2 tasks | 7 files |
 | Phase 03-model-management P02 | 9m | 2 tasks | 5 files |
 | Phase 03-model-management P03 | 16m | 3 tasks | 6 files |
+| Phase 04-memory-system P01 | 4 min | 3 tasks | 7 files |
 
 ### Plan Execution Metrics
 
@@ -180,6 +181,8 @@
 - [Phase 03-model-management]: Persist model-target changes without touching updatedAt so sidebar ordering remains message-activity-driven.
 - [Phase 03-model-management]: Gate model activation with requested-target checks so stale download completions cannot force-switch active runtime.
 - [Phase 03-model-management]: Keep requested-vs-active model state split per conversation to preserve non-blocking chat during downloads.
+- [Phase 04-memory-system]: Used strict JSON-only extraction prompt with low temperature for WebLLM consistency.
+- [Phase 04-memory-system]: Applied exact-text deduplication in storage while using updates_previous for conflict replacement.
 
 ### Open Questions
 
@@ -213,9 +216,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed Phase 3 plans (03-01/02/03) for model orchestration, UI management, and queue/race test coverage
-**Next Action:** Begin Phase 4 planning/execution (Memory System)
-**Context Hash:** phase-03-model-management-complete-20260219
+**Last Action:** Completed 04-01 with memory schema migration, CRUD storage module, and extraction/conflict handlers
+**Next Action:** Execute 04-02 plan for extraction triggers and memory-context integration
+**Context Hash:** phase-04-memory-system-01-complete-20260219
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 
