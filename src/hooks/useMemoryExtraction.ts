@@ -17,11 +17,15 @@ export function useMemoryExtraction(
   const [isExtracting, setIsExtracting] = useState(false);
   const [lastExtraction, setLastExtraction] = useState<number | null>(null);
   const isExtractingRef = useRef(false);
-  const lastExtractedMessageCountRef = useRef(messages.length);
+  const isMountedRef = useRef(true);
+  const latestConversationIdRef = useRef(conversationId);
+  const latestMessagesRef = useRef(messages);
+  const lastExtractedMessageCountRef = useRef(0);
   const timeoutRef = useRef<number | null>(null);
 
   const runExtraction = useCallback(async () => {
-    if (messages.length < 2 || isExtractingRef.current) {
+    const latestMessages = latestMessagesRef.current;
+    if (latestMessages.length < 2 || isExtractingRef.current) {
       return;
     }
 
@@ -31,30 +35,60 @@ export function useMemoryExtraction(
     }
 
     isExtractingRef.current = true;
-    setIsExtracting(true);
+    if (isMountedRef.current) {
+      setIsExtracting(true);
+    }
 
     try {
-      const extraction = await extractFacts(engine, messages);
+      const extraction = await extractFacts(engine, latestMessages);
       if (extraction.kind === "ok" && extraction.value.length > 0) {
-        await processExtractedFacts(extraction.value, conversationId);
+        await processExtractedFacts(extraction.value, latestConversationIdRef.current);
       }
-      lastExtractedMessageCountRef.current = messages.length;
-      setLastExtraction(Date.now());
+      lastExtractedMessageCountRef.current = latestMessages.length;
+      if (isMountedRef.current) {
+        setLastExtraction(Date.now());
+      }
     } finally {
       isExtractingRef.current = false;
-      setIsExtracting(false);
+      if (isMountedRef.current) {
+        setIsExtracting(false);
+      }
     }
-  }, [conversationId, messages]);
+  }, []);
 
-  const triggerExtraction = useCallback(() => {
-    if (timeoutRef.current !== null) {
-      window.clearTimeout(timeoutRef.current);
-    }
+  const triggerExtraction = useCallback(
+    (immediate: boolean = false) => {
+      if (timeoutRef.current !== null) {
+        window.clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
 
-    timeoutRef.current = window.setTimeout(() => {
-      void runExtraction();
-    }, 0);
-  }, [runExtraction]);
+      if (immediate) {
+        void runExtraction();
+        return;
+      }
+
+      timeoutRef.current = window.setTimeout(() => {
+        void runExtraction();
+        timeoutRef.current = null;
+      }, 0);
+    },
+    [runExtraction]
+  );
+
+  useEffect(() => {
+    latestConversationIdRef.current = conversationId;
+  }, [conversationId]);
+
+  useEffect(() => {
+    latestMessagesRef.current = messages;
+  }, [messages]);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const messagesSinceLast = messages.length - lastExtractedMessageCountRef.current;
@@ -64,25 +98,20 @@ export function useMemoryExtraction(
   }, [messages.length, triggerExtraction]);
 
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      triggerExtraction();
-    };
-
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
-        triggerExtraction();
+        triggerExtraction(true);
       }
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      triggerExtraction();
+      triggerExtraction(true);
       if (timeoutRef.current !== null) {
         window.clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
       }
     };
   }, [triggerExtraction]);
