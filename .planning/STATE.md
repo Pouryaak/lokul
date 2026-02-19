@@ -2,7 +2,7 @@
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
 **Status:** In progress
-**Updated:** 2026-02-19 (10:44 UTC)
+**Updated:** 2026-02-19 (10:52 UTC)
 
 ---
 
@@ -27,8 +27,8 @@
 ## Current Position
 
 **Phase:** Phase 4 - Memory System
-**Plan:** 04-01 complete (1/3 plans complete)
-**Status:** IN PROGRESS - memory schema v2, Result-based memory CRUD, and LLM extraction foundation delivered
+**Plan:** 04-02 complete (2/3 plans complete)
+**Status:** IN PROGRESS - context budgeting, staged compaction, eviction, and transport-level memory injection delivered
 
 **Progress:**
 
@@ -84,6 +84,7 @@
 | Phase 03-model-management P02 | 9m | 2 tasks | 5 files |
 | Phase 03-model-management P03 | 16m | 3 tasks | 6 files |
 | Phase 04-memory-system P01 | 4 min | 3 tasks | 7 files |
+| Phase 04-memory-system P02 | 4 min | 4 tasks | 6 files |
 
 ### Plan Execution Metrics
 
@@ -105,6 +106,7 @@
 | 02.1-05 | 25 min | 3 | 3 | 2026-02-18 |
 | 02.1-06 | 20 min | 3 | 4 | 2026-02-18 |
 | 02.1-07 | 3 min | 3 | 5 | 2026-02-18 |
+| 04-02 | 4 min | 4 | 6 | 2026-02-19 |
 
 ---
 
@@ -183,6 +185,9 @@
 - [Phase 03-model-management]: Keep requested-vs-active model state split per conversation to preserve non-blocking chat during downloads.
 - [Phase 04-memory-system]: Used strict JSON-only extraction prompt with low temperature for WebLLM consistency.
 - [Phase 04-memory-system]: Applied exact-text deduplication in storage while using updates_previous for conflict replacement.
+- [Phase 04-memory-system]: Integrated memory context into `src/lib/ai/webllm-transport.ts` because `src/lib/ai/chat-transport.ts` no longer exists in codebase.
+- [Phase 04-memory-system]: Added `InferenceManager.getEngine()` to support extraction trigger hook access to the loaded local model.
+- [Phase 04-memory-system]: Used tokenlens metadata with static context-window fallbacks for robust memory budget calculations.
 
 ### Open Questions
 
@@ -216,9 +221,9 @@ None currently.
 
 ## Session Continuity
 
-**Last Action:** Completed 04-01 with memory schema migration, CRUD storage module, and extraction/conflict handlers
-**Next Action:** Execute 04-02 plan for extraction triggers and memory-context integration
-**Context Hash:** phase-04-memory-system-01-complete-20260219
+**Last Action:** Completed 04-02 with context budgeting, compaction, eviction, extraction triggers, and transport integration
+**Next Action:** Execute 04-03 plan for memory UI and interaction polish
+**Context Hash:** phase-04-memory-system-02-complete-20260219
 
 **Critical Bugs Identified by User (must fix in Phase 2.2):**
 
