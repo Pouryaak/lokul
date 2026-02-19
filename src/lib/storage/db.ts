@@ -12,7 +12,42 @@ import type { Conversation, MemoryFact, Settings } from "@/types/index";
  * Database schema version and table definitions
  */
 const DB_NAME = "LokulDB";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
+
+interface LegacyMemoryFact {
+  id: string;
+  key?: string;
+  value?: string;
+  updatedAt?: number;
+  confidence?: number;
+  sourceConversationId?: string;
+}
+
+function normalizeMemoryCategory(value?: string): MemoryFact["category"] {
+  if (value === "identity" || value === "preference" || value === "project") {
+    return value;
+  }
+
+  return "project";
+}
+
+function migrateLegacyMemoryFact(fact: LegacyMemoryFact): MemoryFact {
+  const now = Date.now();
+  const timestamp = typeof fact.updatedAt === "number" ? fact.updatedAt : now;
+  const text = fact.value?.trim() || fact.key?.trim() || "";
+
+  return {
+    id: fact.id,
+    fact: text,
+    category: normalizeMemoryCategory(fact.key),
+    confidence: typeof fact.confidence === "number" ? fact.confidence : 0.75,
+    mentionCount: 1,
+    firstSeen: timestamp,
+    lastSeen: timestamp,
+    lastSeenConversationId: fact.sourceConversationId ?? "unknown",
+    pinned: false,
+  };
+}
 
 /**
  * LokulDatabase extends Dexie to provide typed tables for all domain models.
@@ -35,8 +70,8 @@ export class LokulDatabase extends Dexie {
   constructor() {
     super(DB_NAME);
 
-    // Define schema for version 1
-    this.version(DB_VERSION).stores({
+    // Keep version 1 for users migrating from existing installs.
+    this.version(1).stores({
       // Settings: single record with id "app"
       settings: "id",
 
@@ -46,6 +81,26 @@ export class LokulDatabase extends Dexie {
       // Memory: indexed by id, with secondary index for key lookups
       memory: "id, key, updatedAt",
     });
+
+    this.version(DB_VERSION)
+      .stores({
+        settings: "id",
+        conversations: "id, createdAt, updatedAt",
+        memory: "id, category, lastSeen, confidence, lastSeenConversationId",
+      })
+      .upgrade(async (tx) => {
+        await tx
+          .table("memory")
+          .toCollection()
+          .modify((value: LegacyMemoryFact) => {
+            const migrated = migrateLegacyMemoryFact(value);
+            Object.assign(value, migrated);
+            delete value.key;
+            delete value.value;
+            delete value.updatedAt;
+            delete value.sourceConversationId;
+          });
+      });
   }
 }
 

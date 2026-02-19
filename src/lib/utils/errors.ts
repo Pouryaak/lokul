@@ -3,6 +3,9 @@ export type ErrorCode =
   | "STORAGE_ERROR"
   | "STORAGE_NOT_FOUND"
   | "STORAGE_QUOTA_EXCEEDED"
+  | "MEMORY_ERROR"
+  | "MEMORY_EXTRACTION_FAILED"
+  | "MEMORY_QUOTA_EXCEEDED"
   | "MODEL_ERROR"
   | "MODEL_NOT_LOADED"
   | "MODEL_DOWNLOAD_FAILED"
@@ -35,6 +38,10 @@ export type ModelError =
   | (AppError & { code: "MODEL_NOT_LOADED" })
   | (AppError & { code: "MODEL_DOWNLOAD_FAILED" });
 export type NetworkError = AppError & { code: "NETWORK_ERROR" };
+export type MemoryError =
+  | (AppError & { code: "MEMORY_ERROR" })
+  | (AppError & { code: "MEMORY_EXTRACTION_FAILED" })
+  | (AppError & { code: "MEMORY_QUOTA_EXCEEDED" });
 
 function createError(
   code: ErrorCode,
@@ -78,6 +85,23 @@ export function quotaExceededError(details?: string, cause?: unknown): StorageEr
     details,
     cause
   ) as StorageError;
+}
+
+export function memoryError(message: string, details?: string, cause?: unknown): MemoryError {
+  return createError("MEMORY_ERROR", message, details, cause) as MemoryError;
+}
+
+export function memoryExtractionError(message: string, cause?: unknown): MemoryError {
+  return createError("MEMORY_EXTRACTION_FAILED", message, undefined, cause) as MemoryError;
+}
+
+export function memoryQuotaExceededError(details?: string, cause?: unknown): MemoryError {
+  return createError(
+    "MEMORY_QUOTA_EXCEEDED",
+    "Memory storage is full. Please clear some saved memories and try again.",
+    details,
+    cause
+  ) as MemoryError;
 }
 
 export function modelError(message: string, details?: string, cause?: unknown): ModelError {

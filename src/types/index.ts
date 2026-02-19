@@ -267,24 +267,38 @@ export interface PerformanceMetrics {
 /**
  * A single extracted fact about the user
  */
+export type MemoryCategory = "identity" | "preference" | "project";
+
 export interface MemoryFact {
   /** Unique identifier for the fact */
   id: string;
 
-  /** Category/key for the fact (e.g., "name", "preferences") */
-  key: string;
+  /** Human-readable fact statement */
+  fact: string;
 
-  /** The fact value */
-  value: string;
+  /** Category grouping used for relevance and UI */
+  category: MemoryCategory;
 
-  /** Timestamp when the fact was extracted or updated */
-  updatedAt: number;
+  /** Confidence score (0-1) for extraction quality */
+  confidence: number;
 
-  /** Confidence score (0-1) for the fact extraction */
-  confidence?: number;
+  /** Number of times this fact was re-observed */
+  mentionCount: number;
 
-  /** Source conversation ID where this fact was extracted */
-  sourceConversationId?: string;
+  /** First observation timestamp (Unix milliseconds) */
+  firstSeen: number;
+
+  /** Most recent observation timestamp (Unix milliseconds) */
+  lastSeen: number;
+
+  /** Conversation ID where this fact was last observed */
+  lastSeenConversationId: string;
+
+  /** User pin flag to protect from automatic eviction */
+  pinned: boolean;
+
+  /** Optional link to previous fact replaced by this one */
+  updatesFactId?: string;
 }
 
 /**
