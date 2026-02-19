@@ -116,13 +116,23 @@ interface InputSectionProps {
   status: "submitted" | "streaming" | "ready" | "error";
   onSubmit: (message: { text: string }) => Promise<void>;
   onStop: () => void;
+  className?: string;
 }
 
-export function InputSection({ conversationId, status, onSubmit, onStop }: InputSectionProps) {
+export function InputSection({
+  conversationId,
+  status,
+  onSubmit,
+  onStop,
+  className,
+}: InputSectionProps) {
   return (
-    <div className="border-t border-gray-200 bg-white px-4 py-4">
-      <div className="mx-auto max-w-3xl">
-        <PromptInput onSubmit={onSubmit}>
+    <div className={cn("pointer-events-none px-4 pb-4", className)}>
+      <div className="pointer-events-auto mx-auto max-w-3xl">
+        <PromptInput
+          onSubmit={onSubmit}
+          className="rounded-2xl border border-gray-200 bg-white shadow-sm"
+        >
           <PromptInputTextarea placeholder="Message Lokul..." className="min-h-[60px]" />
           <PromptInputFooter>
             <PromptInputTools>
@@ -131,11 +141,6 @@ export function InputSection({ conversationId, status, onSubmit, onStop }: Input
             <PromptInputSubmit status={status} onStop={onStop} />
           </PromptInputFooter>
         </PromptInput>
-
-        <p className="mt-2 text-center text-xs text-gray-400">
-          AI responses are generated locally on your device.
-          <span className="ml-1 text-[#FF6B35]">Private by design.</span>
-        </p>
       </div>
     </div>
   );

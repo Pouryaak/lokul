@@ -100,7 +100,7 @@ export function AIChatInterface({
   useErrorToasts(error, resetDismissedError);
 
   return (
-    <div className={cn("flex h-full flex-col bg-[#FFF8F0]", className)}>
+    <div className={cn("relative flex h-full flex-col overflow-hidden bg-[#FFF8F0]", className)}>
       {activeError && (
         <ErrorBanner
           message={activeError}
@@ -116,7 +116,7 @@ export function AIChatInterface({
       )}
 
       <Conversation className="flex-1">
-        <ConversationContent>
+        <ConversationContent className="pb-40">
           {hasMessages ? (
             <ConversationMessages messages={messages} />
           ) : (
@@ -131,6 +131,7 @@ export function AIChatInterface({
       </Conversation>
 
       <InputSection
+        className="absolute inset-x-0 bottom-0 z-20"
         conversationId={conversationId}
         status={status}
         onSubmit={handleSubmit}

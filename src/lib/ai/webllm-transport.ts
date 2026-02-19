@@ -11,6 +11,7 @@ import { startTokenTracking, recordToken, stopTokenTracking } from "@/lib/perfor
 import { getUserMessage, modelNotLoadedError, toAppError, type AppError } from "@/lib/utils/errors";
 import { err, ok, type Result } from "@/types/result";
 import { inferenceManager } from "./inference";
+import { modelEngine } from "./model-engine";
 import type { CancellationReason } from "@/types/index";
 
 const DEFAULT_CANCEL_REASON: CancellationReason = "user_stop";
@@ -118,9 +119,23 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
     options: { signal: AbortSignal; cancelReason: CancellationReason }
   ): Promise<Result<AsyncGenerator<string>, AppError>> {
     if (!inferenceManager.isLoaded()) {
-      return err(
-        modelNotLoadedError("Model not initialized. Please load a model before sending messages.")
-      );
+      const engineState = modelEngine.getState();
+
+      if (engineState.kind === "loading") {
+        const isReady = await modelEngine.waitForReadyModel(engineState.modelId);
+
+        if (!isReady || options.signal.aborted || !inferenceManager.isLoaded()) {
+          return err(
+            modelNotLoadedError(
+              "Model is still loading. Please wait for download/compile to finish before sending."
+            )
+          );
+        }
+      } else {
+        return err(
+          modelNotLoadedError("Model not initialized. Please load a model before sending messages.")
+        );
+      }
     }
 
     return inferenceManager.generateSafe(webLLMMessages, {
@@ -257,15 +272,21 @@ export class WebLLMTransport implements ChatTransport<UIMessage> {
   private convertToWebLLMMessages(
     messages: UIMessage[]
   ): Array<{ role: "system" | "user" | "assistant"; content: string }> {
-    return messages.map((message) => {
-      // Extract text content from message parts
-      const content = this.extractTextContent(message);
-
-      return {
+    const converted = messages
+      .map((message) => ({
         role: message.role,
-        content,
-      };
-    });
+        content: this.extractTextContent(message).trim(),
+      }))
+      .filter((message) => message.content.length > 0);
+
+    if (import.meta.env.DEV && converted.length < messages.length) {
+      console.info("[WebLLMTransport] Dropped empty messages before inference", {
+        inputCount: messages.length,
+        sentCount: converted.length,
+      });
+    }
+
+    return converted;
   }
 
   /**

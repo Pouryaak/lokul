@@ -87,6 +87,44 @@ export class ModelEngine {
     this.progressCallback = callback;
   }
 
+  async waitForReadyModel(modelId?: string, timeoutMs: number = 180000): Promise<boolean> {
+    const currentState = this.state;
+    if (currentState.kind === "ready") {
+      return modelId ? currentState.model.id === modelId : true;
+    }
+
+    if (currentState.kind === "error" || currentState.kind === "idle") {
+      return false;
+    }
+
+    return new Promise((resolve) => {
+      const unsubscribe = this.subscribe((nextState) => {
+        if (nextState.kind === "ready") {
+          if (!modelId || nextState.model.id === modelId) {
+            cleanup();
+            resolve(true);
+          }
+          return;
+        }
+
+        if (nextState.kind === "error" || nextState.kind === "idle") {
+          cleanup();
+          resolve(false);
+        }
+      });
+
+      const timeoutId = window.setTimeout(() => {
+        cleanup();
+        resolve(false);
+      }, timeoutMs);
+
+      function cleanup() {
+        window.clearTimeout(timeoutId);
+        unsubscribe();
+      }
+    });
+  }
+
   async loadModel(modelId: string): Promise<void> {
     const model = getModelById(modelId);
 

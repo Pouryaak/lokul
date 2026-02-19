@@ -141,9 +141,9 @@ function assignConversationSnapshot(
   }
 
   const timestamp = Date.now();
-  conversation.messages = nextMessages.map((message) =>
-    toStorageMessage(message, conversationId, timestamp)
-  );
+  conversation.messages = nextMessages
+    .filter((message) => getTextFromMessage(message).trim().length > 0)
+    .map((message) => toStorageMessage(message, conversationId, timestamp));
   conversation.updatedAt = timestamp;
 }
 

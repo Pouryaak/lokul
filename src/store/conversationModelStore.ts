@@ -263,12 +263,16 @@ function createRequestModelForConversation(set: StoreSet, get: StoreGet) {
       throw new Error(`Model not found: ${modelId}`);
     }
 
-    await ensureConversationModel(conversationId, resolvedModelId, get, set, true);
+    const stateBeforeRequest = get();
+    const isAlreadyReady =
+      stateBeforeRequest.engineLoadedModelId === resolvedModelId ||
+      stateBeforeRequest.downloadLifecycleByModel[resolvedModelId] === "Ready";
 
-    const lifecycle = get().downloadLifecycleByModel[resolvedModelId];
-    if (lifecycle !== "Ready") {
+    if (!isAlreadyReady) {
       set({ isDownloadManagerOpen: true });
     }
+
+    await ensureConversationModel(conversationId, resolvedModelId, get, set, true);
   };
 }
 
@@ -387,11 +391,12 @@ function createActions(set: StoreSet, get: StoreGet): ConversationModelActions {
         return;
       }
 
+      set({ isDownloadManagerOpen: true });
+
       set((state) => ({
         downloadLifecycleByModel: setLifecycle(state.downloadLifecycleByModel, modelId, "Queued"),
       }));
       await queueModelLoad(modelId, get, set);
-      set({ isDownloadManagerOpen: true });
     },
     openDownloadManager: () => set({ isDownloadManagerOpen: true }),
     closeDownloadManager: () => set({ isDownloadManagerOpen: false }),

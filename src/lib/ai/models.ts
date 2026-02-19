@@ -17,6 +17,8 @@ export interface ModelConfig {
   name: string;
   /** Description of model capabilities */
   description: string;
+  /** What this model is best for in UX copy */
+  bestFor: string;
   /** Approximate download size in MB */
   sizeMB: number;
   /** HuggingFace model ID or CDN URL */
@@ -34,6 +36,7 @@ export const QUICK_MODEL: ModelConfig = {
   id: "phi-2-q4f16_1-MLC",
   name: "Quick Mode",
   description: "Fast responses, good for everyday chat (Phi-2 2.7B)",
+  bestFor: "Fast drafts, quick checks, and low-memory devices",
   sizeMB: 80,
   modelUrl: "https://huggingface.co/mlc-ai/phi-2-q4f16_1-MLC",
   requiredVRAM: 512,
@@ -48,6 +51,7 @@ export const SMART_MODEL: ModelConfig = {
   id: "Llama-3.2-3B-Instruct-q4f16_1-MLC",
   name: "Smart Mode",
   description: "Balanced quality and speed (Llama 3.2 3B)",
+  bestFor: "Daily conversations, planning, and balanced quality",
   sizeMB: 2800,
   modelUrl: "https://huggingface.co/mlc-ai/Llama-3.2-3B-Instruct-q4f16_1-MLC",
   requiredVRAM: 4096,
@@ -62,15 +66,42 @@ export const GENIUS_MODEL: ModelConfig = {
   id: "Mistral-7B-Instruct-v0.3-q4f16_1-MLC",
   name: "Genius Mode",
   description: "Highest quality responses (Mistral 7B)",
+  bestFor: "Complex reasoning, deeper writing, and nuanced responses",
   sizeMB: 6400,
   modelUrl: "https://huggingface.co/mlc-ai/Mistral-7B-Instruct-v0.3-q4f16_1-MLC",
   requiredVRAM: 8192,
 };
 
+export const LLAMA_31_8B_Q4F16_MODEL: ModelConfig = {
+  id: "Llama-3.1-8B-Instruct-q4f16_1-MLC",
+  name: "Llama 3.1 8B (Q4F16)",
+  description: "Large Meta model with strong quality-speed balance",
+  bestFor: "High-quality general chat, coding help, and long-form drafting",
+  sizeMB: 6900,
+  modelUrl: "https://huggingface.co/mlc-ai/Llama-3.1-8B-Instruct-q4f16_1-MLC",
+  requiredVRAM: 10240,
+};
+
+export const LLAMA_31_8B_Q4F32_MODEL: ModelConfig = {
+  id: "Llama-3.1-8B-Instruct-q4f32_1-MLC",
+  name: "Llama 3.1 8B (Q4F32)",
+  description: "Higher-precision Meta model for stronger output quality",
+  bestFor: "Best quality writing/reasoning when your device has more VRAM",
+  sizeMB: 8600,
+  modelUrl: "https://huggingface.co/mlc-ai/Llama-3.1-8B-Instruct-q4f32_1-MLC",
+  requiredVRAM: 12288,
+};
+
 /**
  * All available models in order of capability
  */
-export const MODELS: ModelConfig[] = [QUICK_MODEL, SMART_MODEL, GENIUS_MODEL];
+export const MODELS: ModelConfig[] = [
+  QUICK_MODEL,
+  SMART_MODEL,
+  GENIUS_MODEL,
+  LLAMA_31_8B_Q4F16_MODEL,
+  LLAMA_31_8B_Q4F32_MODEL,
+];
 
 /**
  * Get a model configuration by its ID

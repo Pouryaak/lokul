@@ -97,6 +97,7 @@ describe("conversationModelStore queue orchestration", () => {
         id: "phi-2-q4f16_1-MLC",
         name: "Quick Mode",
         description: "Quick",
+        bestFor: "Fast drafts",
         sizeMB: 80,
         modelUrl: "",
         requiredVRAM: 512,
