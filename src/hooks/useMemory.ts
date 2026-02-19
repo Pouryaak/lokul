@@ -1,6 +1,7 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { toast } from "sonner";
+import { MEMORY_LIMITS } from "@/lib/memory/eviction";
 import type { MemoryCategory, MemoryFact } from "@/lib/memory/types";
 import {
   clearAllMemory,
@@ -12,7 +13,19 @@ import {
 
 const DELETE_UNDO_MS = 4000;
 const CLEAR_ALL_UNDO_MS = 8000;
-const MAX_PINNED = 10;
+
+interface PendingClearOperation {
+  timerId: number;
+}
+
+let pendingClearOperation: PendingClearOperation | null = null;
+const pendingClearSubscribers = new Set<() => void>();
+
+function notifyPendingClearChange(): void {
+  for (const subscriber of pendingClearSubscribers) {
+    subscriber();
+  }
+}
 
 interface UseMemoryReturn {
   facts: MemoryFact[];
@@ -34,11 +47,29 @@ interface UseMemoryReturn {
 
 export function useMemory(): UseMemoryReturn {
   const [error, setError] = useState<string | null>(null);
-  const [optimisticClear, setOptimisticClear] = useState(false);
+  const [optimisticClear, setOptimisticClear] = useState(() => pendingClearOperation !== null);
   const [, setRefreshTick] = useState(0);
   const deletedFactsRef = useRef<MemoryFact[]>([]);
-  const clearBackupRef = useRef<MemoryFact[]>([]);
-  const clearTimerRef = useRef<number | null>(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+
+    const handlePendingChange = () => {
+      if (!mountedRef.current) {
+        return;
+      }
+
+      setOptimisticClear(pendingClearOperation !== null);
+    };
+
+    pendingClearSubscribers.add(handlePendingChange);
+
+    return () => {
+      pendingClearSubscribers.delete(handlePendingChange);
+      mountedRef.current = false;
+    };
+  }, []);
 
   const liveFacts = useLiveQuery(async () => {
     const result = await getMemoryFacts();
@@ -159,8 +190,8 @@ export function useMemory(): UseMemoryReturn {
   const pinFact = useCallback(
     async (id: string) => {
       const alreadyPinned = facts.filter((fact) => fact.pinned).length;
-      if (alreadyPinned >= MAX_PINNED) {
-        const message = "You can pin up to 10 memories";
+      if (alreadyPinned >= MEMORY_LIMITS.maxPinned) {
+        const message = `You can pin up to ${MEMORY_LIMITS.maxPinned} memories`;
         setError(message);
         toast.error(message);
         return;
@@ -179,18 +210,18 @@ export function useMemory(): UseMemoryReturn {
   );
 
   const undoClearAll = useCallback(async () => {
-    if (!optimisticClear) {
+    if (!pendingClearOperation) {
       return;
     }
 
-    if (clearTimerRef.current !== null) {
-      window.clearTimeout(clearTimerRef.current);
-      clearTimerRef.current = null;
-    }
+    window.clearTimeout(pendingClearOperation.timerId);
+    pendingClearOperation = null;
+    notifyPendingClearChange();
 
-    clearBackupRef.current = [];
-    setOptimisticClear(false);
-  }, [optimisticClear]);
+    if (mountedRef.current) {
+      setOptimisticClear(false);
+    }
+  }, []);
 
   const clearAllFacts = useCallback(async () => {
     if (!liveFacts || liveFacts.length === 0) {
@@ -199,25 +230,36 @@ export function useMemory(): UseMemoryReturn {
 
     setError(null);
 
-    if (clearTimerRef.current !== null) {
-      window.clearTimeout(clearTimerRef.current);
-      clearTimerRef.current = null;
+    if (pendingClearOperation) {
+      window.clearTimeout(pendingClearOperation.timerId);
+      pendingClearOperation = null;
+      notifyPendingClearChange();
     }
 
-    clearBackupRef.current = [...liveFacts];
     setOptimisticClear(true);
 
-    clearTimerRef.current = window.setTimeout(async () => {
+    const timerId = window.setTimeout(async () => {
       const result = await clearAllMemory();
 
       if (result.kind === "err") {
         setError(result.error.message || "Could not clear memory");
       }
 
-      clearBackupRef.current = [];
-      clearTimerRef.current = null;
-      setOptimisticClear(false);
+      if (!pendingClearOperation || pendingClearOperation.timerId !== timerId) {
+        return;
+      }
+
+      pendingClearOperation = null;
+      notifyPendingClearChange();
+      if (mountedRef.current) {
+        setOptimisticClear(false);
+      }
     }, CLEAR_ALL_UNDO_MS);
+
+    pendingClearOperation = {
+      timerId,
+    };
+    notifyPendingClearChange();
 
     toast("Memory cleared", {
       action: {
