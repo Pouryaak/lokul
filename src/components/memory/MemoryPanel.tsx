@@ -22,6 +22,16 @@ const sectionOrder: Array<{ key: MemoryCategory; title: string }> = [
   { key: "identity", title: "About" },
 ];
 
+const MANUAL_DEFAULT_CATEGORY: MemoryCategory = "preference";
+
+function isToastInteractionTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) {
+    return false;
+  }
+
+  return target.closest("[data-sonner-toaster], [data-sonner-toast]") !== null;
+}
+
 export function MemoryPanel({ open, onClose }: MemoryPanelProps) {
   const { id: routeConversationId } = useParams<{ id: string }>();
   const {
@@ -85,7 +95,7 @@ export function MemoryPanel({ open, onClose }: MemoryPanelProps) {
     try {
       await addFact({
         fact: factText,
-        category: "preference",
+        category: MANUAL_DEFAULT_CATEGORY,
         confidence: 0.6,
         mentionCount: 1,
         firstSeen: now,
@@ -118,7 +128,15 @@ export function MemoryPanel({ open, onClose }: MemoryPanelProps) {
 
   return (
     <Sheet open={open} onOpenChange={(nextOpen) => (!nextOpen ? handleClose() : undefined)}>
-      <SheetContent side="right" className="w-full p-0 sm:max-w-xl">
+      <SheetContent
+        side="right"
+        className="w-full p-0 sm:max-w-xl"
+        onInteractOutside={(event) => {
+          if (isToastInteractionTarget(event.target)) {
+            event.preventDefault();
+          }
+        }}
+      >
         <SheetHeader className="border-b border-gray-200/80 bg-white/95 py-3 pr-12 pl-4">
           <div className="flex items-center justify-between gap-3">
             <SheetTitle>Memory</SheetTitle>
