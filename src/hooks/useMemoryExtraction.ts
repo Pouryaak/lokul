@@ -31,7 +31,16 @@ export function useMemoryExtraction(
 
     const engine = inferenceManager.getEngine();
     if (!engine) {
+      if (import.meta.env.DEV) {
+        console.info("[MemoryExtraction] Skipping extraction: engine unavailable");
+      }
       return;
+    }
+
+    if (import.meta.env.DEV) {
+      console.info(
+        `[MemoryExtraction] Starting extraction for ${latestMessages.length} messages in ${latestConversationIdRef.current}`
+      );
     }
 
     isExtractingRef.current = true;
@@ -41,9 +50,37 @@ export function useMemoryExtraction(
 
     try {
       const extraction = await extractFacts(engine, latestMessages);
-      if (extraction.kind === "ok" && extraction.value.length > 0) {
-        await processExtractedFacts(extraction.value, latestConversationIdRef.current);
+      if (extraction.kind === "err") {
+        if (import.meta.env.DEV) {
+          console.warn("[MemoryExtraction] Extraction failed", extraction.error);
+        }
+        return;
       }
+
+      if (import.meta.env.DEV) {
+        console.info(
+          `[MemoryExtraction] Extracted ${extraction.value.length} candidate facts from ${latestMessages.length} messages`
+        );
+      }
+
+      if (extraction.value.length > 0) {
+        const persistence = await processExtractedFacts(
+          extraction.value,
+          latestConversationIdRef.current
+        );
+
+        if (persistence.kind === "err") {
+          if (import.meta.env.DEV) {
+            console.warn("[MemoryExtraction] Persisting extracted facts failed", persistence.error);
+          }
+          return;
+        }
+
+        if (import.meta.env.DEV) {
+          console.info(`[MemoryExtraction] Persisted ${persistence.value.length} memory facts`);
+        }
+      }
+
       lastExtractedMessageCountRef.current = latestMessages.length;
       if (isMountedRef.current) {
         setLastExtraction(Date.now());
@@ -93,6 +130,11 @@ export function useMemoryExtraction(
   useEffect(() => {
     const messagesSinceLast = messages.length - lastExtractedMessageCountRef.current;
     if (messagesSinceLast >= EXTRACTION_INTERVAL_MESSAGES) {
+      if (import.meta.env.DEV) {
+        console.info(
+          `[MemoryExtraction] Interval trigger: ${messagesSinceLast} new messages since last extraction`
+        );
+      }
       triggerExtraction();
     }
   }, [messages.length, triggerExtraction]);
