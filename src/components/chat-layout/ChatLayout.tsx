@@ -9,10 +9,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Activity, PanelLeft } from "lucide-react";
+import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { SidebarInset, SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/Button";
 import { AppSidebar } from "./AppSidebar";
+import { ChatTopbarMenu } from "./chat-topbar-menu";
 import { CompactChatHeader } from "./compact-chat-header";
 import { createMobilePanelController, type MobilePanel } from "./mobile-panel-focus";
 import { StatusIndicator } from "@/components/performance/StatusIndicator";
@@ -95,6 +97,7 @@ function ChatLayoutContent({
   children,
   className,
 }: Pick<ChatLayoutProps, "children" | "className">) {
+  const { id: activeConversationId } = useParams<{ id: string }>();
   const { count } = useMemory();
   const [showPerformancePanel, setShowPerformancePanel] = useState(false);
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("none");
@@ -262,6 +265,7 @@ function ChatLayoutContent({
             >
               <Activity className="h-4 w-4" />
             </Button>
+            {activeConversationId ? <ChatTopbarMenu conversationId={activeConversationId} /> : null}
           </>
         }
       />
