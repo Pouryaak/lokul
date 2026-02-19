@@ -7,19 +7,21 @@
  * Based on @blocks/sidebar-02 pattern from shadcn.
  */
 
-import { useEffect, useState } from "react";
-import { Activity } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Activity, PanelLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/Button";
 import { AppSidebar } from "./AppSidebar";
 import { CompactChatHeader } from "./compact-chat-header";
+import { createMobilePanelController, type MobilePanel } from "./mobile-panel-focus";
 import { StatusIndicator } from "@/components/performance/StatusIndicator";
 import { PerformancePanel } from "@/components/performance/PerformancePanel";
 import { DownloadManager } from "@/components/model/DownloadManager";
 import { MemoryHeaderPill } from "@/components/memory/MemoryHeaderPill";
 import { MemoryPanel } from "@/components/memory/MemoryPanel";
 import { useMemory } from "@/hooks/useMemory";
+import { useConversationModelStore } from "@/store/conversationModelStore";
 import { useMemoryStore } from "@/store/memoryStore";
 
 /**
@@ -70,27 +72,6 @@ export function ChatLayout({
   open,
   onOpenChange,
 }: ChatLayoutProps) {
-  const [showPerformancePanel, setShowPerformancePanel] = useState(false);
-  const { count } = useMemory();
-  const isPanelOpen = useMemoryStore((state) => state.isPanelOpen);
-  const openPanel = useMemoryStore((state) => state.openPanel);
-  const closePanel = useMemoryStore((state) => state.closePanel);
-  const togglePanel = useMemoryStore((state) => state.togglePanel);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === "m") {
-        event.preventDefault();
-        togglePanel();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [togglePanel]);
-
   return (
     <SidebarProvider
       defaultOpen={defaultOpen}
@@ -105,55 +86,197 @@ export function ChatLayout({
         onConversationClick={onConversationClick}
       />
 
-      {/* Main content area */}
-      <SidebarInset
-        className={cn(
-          "relative flex flex-col overflow-hidden",
-          "bg-[#FFF8F0]", // Lokul warm cream background
-          className
-        )}
-      >
-        <CompactChatHeader
-          leftActions={
-            <>
-              <SidebarTrigger className="md:hidden" />
-              <MemoryHeaderPill count={count} onClick={openPanel} />
-            </>
-          }
-          rightActions={
-            <>
-              <DownloadManager />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowPerformancePanel(!showPerformancePanel)}
-                aria-label={
-                  showPerformancePanel ? "Hide performance panel" : "Show performance panel"
-                }
-                aria-pressed={showPerformancePanel}
-              >
-                <Activity className="h-4 w-4" />
-              </Button>
-            </>
-          }
-        />
-
-        {/* Main content */}
-        <main className="flex-1 overflow-hidden">{children}</main>
-
-        {/* Performance Panel - Right Side */}
-        {showPerformancePanel && (
-          <div className="absolute top-16 right-4 z-40">
-            <PerformancePanel onClose={() => setShowPerformancePanel(false)} />
-          </div>
-        )}
-
-        {/* Status Indicator - Bottom Left */}
-        <StatusIndicator />
-
-        <MemoryPanel open={isPanelOpen} onClose={closePanel} />
-      </SidebarInset>
+      <ChatLayoutContent className={className}>{children}</ChatLayoutContent>
     </SidebarProvider>
+  );
+}
+
+function ChatLayoutContent({
+  children,
+  className,
+}: Pick<ChatLayoutProps, "children" | "className">) {
+  const { count } = useMemory();
+  const [showPerformancePanel, setShowPerformancePanel] = useState(false);
+  const [mobilePanel, setMobilePanel] = useState<MobilePanel>("none");
+  const mobileController = useMemo(() => createMobilePanelController(setMobilePanel), []);
+  const { isMobile, openMobile, setOpenMobile } = useSidebar();
+  const isMemoryPanelOpen = useMemoryStore((state) => state.isPanelOpen);
+  const openMemoryPanel = useMemoryStore((state) => state.openPanel);
+  const closeMemoryPanel = useMemoryStore((state) => state.closePanel);
+  const toggleMemoryPanel = useMemoryStore((state) => state.togglePanel);
+  const isDownloadPanelOpen = useConversationModelStore((state) => state.isDownloadManagerOpen);
+  const closeDownloadPanel = useConversationModelStore((state) => state.closeDownloadManager);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === "m") {
+        event.preventDefault();
+        if (isMobile) {
+          mobileController.togglePanel("memory");
+          return;
+        }
+        toggleMemoryPanel();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isMobile, mobileController, toggleMemoryPanel]);
+
+  useEffect(() => {
+    if (!isMobile) {
+      setMobilePanel("none");
+      return;
+    }
+
+    if (mobilePanel === "sidebar") {
+      setOpenMobile(true);
+      closeMemoryPanel();
+      setShowPerformancePanel(false);
+      closeDownloadPanel();
+      return;
+    }
+
+    if (mobilePanel === "memory") {
+      setOpenMobile(false);
+      openMemoryPanel();
+      setShowPerformancePanel(false);
+      closeDownloadPanel();
+      return;
+    }
+
+    if (mobilePanel === "performance") {
+      setOpenMobile(false);
+      closeMemoryPanel();
+      setShowPerformancePanel(true);
+      closeDownloadPanel();
+      return;
+    }
+
+    if (mobilePanel === "downloads") {
+      setOpenMobile(false);
+      closeMemoryPanel();
+      setShowPerformancePanel(false);
+      return;
+    }
+
+    setOpenMobile(false);
+    closeMemoryPanel();
+    setShowPerformancePanel(false);
+    closeDownloadPanel();
+  }, [closeDownloadPanel, closeMemoryPanel, isMobile, mobilePanel, openMemoryPanel, setOpenMobile]);
+
+  useEffect(() => {
+    if (isMobile && isDownloadPanelOpen && mobilePanel !== "downloads") {
+      mobileController.openPanel("downloads");
+    }
+  }, [isDownloadPanelOpen, isMobile, mobileController, mobilePanel]);
+
+  useEffect(() => {
+    if (isMobile && openMobile && mobilePanel !== "sidebar") {
+      mobileController.openPanel("sidebar");
+    }
+  }, [isMobile, mobileController, mobilePanel, openMobile]);
+
+  useEffect(() => {
+    if (isMobile && !openMobile && mobilePanel === "sidebar") {
+      mobileController.closePanel("sidebar");
+    }
+  }, [isMobile, mobileController, mobilePanel, openMobile]);
+
+  useEffect(() => {
+    if (isMobile && !isMemoryPanelOpen && mobilePanel === "memory") {
+      mobileController.closePanel("memory");
+    }
+  }, [isMemoryPanelOpen, isMobile, mobileController, mobilePanel]);
+
+  useEffect(() => {
+    if (isMobile && !showPerformancePanel && mobilePanel === "performance") {
+      mobileController.closePanel("performance");
+    }
+  }, [isMobile, mobileController, mobilePanel, showPerformancePanel]);
+
+  useEffect(() => {
+    if (isMobile && !isDownloadPanelOpen && mobilePanel === "downloads") {
+      mobileController.closePanel("downloads");
+    }
+  }, [isDownloadPanelOpen, isMobile, mobileController, mobilePanel]);
+
+  const handleMemoryClick = () => {
+    if (isMobile) {
+      mobileController.togglePanel("memory");
+      return;
+    }
+    toggleMemoryPanel();
+  };
+
+  const handlePerformanceClick = () => {
+    if (isMobile) {
+      mobileController.togglePanel("performance");
+      return;
+    }
+    setShowPerformancePanel((current) => !current);
+  };
+
+  const handleSidebarClick = () => {
+    mobileController.togglePanel("sidebar");
+  };
+
+  return (
+    <SidebarInset
+      className={cn(
+        "relative flex flex-col overflow-hidden",
+        "bg-[#FFF8F0]", // Lokul warm cream background
+        className
+      )}
+    >
+      <CompactChatHeader
+        leftActions={
+          <>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 md:hidden"
+              onClick={handleSidebarClick}
+              aria-label={openMobile ? "Close conversation drawer" : "Open conversation drawer"}
+            >
+              <PanelLeft className="h-4 w-4" />
+            </Button>
+            <MemoryHeaderPill count={count} onClick={handleMemoryClick} />
+          </>
+        }
+        rightActions={
+          <>
+            <DownloadManager />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePerformanceClick}
+              aria-label={
+                showPerformancePanel ? "Hide performance panel" : "Show performance panel"
+              }
+              aria-pressed={showPerformancePanel}
+            >
+              <Activity className="h-4 w-4" />
+            </Button>
+          </>
+        }
+      />
+
+      <main className="flex-1 overflow-hidden">{children}</main>
+
+      {showPerformancePanel && (
+        <div className="absolute top-16 right-4 z-40">
+          <PerformancePanel onClose={() => setShowPerformancePanel(false)} />
+        </div>
+      )}
+
+      <StatusIndicator />
+
+      <MemoryPanel open={isMemoryPanelOpen} onClose={closeMemoryPanel} />
+    </SidebarInset>
   );
 }
 
