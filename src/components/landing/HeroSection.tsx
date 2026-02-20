@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 export interface HeroSectionProps {
   onStart: () => void;
@@ -9,6 +10,8 @@ const proofItems = ["Open source", "Verified private", "No account required", "W
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 export function HeroSection({ onStart }: HeroSectionProps) {
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
+
   return (
     <section className="relative flex min-h-screen items-center overflow-hidden bg-[#050505] px-4 py-16 md:py-20">
       <motion.div
@@ -26,7 +29,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
       />
 
       <div className="relative z-10 mx-auto grid w-full max-w-[1220px] items-center gap-10 lg:grid-cols-[55%_45%] lg:gap-2">
-        <div className="order-2 lg:order-1">
+        <div>
           <motion.div
             className="mb-7 inline-flex rounded-full bg-[#FF6B35] px-4 py-2 text-[11px] font-semibold tracking-[0.2em] text-white uppercase"
             initial={{ opacity: 0, y: 10 }}
@@ -137,39 +140,6 @@ export function HeroSection({ onStart }: HeroSectionProps) {
             </div>
           </motion.div>
         </div>
-
-        <div className="order-1 flex justify-center lg:hidden">
-          <div
-            className="relative w-[180px] md:w-[240px] lg:w-[300px]"
-            style={{ transformOrigin: "center center" }}
-          >
-            <div>
-              <motion.div
-                className="pointer-events-none absolute top-[4%] -left-[36%] w-[126%]"
-                initial={{ opacity: 0, y: 14, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.52, delay: 0.45, ease: EASE }}
-              >
-                <div className="absolute top-[8%] left-1/2 h-[30%] w-[62%] -translate-x-1/2 rounded-full bg-[#FFD88A]/55 blur-2xl" />
-                <img
-                  src="/stand-lamp.png"
-                  alt="Stand lamp"
-                  className="relative h-auto w-full drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)]"
-                />
-              </motion.div>
-
-              <motion.img
-                src="/lokul-couch.png"
-                alt="Spark on couch"
-                className="relative z-10 h-auto w-full"
-                style={{ transform: "rotateY(-8deg)" }}
-                initial={{ opacity: 0, y: 16, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.56, delay: 0.95, ease: EASE }}
-              />
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className="pointer-events-none absolute inset-0 hidden lg:block">
@@ -191,24 +161,127 @@ export function HeroSection({ onStart }: HeroSectionProps) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.52, delay: 0.45, ease: EASE }}
             >
-              <div className="absolute top-[8%] left-1/2 h-[30%] w-[62%] -translate-x-1/2 rounded-full bg-[#FFD88A]/55 blur-3xl" />
-              <img
-                src="/stand-lamp.png"
-                alt="Stand lamp"
-                className="relative h-auto w-full drop-shadow-[0_14px_32px_rgba(0,0,0,0.42)]"
+              <motion.div
+                className="absolute top-[8%] left-1/2 h-[30%] w-[62%] -translate-x-1/2 rounded-full bg-[#FFD88A]/55 blur-3xl"
+                animate={{ opacity: isSwitchOn ? 1 : 0 }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
               />
+
+              <div className="relative h-auto w-full">
+                <motion.img
+                  src="/stand-lamp-off.png"
+                  alt="Stand lamp off"
+                  className="relative h-auto w-full drop-shadow-[0_14px_32px_rgba(0,0,0,0.42)]"
+                  animate={{ opacity: isSwitchOn ? 0 : 1 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                />
+                <motion.img
+                  src="/stand-lamp.png"
+                  alt="Stand lamp on"
+                  className="absolute inset-0 h-auto w-full drop-shadow-[0_14px_32px_rgba(0,0,0,0.42)]"
+                  animate={{ opacity: isSwitchOn ? 1 : 0 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                />
+              </div>
             </motion.div>
+
+            <div className="pointer-events-none absolute bottom-[2%] left-1/2 h-[11%] w-[78%] -translate-x-1/2 rounded-full bg-black/85 blur-2xl" />
+            <div className="pointer-events-none absolute bottom-[4%] left-1/2 h-[13%] w-[84%] -translate-x-1/2 rounded-full bg-[#FF8A4D]/16 blur-3xl" />
 
             <motion.img
               src="/lokul-couch.png"
               alt="Spark on couch"
               className="relative z-10 h-auto w-full"
-              style={{ transform: "rotateY(-8deg)" }}
+              style={{
+                transform: "rotateY(-8deg)",
+                filter: "drop-shadow(0 32px 48px rgba(0,0,0,0.72))",
+              }}
               initial={{ opacity: 0, y: 16, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.56, delay: 0.95, ease: EASE }}
             />
+
+            <motion.img
+              src="/coffee-table.png"
+              alt="Coffee table"
+              className="pointer-events-none absolute right-[-20%] bottom-[-15%] z-20 h-auto w-[90%]"
+              style={{ filter: "drop-shadow(0 38px 56px rgba(0,0,0,0.78))" }}
+              initial={{ opacity: 0, y: 14, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.48, delay: 1.08, ease: EASE }}
+            />
+            <div className="pointer-events-none absolute right-[-14%] bottom-[-14%] z-[19] h-[13%] w-[62%] rounded-full bg-black/85 blur-2xl" />
           </div>
+        </div>
+      </div>
+
+      <div className="absolute inset-0 z-40 hidden lg:block">
+        <div
+          className="pointer-events-none absolute"
+          style={{
+            left: "68%",
+            top: "62%",
+            width: "clamp(860px, 72vw, 1360px)",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <motion.button
+            type="button"
+            onClick={() => setIsSwitchOn((prev) => !prev)}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, y: 10, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.45, delay: 3.05, ease: EASE }}
+            className="pointer-events-auto absolute top-0 left-[50%] z-40 w-[20%] -translate-x-1/2 -translate-y-[320px] cursor-pointer"
+            aria-label="Toggle room light switch"
+          >
+            <motion.div
+              className="pointer-events-none absolute -top-20 left-[20%] z-50 -translate-x-1/2 select-none"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 3.55, ease: "easeOut" }}
+            >
+              <p
+                className="text-2xl whitespace-nowrap text-white/85"
+                style={{
+                  fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+                  fontStyle: "italic",
+                }}
+              >
+                Turn On Privacy
+              </p>
+              <svg
+                width="170"
+                height="88"
+                viewBox="0 0 170 88"
+                className="-mt-1 ml-7"
+                aria-hidden="true"
+              >
+                <path
+                  d="M8 12 C48 8, 70 26, 66 44 C62 57, 84 66, 102 58 C121 50, 118 30, 110 26 C98 19, 86 25, 91 35 C96 46, 116 50, 136 62"
+                  fill="none"
+                  stroke="#FFB07A"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+                {/* <path
+                  d="M112 26 L146 72 L126 70"
+                  fill="none"
+                  stroke="#FFB07A"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                /> */}
+              </svg>
+            </motion.div>
+
+            <img
+              src={isSwitchOn ? "/light-switch-on.webp" : "/light-switch-off.png"}
+              alt={isSwitchOn ? "Light switch on" : "Light switch off"}
+              className="h-auto w-full drop-shadow-[0_8px_18px_rgba(0,0,0,0.45)]"
+            />
+          </motion.button>
         </div>
       </div>
     </section>
