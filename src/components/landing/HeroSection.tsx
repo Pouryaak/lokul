@@ -21,7 +21,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         transition={{ duration: 0.6, ease: "easeOut" }}
         style={{
           backgroundImage:
-            "linear-gradient(to right, rgba(5,5,5,0.72) 0%, rgba(5,5,5,0.62) 45%, rgba(5,5,5,0.52) 100%), url('/hero_bg.webp')",
+            "linear-gradient(to right, rgba(5,5,5,0.90) 0%, rgba(5,5,5,0.82) 45%, rgba(5,5,5,0.54) 100%), url('/hero_bg.webp')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -215,7 +215,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         </div>
       </div>
 
-      <div className="absolute inset-0 z-40 hidden lg:block">
+      <div className="pointer-events-none absolute inset-0 z-40 hidden lg:block">
         <div
           className="pointer-events-none absolute"
           style={{
@@ -233,11 +233,11 @@ export function HeroSection({ onStart }: HeroSectionProps) {
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.45, delay: 3.05, ease: EASE }}
-            className="pointer-events-auto absolute top-0 left-[50%] z-40 w-[20%] -translate-x-1/2 -translate-y-[320px] cursor-pointer"
+            className="pointer-events-auto absolute top-0 left-[54%] z-40 w-[20%] -translate-x-1/2 -translate-y-[360px] cursor-pointer"
             aria-label="Toggle room light switch"
           >
             <motion.div
-              className="pointer-events-none absolute -top-20 left-[20%] z-50 -translate-x-1/2 select-none"
+              className="pointer-events-none absolute -top-14 left-[24%] z-50 -translate-x-1/2 select-none"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: 3.55, ease: "easeOut" }}
