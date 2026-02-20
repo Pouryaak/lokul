@@ -1,117 +1,215 @@
-/**
- * HeroSection Component - Main landing page hero
- *
- * Features spark logo, headline, gradient CTA, trust indicators.
- */
-
 import { Button } from "@/components/ui/Button";
-import { PerspectiveGrid } from "@/components/ui/perspective-grid";
-import { ChevronDown, Github, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
-/**
- * Props for HeroSection
- */
 export interface HeroSectionProps {
-  /** Callback when user clicks Start Chatting */
   onStart: () => void;
 }
 
-/**
- * Hero section with spark logo, headline, and CTA
- */
-export function HeroSection({ onStart }: HeroSectionProps) {
-  const scrollToNext = () => {
-    const nextSection = document.getElementById("problem-solution");
-    if (nextSection) {
-      nextSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+const proofItems = ["Open source", "Verified private", "No account required", "Works offline"];
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
+export function HeroSection({ onStart }: HeroSectionProps) {
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center bg-[#050505] px-4 py-20">
-      {/* Perspective grid background */}
-      <PerspectiveGrid
-        className="absolute inset-0 z-0 bg-[#050505]"
-        backgroundColor="#050505"
-        gridSize={35}
-        fadeRadius={75}
+    <section className="relative flex min-h-screen items-center overflow-hidden bg-[#050505] px-4 py-16 md:py-20">
+      <motion.div
+        className="absolute inset-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(5,5,5,0.72) 0%, rgba(5,5,5,0.62) 45%, rgba(5,5,5,0.52) 100%), url('/hero_bg.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
       />
 
-      {/* Main content */}
-      <div className="relative z-10 mx-auto max-w-[860px] text-center">
-        {/* Spark Logo with pulsing glow */}
-        <div className="mb-8 flex justify-center">
-          <div className="relative">
-            {/* Glow effect */}
-            <div className="absolute inset-0 animate-pulse rounded-full bg-[#FF6B35]/30 blur-3xl" />
-            {/* Logo */}
-            <img
-              src="/lokul-logo.png"
-              alt="Lokul"
-              className="relative h-25 w-25 drop-shadow-lg md:h-50 md:w-50"
+      <div className="relative z-10 mx-auto grid w-full max-w-[1220px] items-center gap-10 lg:grid-cols-[55%_45%] lg:gap-2">
+        <div className="order-2 lg:order-1">
+          <motion.div
+            className="mb-7 inline-flex rounded-full bg-[#FF6B35] px-4 py-2 text-[11px] font-semibold tracking-[0.2em] text-white uppercase"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 1.45, ease: "easeOut" }}
+            style={{ fontFamily: '"Syne", "Avenir Next", "Segoe UI", sans-serif' }}
+          >
+            ⚡ WORKS IN YOUR BROWSER · ZERO SERVERS · FREE FOREVER
+          </motion.div>
+
+          <h1
+            className="mb-6 text-center text-[clamp(3rem,8vw,5.5rem)] leading-[0.95] tracking-[-0.03em] text-white lg:text-left"
+            style={{ fontFamily: '"Instrument Serif", "Iowan Old Style", serif' }}
+          >
+            <motion.span
+              className="block"
+              initial={{ clipPath: "inset(100% 0 0 0)" }}
+              animate={{ clipPath: "inset(0 0 0 0)" }}
+              transition={{ duration: 0.5, delay: 1.65, ease: EASE }}
+            >
+              Your thoughts.
+            </motion.span>
+            <motion.span
+              className="block font-light italic"
+              initial={{ clipPath: "inset(100% 0 0 0)" }}
+              animate={{ clipPath: "inset(0 0 0 0)" }}
+              transition={{ duration: 0.5, delay: 1.85, ease: EASE }}
+            >
+              Your AI. <span className="text-[#FF6B35]/70">No one else.</span>
+            </motion.span>
+          </h1>
+
+          <motion.p
+            className="mx-auto mb-10 max-w-[460px] text-center text-[19px] leading-[1.55] text-[#9a9590] lg:mx-0 lg:text-left"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 2.05, ease: "easeOut" }}
+            style={{
+              fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif',
+              fontWeight: 300,
+            }}
+          >
+            Lokul runs entirely in your browser. No cloud. No servers. No company reading your
+            words. Just you and an AI that stays exactly where you put it.
+          </motion.p>
+
+          <motion.div
+            className="mb-10 flex flex-wrap items-center justify-center gap-5 lg:justify-start"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 2.25, ease: "easeOut" }}
+          >
+            <div>
+              <Button
+                variant="cta"
+                size="lg"
+                onClick={onStart}
+                className="group relative h-[52px] rounded-full px-8 text-[16px] font-semibold"
+                style={{ fontFamily: '"Syne", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
+                <span className="pointer-events-none absolute inset-0 -translate-x-[140%] bg-gradient-to-r from-transparent via-white/35 to-transparent transition-transform duration-700 group-hover:translate-x-[140%]" />
+                <span className="relative z-10">Start for free &nbsp;→</span>
+              </Button>
+            </div>
+
+            <Button
+              variant="ghost"
+              onClick={() => {
+                const nextSection = document.getElementById("demo");
+                if (nextSection) {
+                  nextSection.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className="group h-[52px] rounded-full bg-transparent px-1 text-[16px] font-medium text-white/78 hover:bg-transparent hover:text-white"
+              style={{ fontFamily: '"Syne", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
+              <span className="relative">
+                See how it works &nbsp;↓
+                <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-white/70 transition-transform duration-300 group-hover:scale-x-100" />
+              </span>
+            </Button>
+          </motion.div>
+
+          <motion.div
+            className="mx-auto w-full max-w-[760px] lg:mx-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.35, delay: 2.45, ease: "easeOut" }}
+          >
+            <div className="mb-4 h-px w-full bg-white/8" />
+            <div
+              className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center text-[12px] tracking-[0.08em] text-[#9d9892] lg:justify-start lg:text-left"
+              style={{ fontFamily: '"Syne", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
+              {proofItems.map((item, index) => (
+                <span key={item} className="inline-flex items-center">
+                  <motion.span
+                    initial={{ clipPath: "inset(0 100% 0 0)" }}
+                    animate={{ clipPath: "inset(0 0 0 0)" }}
+                    transition={{ duration: 0.3, delay: 2.45 + index * 0.15, ease: "easeOut" }}
+                    style={{ whiteSpace: "nowrap" }}
+                  >
+                    {item}
+                  </motion.span>
+                  {index < proofItems.length - 1 && <span className="px-2 text-white/20">·</span>}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="order-1 flex justify-center lg:hidden">
+          <div
+            className="relative w-[180px] md:w-[240px] lg:w-[300px]"
+            style={{ transformOrigin: "center center" }}
+          >
+            <div>
+              <motion.div
+                className="pointer-events-none absolute top-[4%] -left-[36%] w-[126%]"
+                initial={{ opacity: 0, y: 14, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.52, delay: 0.45, ease: EASE }}
+              >
+                <div className="absolute top-[8%] left-1/2 h-[30%] w-[62%] -translate-x-1/2 rounded-full bg-[#FFD88A]/55 blur-2xl" />
+                <img
+                  src="/stand-lamp.png"
+                  alt="Stand lamp"
+                  className="relative h-auto w-full drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)]"
+                />
+              </motion.div>
+
+              <motion.img
+                src="/lokul-couch.png"
+                alt="Spark on couch"
+                className="relative z-10 h-auto w-full"
+                style={{ transform: "rotateY(-8deg)" }}
+                initial={{ opacity: 0, y: 16, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.56, delay: 0.95, ease: EASE }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="pointer-events-none absolute inset-0 hidden lg:block">
+        <div
+          className="absolute"
+          style={{
+            left: "68%",
+            top: "62%",
+            width: "clamp(860px, 72vw, 1360px)",
+            transform: "translate(-50%, -50%)",
+            transformOrigin: "center center",
+          }}
+        >
+          <div>
+            <motion.div
+              className="pointer-events-none absolute"
+              style={{ left: "-10%", top: "-10%", width: "100%" }}
+              initial={{ opacity: 0, y: 14, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.52, delay: 0.45, ease: EASE }}
+            >
+              <div className="absolute top-[8%] left-1/2 h-[30%] w-[62%] -translate-x-1/2 rounded-full bg-[#FFD88A]/55 blur-3xl" />
+              <img
+                src="/stand-lamp.png"
+                alt="Stand lamp"
+                className="relative h-auto w-full drop-shadow-[0_14px_32px_rgba(0,0,0,0.42)]"
+              />
+            </motion.div>
+
+            <motion.img
+              src="/lokul-couch.png"
+              alt="Spark on couch"
+              className="relative z-10 h-auto w-full"
+              style={{ transform: "rotateY(-8deg)" }}
+              initial={{ opacity: 0, y: 16, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.56, delay: 0.95, ease: EASE }}
             />
           </div>
         </div>
-
-        {/* Headline */}
-        <h1 className="mb-4 text-6xl font-bold tracking-tight text-white md:text-7xl">Lokul</h1>
-
-        {/* Subheadline */}
-        <p className="mb-6 text-2xl font-medium text-gray-300 md:text-3xl">
-          Your AI. Your browser. Your privacy.
-        </p>
-
-        {/* Description */}
-        <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-gray-200">
-          ChatGPT-quality AI running 100% in your browser.
-          <br />
-          No servers. No tracking. Works offline.
-        </p>
-
-        {/* Primary CTA */}
-        <div className="mb-6 flex flex-wrap items-center justify-center gap-4">
-          <Button variant="cta" size="xl" onClick={onStart} className="text-lg">
-            <Sparkles className="mr-2 h-5 w-5 transition-transform group-hover:rotate-12" />
-            Start Chatting — Free
-          </Button>
-          <Button
-            variant="secondary"
-            size="xl"
-            onClick={() => window.open("https://github.com/pouryaak/lokul", "_blank")}
-            className="text-lg"
-          >
-            <Github className="mr-2 h-5 w-5" />
-            Star on GitHub
-          </Button>
-        </div>
-
-        {/* Trust Indicators */}
-        <div className="mb-8 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-300">
-          <span className="flex items-center gap-1">
-            <span className="text-[#FF6B35]">&#10003;</span>
-            No account needed
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="text-[#FF6B35]">&#10003;</span>
-            Free forever
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="text-[#FF6B35]">&#10003;</span>
-            Open source
-          </span>
-        </div>
-
-        {/* Social Proof */}
-        <p className="mb-12 text-sm text-gray-500">&#9733; 12,847 developers trust Lokul</p>
-
-        {/* Scroll indicator */}
-        <button
-          onClick={scrollToNext}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer text-[#FF6B35] transition-colors hover:text-[#FF6B35]/80"
-          aria-label="Scroll to learn more"
-        >
-          <ChevronDown className="h-8 w-8" />
-        </button>
       </div>
     </section>
   );

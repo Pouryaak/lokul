@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=Instrument+Serif:ital@0;1&family=Syne:wght@500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -85,6 +86,57 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  .animate-hero-ember-breathe {
+    animation: hero-ember-breathe 6s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes hero-ember-breathe {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes spark-entry {
+  0% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  72% {
+    transform: translateY(4px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spark-soft-entry {
+  0% {
+    transform: translateY(16px) scale(0.97);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes spark-tilt {
+  0% {
+    transform: rotateY(-8deg) rotateZ(0deg);
+  }
+  45% {
+    transform: rotateY(-8deg) rotateZ(-3.5deg);
+  }
+  100% {
+    transform: rotateY(-8deg) rotateZ(0deg);
+  }
 }
 
 /* Code block styling for Streamdown/Shiki */
@@ -100,7 +152,7 @@
   pre code {
     background-color: transparent;
     padding: 0;
-    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-family: "Fira Code", "Monaco", "Consolas", monospace;
     font-size: 0.875rem;
     line-height: 1.5;
   }
@@ -109,7 +161,7 @@
     background-color: rgba(0, 0, 0, 0.05);
     padding: 0.2em 0.4em;
     border-radius: 0.25rem;
-    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-family: "Fira Code", "Monaco", "Consolas", monospace;
     font-size: 0.875em;
   }
 
@@ -233,15 +285,39 @@
 }
 
 /* Perspective Grid Tile Hover Effects - Primary Orange Color */
-.tile:nth-child(4n):hover { background-color: rgba(255, 107, 53, 0.9); }
-.tile:nth-child(4n + 1):hover { background-color: rgba(255, 107, 53, 0.7); }
-.tile:nth-child(4n + 2):hover { background-color: rgba(255, 107, 53, 0.8); }
-.tile:nth-child(4n + 3):hover { background-color: rgba(255, 107, 53, 0.6); }
-.tile:nth-child(7n):hover { background-color: rgba(255, 107, 53, 0.75); }
-.tile:nth-child(7n + 3):hover { background-color: rgba(255, 107, 53, 0.85); }
-.tile:nth-child(7n + 5):hover { background-color: rgba(255, 107, 53, 0.65); }
-.tile:nth-child(7n + 6):hover { background-color: rgba(255, 107, 53, 0.95); }
-.tile:nth-child(11n + 1):hover { background-color: rgba(255, 107, 53, 0.8); }
-.tile:nth-child(11n + 4):hover { background-color: rgba(255, 107, 53, 0.7); }
-.tile:nth-child(11n + 7):hover { background-color: rgba(255, 107, 53, 0.9); }
-.tile:nth-child(11n + 10):hover { background-color: rgba(255, 107, 53, 0.6); }
+.tile:nth-child(4n):hover {
+  background-color: rgba(255, 107, 53, 0.9);
+}
+.tile:nth-child(4n + 1):hover {
+  background-color: rgba(255, 107, 53, 0.7);
+}
+.tile:nth-child(4n + 2):hover {
+  background-color: rgba(255, 107, 53, 0.8);
+}
+.tile:nth-child(4n + 3):hover {
+  background-color: rgba(255, 107, 53, 0.6);
+}
+.tile:nth-child(7n):hover {
+  background-color: rgba(255, 107, 53, 0.75);
+}
+.tile:nth-child(7n + 3):hover {
+  background-color: rgba(255, 107, 53, 0.85);
+}
+.tile:nth-child(7n + 5):hover {
+  background-color: rgba(255, 107, 53, 0.65);
+}
+.tile:nth-child(7n + 6):hover {
+  background-color: rgba(255, 107, 53, 0.95);
+}
+.tile:nth-child(11n + 1):hover {
+  background-color: rgba(255, 107, 53, 0.8);
+}
+.tile:nth-child(11n + 4):hover {
+  background-color: rgba(255, 107, 53, 0.7);
+}
+.tile:nth-child(11n + 7):hover {
+  background-color: rgba(255, 107, 53, 0.9);
+}
+.tile:nth-child(11n + 10):hover {
+  background-color: rgba(255, 107, 53, 0.6);
+}
