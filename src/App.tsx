@@ -10,6 +10,7 @@ import { FinalCTASection } from "./components/landing/FinalCTASection";
 import { FooterSection } from "./components/landing/FooterSection";
 import { HeroSection } from "./components/landing/HeroSection";
 import { HowItWorksSection } from "./components/landing/HowItWorksSection";
+import { Nav } from "./components/landing/Nav";
 import { ModelsSection } from "./components/landing/ModelsSection";
 import { ProblemSolutionSection } from "./components/landing/ProblemSolutionSection";
 import { TechnicalTrustSection } from "./components/landing/TechnicalTrustSection";
@@ -31,6 +32,7 @@ function LandingPage() {
 
   return (
     <div className="relative min-h-screen bg-white">
+      <Nav onStart={handleStart} />
       <HeroSection onStart={handleStart} />
       <ProblemSolutionSection />
       <ModelsSection />
