@@ -7,7 +7,7 @@
  * Based on @blocks/sidebar-02 pattern from shadcn.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Activity, PanelLeft } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -110,6 +110,17 @@ function ChatLayoutContent({
   const isDownloadPanelOpen = useConversationModelStore((state) => state.isDownloadManagerOpen);
   const closeDownloadPanel = useConversationModelStore((state) => state.closeDownloadManager);
 
+  const setMobileSidebarOpen = useCallback(
+    (nextOpen: boolean) => {
+      if (openMobile === nextOpen) {
+        return;
+      }
+
+      setOpenMobile(nextOpen);
+    },
+    [openMobile, setOpenMobile]
+  );
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === "m") {
@@ -131,11 +142,12 @@ function ChatLayoutContent({
   useEffect(() => {
     if (!isMobile) {
       setMobilePanel("none");
+      setMobileSidebarOpen(false);
       return;
     }
 
     if (mobilePanel === "sidebar") {
-      setOpenMobile(true);
+      setMobileSidebarOpen(true);
       closeMemoryPanel();
       setShowPerformancePanel(false);
       closeDownloadPanel();
@@ -143,7 +155,7 @@ function ChatLayoutContent({
     }
 
     if (mobilePanel === "memory") {
-      setOpenMobile(false);
+      setMobileSidebarOpen(false);
       openMemoryPanel();
       setShowPerformancePanel(false);
       closeDownloadPanel();
@@ -151,7 +163,7 @@ function ChatLayoutContent({
     }
 
     if (mobilePanel === "performance") {
-      setOpenMobile(false);
+      setMobileSidebarOpen(false);
       closeMemoryPanel();
       setShowPerformancePanel(true);
       closeDownloadPanel();
@@ -159,29 +171,32 @@ function ChatLayoutContent({
     }
 
     if (mobilePanel === "downloads") {
-      setOpenMobile(false);
+      setMobileSidebarOpen(false);
       closeMemoryPanel();
       setShowPerformancePanel(false);
       return;
     }
 
-    setOpenMobile(false);
+    setMobileSidebarOpen(false);
     closeMemoryPanel();
     setShowPerformancePanel(false);
     closeDownloadPanel();
-  }, [closeDownloadPanel, closeMemoryPanel, isMobile, mobilePanel, openMemoryPanel, setOpenMobile]);
+  }, [
+    closeDownloadPanel,
+    closeMemoryPanel,
+    isMobile,
+    mobilePanel,
+    openMemoryPanel,
+    openMobile,
+    setMobileSidebarOpen,
+    setOpenMobile,
+  ]);
 
   useEffect(() => {
     if (isMobile && isDownloadPanelOpen && mobilePanel !== "downloads") {
       mobileController.openPanel("downloads");
     }
   }, [isDownloadPanelOpen, isMobile, mobileController, mobilePanel]);
-
-  useEffect(() => {
-    if (isMobile && openMobile && mobilePanel !== "sidebar") {
-      mobileController.openPanel("sidebar");
-    }
-  }, [isMobile, mobileController, mobilePanel, openMobile]);
 
   useEffect(() => {
     if (isMobile && !openMobile && mobilePanel === "sidebar") {

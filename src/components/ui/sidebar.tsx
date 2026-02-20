@@ -60,7 +60,7 @@ function SidebarProvider({
   onOpenChange?: (open: boolean) => void;
 }) {
   const isMobile = useIsMobile();
-  const [openMobile, setOpenMobile] = React.useState(false);
+  const [openMobile, setOpenMobileState] = React.useState(false);
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
@@ -69,6 +69,10 @@ function SidebarProvider({
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === "function" ? value(open) : value;
+      if (openState === open) {
+        return;
+      }
+
       if (setOpenProp) {
         setOpenProp(openState);
       } else {
@@ -81,9 +85,16 @@ function SidebarProvider({
     [setOpenProp, open]
   );
 
+  const setOpenMobile = React.useCallback((value: boolean | ((value: boolean) => boolean)) => {
+    setOpenMobileState((current) => {
+      const nextValue = typeof value === "function" ? value(current) : value;
+      return nextValue === current ? current : nextValue;
+    });
+  }, []);
+
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
-    return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
+    return isMobile ? setOpenMobile((isOpen) => !isOpen) : setOpen((isOpen) => !isOpen);
   }, [isMobile, setOpen, setOpenMobile]);
 
   // Adds a keyboard shortcut to toggle the sidebar.
