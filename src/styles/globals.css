@@ -217,6 +217,11 @@
 
 :root {
   --radius: 0.625rem;
+  --hero-text-muted: #b7b1ac;
+  --hero-text-secondary: rgba(255, 255, 255, 0.88);
+  --hero-text-tertiary: #b6b0aa;
+  --hero-pointer: #ffb07a;
+  --hero-badge-text: #ffd3bf;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);

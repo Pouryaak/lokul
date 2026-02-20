@@ -31,13 +31,17 @@ export function HeroSection({ onStart }: HeroSectionProps) {
       <div className="relative z-10 mx-auto grid w-full max-w-[1220px] items-center gap-10 lg:grid-cols-[55%_45%] lg:gap-2">
         <div>
           <motion.div
-            className="mb-7 inline-flex rounded-full bg-[#FF6B35] px-4 py-2 text-[11px] font-semibold tracking-[0.2em] text-white uppercase"
+            className="mb-7 inline-flex items-center gap-3 rounded-full border border-[#FF6B35]/30 bg-[#0f0f0f]/85 px-4 py-2 text-[10px] font-semibold tracking-[0.18em] text-[var(--hero-badge-text)] uppercase backdrop-blur-sm"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 1.45, ease: "easeOut" }}
             style={{ fontFamily: '"Syne", "Avenir Next", "Segoe UI", sans-serif' }}
           >
-            ⚡ WORKS IN YOUR BROWSER · ZERO SERVERS · FREE FOREVER
+            <span>Works in your browser</span>
+            <span className="h-3 w-px bg-[#FF6B35]/35" />
+            <span>Zero servers</span>
+            <span className="h-3 w-px bg-[#FF6B35]/35" />
+            <span>Free forever</span>
           </motion.div>
 
           <h1
@@ -63,7 +67,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
           </h1>
 
           <motion.p
-            className="mx-auto mb-10 max-w-[460px] text-center text-[19px] leading-[1.55] text-[#9a9590] lg:mx-0 lg:text-left"
+            className="mx-auto mb-10 max-w-[460px] text-center text-[19px] leading-[1.55] text-[var(--hero-text-muted)] lg:mx-0 lg:text-left"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 2.05, ease: "easeOut" }}
@@ -103,7 +107,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
                   nextSection.scrollIntoView({ behavior: "smooth" });
                 }
               }}
-              className="group h-[52px] rounded-full bg-transparent px-1 text-[16px] font-medium text-white/78 hover:bg-transparent hover:text-white"
+              className="group h-[52px] rounded-full bg-transparent px-1 text-[16px] font-medium text-[var(--hero-text-secondary)] hover:bg-transparent hover:text-white"
               style={{ fontFamily: '"Syne", "Avenir Next", "Segoe UI", sans-serif' }}
             >
               <span className="relative">
@@ -121,7 +125,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
           >
             <div className="mb-4 h-px w-full bg-white/8" />
             <div
-              className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center text-[12px] tracking-[0.08em] text-[#9d9892] lg:justify-start lg:text-left"
+              className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center text-[12px] tracking-[0.08em] text-[var(--hero-text-tertiary)] lg:justify-start lg:text-left"
               style={{ fontFamily: '"Syne", "Avenir Next", "Segoe UI", sans-serif' }}
             >
               {proofItems.map((item, index) => (
@@ -243,7 +247,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
               transition={{ duration: 0.35, delay: 3.55, ease: "easeOut" }}
             >
               <p
-                className="text-2xl whitespace-nowrap text-white/85"
+                className="text-2xl whitespace-nowrap text-[var(--hero-text-secondary)]"
                 style={{
                   fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
                   fontStyle: "italic",
@@ -261,7 +265,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
                 <path
                   d="M8 12 C48 8, 70 26, 66 44 C62 57, 84 66, 102 58 C121 50, 118 30, 110 26 C98 19, 86 25, 91 35 C96 46, 116 50, 136 62"
                   fill="none"
-                  stroke="#FFB07A"
+                  stroke="var(--hero-pointer)"
                   strokeWidth="3"
                   strokeLinecap="round"
                 />
