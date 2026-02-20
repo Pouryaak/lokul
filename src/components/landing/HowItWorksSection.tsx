@@ -114,15 +114,15 @@ function StepItem({ step, index }: { step: Step; index: number }) {
           </div>
 
           {/* Title */}
-          <h3 className="mb-4 text-3xl font-bold text-[#1A1A1A] md:text-4xl lg:text-5xl">
+          <h3 className="mb-4 text-3xl font-bold text-white md:text-4xl lg:text-5xl">
             {step.title}
           </h3>
 
           {/* Description */}
-          <p className="mb-4 text-xl text-gray-600 md:text-2xl">{step.description}</p>
+          <p className="mb-4 text-xl text-gray-300 md:text-2xl">{step.description}</p>
 
           {/* Detail */}
-          <p className="text-base text-gray-500 md:text-lg">{step.detail}</p>
+          <p className="text-base text-gray-400 md:text-lg">{step.detail}</p>
         </div>
       </div>
 
@@ -185,14 +185,14 @@ export function HowItWorksSection() {
   };
 
   return (
-    <section id="how-it-works" className="relative overflow-hidden bg-white">
+    <section id="how-it-works" className="relative overflow-hidden bg-[#050505]">
       {/* Subtle diagonal pattern */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage: `repeating-linear-gradient(
             45deg,
-            #FF6B35,
+            rgba(255, 107, 53, 0.6),
             #FF6B35 1px,
             transparent 1px,
             transparent 20px
@@ -209,13 +209,13 @@ export function HowItWorksSection() {
           }`}
         >
           {/* Badge */}
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/20 bg-white px-4 py-2 shadow-sm">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#111111] px-4 py-2 shadow-sm">
             <Sparkles className="h-4 w-4 text-[#FF6B35]" />
             <span className="text-sm font-medium text-[#FF6B35]">How It Works</span>
           </div>
 
           {/* Title */}
-          <h2 className="mx-auto mb-4 max-w-2xl text-4xl leading-tight font-bold text-[#1A1A1A] md:text-5xl lg:text-6xl">
+          <h2 className="mx-auto mb-4 max-w-2xl text-4xl leading-tight font-bold text-white md:text-5xl lg:text-6xl">
             Three Steps to{" "}
             <span className="relative">
               <span className="relative z-10">Freedom</span>
@@ -224,7 +224,7 @@ export function HowItWorksSection() {
           </h2>
 
           {/* Subtitle */}
-          <p className="mx-auto max-w-xl text-lg text-gray-600">
+          <p className="mx-auto max-w-xl text-lg text-gray-300">
             From zero to private AI in under a minute. No tech skills required.
           </p>
         </div>
@@ -247,9 +247,18 @@ export function HowItWorksSection() {
           <div className="mb-8 flex items-center justify-center gap-3">
             {/* Animated speed lines */}
             <div className="flex items-center gap-1">
-              <span className="h-2 w-1 animate-pulse rounded-full bg-[#FF6B35]/30" style={{ animationDelay: "0ms" }} />
-              <span className="h-3 w-1 animate-pulse rounded-full bg-[#FF6B35]/50" style={{ animationDelay: "150ms" }} />
-              <span className="h-4 w-1 animate-pulse rounded-full bg-[#FF6B35]" style={{ animationDelay: "300ms" }} />
+              <span
+                className="h-2 w-1 animate-pulse rounded-full bg-[#FF6B35]/30"
+                style={{ animationDelay: "0ms" }}
+              />
+              <span
+                className="h-3 w-1 animate-pulse rounded-full bg-[#FF6B35]/50"
+                style={{ animationDelay: "150ms" }}
+              />
+              <span
+                className="h-4 w-1 animate-pulse rounded-full bg-[#FF6B35]"
+                style={{ animationDelay: "300ms" }}
+              />
             </div>
 
             {/* Lightning bolt */}
@@ -259,19 +268,26 @@ export function HowItWorksSection() {
 
             {/* Speed text */}
             <div className="text-left">
-              <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
+              <p className="text-xs font-medium tracking-wider text-gray-500 uppercase">
                 Setup time
               </p>
-              <p className="text-lg font-bold text-[#1A1A1A]">
-                Less than a minute
-              </p>
+              <p className="text-lg font-bold text-white">Less than a minute</p>
             </div>
 
             {/* Animated speed lines (right) */}
             <div className="flex items-center gap-1">
-              <span className="h-4 w-1 animate-pulse rounded-full bg-[#FF6B35]" style={{ animationDelay: "300ms" }} />
-              <span className="h-3 w-1 animate-pulse rounded-full bg-[#FF6B35]/50" style={{ animationDelay: "150ms" }} />
-              <span className="h-2 w-1 animate-pulse rounded-full bg-[#FF6B35]/30" style={{ animationDelay: "0ms" }} />
+              <span
+                className="h-4 w-1 animate-pulse rounded-full bg-[#FF6B35]"
+                style={{ animationDelay: "300ms" }}
+              />
+              <span
+                className="h-3 w-1 animate-pulse rounded-full bg-[#FF6B35]/50"
+                style={{ animationDelay: "150ms" }}
+              />
+              <span
+                className="h-2 w-1 animate-pulse rounded-full bg-[#FF6B35]/30"
+                style={{ animationDelay: "0ms" }}
+              />
             </div>
           </div>
 

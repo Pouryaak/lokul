@@ -67,14 +67,14 @@ export function DemoSection() {
       ];
 
   return (
-    <section id="demo" className="bg-gradient-to-b from-white to-[#FFF8F0] py-20 md:py-32">
+    <section id="demo" className="bg-gradient-to-b from-[#050505] to-[#0d0d0d] py-20 md:py-32">
       <div className="mx-auto max-w-[860px] px-4">
         {/* Header */}
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-4xl font-bold text-[#1A1A1A] md:text-5xl">
+          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
             Don&apos;t Trust Us. Test Us.
           </h2>
-          <p className="mx-auto max-w-2xl text-xl text-gray-500">
+          <p className="mx-auto max-w-2xl text-xl text-gray-300">
             Watch Lokul work. Then disconnect your WiFi and watch it keep working.
           </p>
         </div>
@@ -82,26 +82,26 @@ export function DemoSection() {
         {/* Demo Browser Window */}
         <div className="mx-auto mb-12 max-w-3xl">
           {/* Browser Chrome */}
-          <div className="flex items-center gap-2 rounded-t-xl border border-gray-300 bg-gray-100 p-3">
+          <div className="flex items-center gap-2 rounded-t-xl border border-white/10 bg-[#181818] p-3">
             <div className="flex gap-1.5">
               <div className="h-3 w-3 rounded-full bg-red-400" />
               <div className="h-3 w-3 rounded-full bg-yellow-400" />
               <div className="h-3 w-3 rounded-full bg-green-400" />
             </div>
             <div className="mx-4 flex-1">
-              <div className="rounded-md bg-white px-3 py-1 text-center text-sm text-gray-500">
+              <div className="rounded-md bg-[#0f0f0f] px-3 py-1 text-center text-sm text-gray-300">
                 lokul.app
               </div>
             </div>
           </div>
 
           {/* Browser Content */}
-          <div className="min-h-[300px] rounded-b-xl border-x border-b border-gray-300 bg-white p-6">
+          <div className="min-h-[300px] rounded-b-xl border-x border-b border-white/10 bg-[#101010] p-6">
             {/* Status Bar */}
-            <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
+            <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-2">
                 <Zap className="h-4 w-4 text-[#FF6B35]" />
-                <span className="text-sm font-medium text-gray-700">Quick Mode</span>
+                <span className="text-sm font-medium text-gray-200">Quick Mode</span>
               </div>
               <div className="flex items-center gap-2">
                 {wifiConnected ? (
@@ -132,13 +132,13 @@ export function DemoSection() {
                     className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                       message.role === "user"
                         ? "rounded-br-md bg-[#FF6B35] text-white"
-                        : "rounded-bl-md bg-gray-100 text-gray-800"
+                        : "rounded-bl-md bg-[#1d1d1d] text-gray-100"
                     }`}
                   >
                     {message.role === "ai" && (
                       <div className="mb-1 flex items-center gap-2">
                         <img src="/lokul-logo.png" alt="" className="h-4 w-4" />
-                        <span className="text-xs font-medium text-gray-500">Lokul</span>
+                        <span className="text-xs font-medium text-gray-400">Lokul</span>
                       </div>
                     )}
                     <p className="text-sm leading-relaxed">
@@ -153,10 +153,10 @@ export function DemoSection() {
             </div>
 
             {/* Input Area (Visual Only) */}
-            <div className="mt-6 border-t border-gray-100 pt-4">
-              <div className="flex items-center gap-2 rounded-full bg-gray-50 px-4 py-2">
-                <MessageCircle className="h-4 w-4 text-gray-400" />
-                <span className="flex-1 text-sm text-gray-400">Type your message...</span>
+            <div className="mt-6 border-t border-white/10 pt-4">
+              <div className="flex items-center gap-2 rounded-full bg-[#1a1a1a] px-4 py-2">
+                <MessageCircle className="h-4 w-4 text-gray-500" />
+                <span className="flex-1 text-sm text-gray-500">Type your message...</span>
               </div>
             </div>
           </div>

@@ -62,11 +62,11 @@ function StarRating({ count }: { count: number }) {
  */
 export function TestimonialsSection() {
   return (
-    <section className="bg-white py-20 md:py-32">
+    <section className="bg-[#070707] py-20 md:py-32">
       <div className="mx-auto max-w-[860px] px-4">
         {/* Header */}
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-bold text-[#1A1A1A] md:text-5xl">
+          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
             Don't Just Take Our Word For It
           </h2>
         </div>
@@ -74,21 +74,24 @@ export function TestimonialsSection() {
         {/* Testimonials Grid */}
         <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-3">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="flex h-full flex-col border border-gray-100 p-8 transition-all duration-300 hover:shadow-lg hover:border-[#FF6B35]/20">
+            <Card
+              key={index}
+              className="flex h-full flex-col border border-white/10 bg-[#111111] p-8 transition-all duration-300 hover:border-[#FF6B35]/20 hover:shadow-lg"
+            >
               {/* Stars */}
               <div className="mb-4">
                 <StarRating count={testimonial.stars} />
               </div>
 
               {/* Quote */}
-              <blockquote className="mb-6 flex-1 text-lg leading-relaxed text-[#1A1A1A] italic">
+              <blockquote className="mb-6 flex-1 text-lg leading-relaxed text-gray-100 italic">
                 "{testimonial.quote}"
               </blockquote>
 
               {/* Attribution */}
-              <div className="border-t border-gray-100 pt-4">
-                <p className="font-medium text-[#1A1A1A]">- {testimonial.name}</p>
-                <p className="text-sm text-gray-500">{testimonial.title}</p>
+              <div className="border-t border-white/10 pt-4">
+                <p className="font-medium text-white">- {testimonial.name}</p>
+                <p className="text-sm text-gray-400">{testimonial.title}</p>
               </div>
             </Card>
           ))}
@@ -96,8 +99,8 @@ export function TestimonialsSection() {
 
         {/* Bottom Stats */}
         <div className="text-center">
-          <p className="mb-2 text-lg text-gray-600">Join 12,847 developers who trust Lokul</p>
-          <p className="text-gray-500">
+          <p className="mb-2 text-lg text-gray-300">Join 12,847 developers who trust Lokul</p>
+          <p className="text-gray-400">
             <span className="text-[#FF6B35]">★★★★★</span> Rated 4.9/5 on GitHub
           </p>
         </div>

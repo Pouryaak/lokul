@@ -28,11 +28,11 @@ export function HeroSection({ onStart }: HeroSectionProps) {
   };
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center bg-[#FFF8F0] px-4 py-20">
+    <section className="relative flex min-h-screen flex-col items-center justify-center bg-[#050505] px-4 py-20">
       {/* Perspective grid background */}
       <PerspectiveGrid
-        className="absolute inset-0 z-0 bg-[#FFF8F0]"
-        backgroundColor="#FFF8F0"
+        className="absolute inset-0 z-0 bg-[#050505]"
+        backgroundColor="#050505"
         gridSize={35}
         fadeRadius={75}
       />
@@ -54,15 +54,15 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         </div>
 
         {/* Headline */}
-        <h1 className="mb-4 text-6xl font-bold tracking-tight text-[#1A1A1A] md:text-7xl">Lokul</h1>
+        <h1 className="mb-4 text-6xl font-bold tracking-tight text-white md:text-7xl">Lokul</h1>
 
         {/* Subheadline */}
-        <p className="mb-6 text-2xl font-medium text-gray-600 md:text-3xl">
+        <p className="mb-6 text-2xl font-medium text-gray-300 md:text-3xl">
           Your AI. Your browser. Your privacy.
         </p>
 
         {/* Description */}
-        <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-[#1A1A1A]">
+        <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-gray-200">
           ChatGPT-quality AI running 100% in your browser.
           <br />
           No servers. No tracking. Works offline.
@@ -86,7 +86,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         </div>
 
         {/* Trust Indicators */}
-        <div className="mb-8 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500">
+        <div className="mb-8 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-300">
           <span className="flex items-center gap-1">
             <span className="text-[#FF6B35]">&#10003;</span>
             No account needed
@@ -102,7 +102,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         </div>
 
         {/* Social Proof */}
-        <p className="mb-12 text-sm text-gray-400">&#9733; 12,847 developers trust Lokul</p>
+        <p className="mb-12 text-sm text-gray-500">&#9733; 12,847 developers trust Lokul</p>
 
         {/* Scroll indicator */}
         <button

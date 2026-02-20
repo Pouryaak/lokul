@@ -80,7 +80,7 @@ function ComparisonCard({
       style={{ transitionDelay: `${index * 150}ms` }}
     >
       {/* Card container */}
-      <div className="relative overflow-hidden rounded-2xl bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_40px_rgba(255,107,53,0.12)]">
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#111111] shadow-[0_4px_24px_rgba(0,0,0,0.35)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_40px_rgba(255,107,53,0.16)]">
         {/* Top accent line */}
         <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-[#FF6B35] via-[#FF8C42] to-[#FFB84D]" />
 
@@ -101,14 +101,14 @@ function ComparisonCard({
               <X className="h-4 w-4 text-red-400" />
               <span className="text-sm font-medium text-red-400/80 line-through">The Old Way</span>
             </div>
-            <h3 className="text-lg font-semibold text-gray-400 line-through decoration-red-300/50">
+            <h3 className="text-lg font-semibold text-gray-500 line-through decoration-red-300/50">
               {item.painHeadline}
             </h3>
-            <p className="mt-1 text-sm text-gray-300 line-through">{item.painSubtext}</p>
+            <p className="mt-1 text-sm text-gray-600 line-through">{item.painSubtext}</p>
           </div>
 
           {/* Divider */}
-          <div className="my-4 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+          <div className="my-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
           {/* Solution - highlighted */}
           <div>
@@ -116,10 +116,10 @@ function ComparisonCard({
               <Check className="h-4 w-4 text-[#FF6B35]" />
               <span className="text-sm font-medium text-[#FF6B35]">With Lokul</span>
             </div>
-            <h3 className="text-xl font-bold text-[#1A1A1A] transition-colors group-hover:text-[#FF6B35]">
+            <h3 className="text-xl font-bold text-white transition-colors group-hover:text-[#FF6B35]">
               {item.solutionHeadline}
             </h3>
-            <p className="mt-1 text-base text-gray-600">{item.solutionSubtext}</p>
+            <p className="mt-1 text-base text-gray-300">{item.solutionSubtext}</p>
           </div>
         </div>
       </div>
@@ -163,7 +163,7 @@ export function ProblemSolutionSection() {
     <section
       id="problem-solution"
       ref={sectionRef}
-      className="relative overflow-hidden bg-[#FFF8F0] py-24 pb-0 md:py-32"
+      className="relative overflow-hidden bg-[#070707] py-24 pb-0 md:py-32"
     >
       {/* Background decorative elements */}
       <div className="pointer-events-none absolute inset-0">
@@ -181,19 +181,19 @@ export function ProblemSolutionSection() {
           }`}
         >
           {/* Badge */}
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/20 bg-white px-4 py-2 shadow-sm">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#111111] px-4 py-2 shadow-sm">
             <Sparkles className="h-4 w-4 text-[#FF6B35]" />
             <span className="text-sm font-medium text-[#FF6B35]">Tired of This?</span>
           </div>
 
-          <h2 className="mx-auto mb-4 max-w-2xl text-4xl leading-tight font-bold text-[#1A1A1A] md:text-5xl">
+          <h2 className="mx-auto mb-4 max-w-2xl text-4xl leading-tight font-bold text-white md:text-5xl">
             Stop Paying for{" "}
             <span className="relative">
               <span className="relative z-10">Privacy</span>
               <span className="absolute right-0 bottom-1 left-0 h-3 bg-[#FF6B35]/20" />
             </span>
           </h2>
-          <p className="mx-auto max-w-xl text-lg text-gray-600">
+          <p className="mx-auto max-w-xl text-lg text-gray-300">
             Four reasons why people are ditching cloud AI for something better.
           </p>
         </div>
@@ -214,7 +214,7 @@ export function ProblemSolutionSection() {
         >
           <button
             onClick={scrollToDemo}
-            className="group inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#1A1A1A] px-8 py-4 text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#1A1A1A]/90 hover:shadow-lg"
+            className="group inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[#FF6B35] px-8 py-4 text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#FF6B35]/90 hover:shadow-lg"
           >
             <span className="font-medium">See It In Action</span>
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

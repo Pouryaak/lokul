@@ -21,7 +21,6 @@ const navLinks = [
 
 export function Nav({ onStart }: NavProps) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const { scrollY } = useScroll();
 
   // Transform scroll position to background opacity
@@ -33,14 +32,6 @@ export function Nav({ onStart }: NavProps) {
     const timer = setTimeout(() => setIsLoaded(true), 100);
     return () => clearTimeout(timer);
   }, []);
-
-  // Track scrolled state for text colors
-  useEffect(() => {
-    const unsubscribe = scrollY.on("change", (value) => {
-      setIsScrolled(value > 80);
-    });
-    return unsubscribe;
-  }, [scrollY]);
 
   const handleLinkClick = (link: (typeof navLinks)[0]) => {
     if (link.external) {
@@ -61,7 +52,7 @@ export function Nav({ onStart }: NavProps) {
       className="fixed top-0 right-0 left-0 z-50"
     >
       {/* Background layer with scroll-aware glass effect */}
-      <motion.div style={{ opacity: bgOpacity }} className="absolute inset-0 bg-[#1A1A1A]/80" />
+      <motion.div style={{ opacity: bgOpacity }} className="absolute inset-0 bg-[#050505]/85" />
       <motion.div
         style={{ backdropFilter: useTransform(backdropBlur, (v) => `blur(${v}px)`) }}
         className="absolute inset-0"
@@ -115,9 +106,7 @@ export function Nav({ onStart }: NavProps) {
 
             {/* Wordmark */}
             <span
-              className={`text-lg font-semibold transition-colors duration-300 ${
-                isScrolled ? "text-white" : "text-[#1A1A1A]"
-              }`}
+              className={`text-lg font-semibold transition-colors duration-300 ${"text-white"}`}
             >
               Lokul
             </span>
@@ -131,9 +120,7 @@ export function Nav({ onStart }: NavProps) {
                 <motion.button
                   key={link.label}
                   onClick={() => handleLinkClick(link)}
-                  className={`relative cursor-pointer text-sm transition-colors duration-300 hover:text-[#FF6B35] ${
-                    isScrolled ? "text-gray-400" : "text-gray-500"
-                  }`}
+                  className="relative cursor-pointer text-sm text-gray-400 transition-colors duration-300 hover:text-[#FF6B35]"
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.97 }}
                 >

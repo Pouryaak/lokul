@@ -31,7 +31,16 @@ function LandingPage() {
   const handleStart = useCallback(() => navigate("/loading"), [navigate]);
 
   return (
-    <div className="relative min-h-screen bg-white">
+    <div className="relative min-h-screen bg-[#050505]">
+      <div
+        className="pointer-events-none fixed inset-0 z-[1000] opacity-[0.16] mix-blend-screen"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.9'/%3E%3C/svg%3E\")",
+          backgroundRepeat: "repeat",
+          backgroundSize: "220px 220px",
+        }}
+      />
       <Nav onStart={handleStart} />
       <HeroSection onStart={handleStart} />
       <ProblemSolutionSection />

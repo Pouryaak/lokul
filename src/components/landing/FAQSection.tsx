@@ -23,26 +23,26 @@ const faqItems: FAQItem[] = [
   {
     question: "Is it really free? What's the catch?",
     content: (
-      <div className="space-y-3 text-gray-600">
-        <p className="font-medium text-[#1A1A1A]">Yes. Actually free. No catch.</p>
+      <div className="space-y-3 text-gray-300">
+        <p className="font-medium text-white">Yes. Actually free. No catch.</p>
         <p>The AI models we use (Phi, Llama, Mistral) are open source and free to use.</p>
         <p>The code is open source and free to use.</p>
         <p>There's no server to pay for (because there is no server).</p>
         <p>
           We might add optional premium features later, but the core product will ALWAYS be free.
         </p>
-        <p className="font-medium text-[#1A1A1A]">This isn't a free trial. It's just free.</p>
+        <p className="font-medium text-white">This isn't a free trial. It's just free.</p>
       </div>
     ),
   },
   {
     question: "How good is it compared to ChatGPT?",
     content: (
-      <div className="space-y-3 text-gray-600">
-        <p className="font-medium text-[#1A1A1A]">Honest answer: It depends.</p>
+      <div className="space-y-3 text-gray-300">
+        <p className="font-medium text-white">Honest answer: It depends.</p>
         <div className="space-y-4">
           <div>
-            <p className="font-medium text-[#1A1A1A]">Quick Mode (80MB):</p>
+            <p className="font-medium text-white">Quick Mode (80MB):</p>
             <ul className="ml-4 list-inside list-disc space-y-1">
               <li>Good for simple questions</li>
               <li>Faster than ChatGPT</li>
@@ -50,7 +50,7 @@ const faqItems: FAQItem[] = [
             </ul>
           </div>
           <div>
-            <p className="font-medium text-[#1A1A1A]">Smart Mode (2.8GB):</p>
+            <p className="font-medium text-white">Smart Mode (2.8GB):</p>
             <ul className="ml-4 list-inside list-disc space-y-1">
               <li>Comparable to ChatGPT 3.5</li>
               <li>Great for most tasks</li>
@@ -58,7 +58,7 @@ const faqItems: FAQItem[] = [
             </ul>
           </div>
           <div>
-            <p className="font-medium text-[#1A1A1A]">Genius Mode (6.4GB):</p>
+            <p className="font-medium text-white">Genius Mode (6.4GB):</p>
             <ul className="ml-4 list-inside list-disc space-y-1">
               <li>Approaching ChatGPT 4</li>
               <li>Best for complex reasoning</li>
@@ -66,7 +66,7 @@ const faqItems: FAQItem[] = [
             </ul>
           </div>
         </div>
-        <p className="mt-4 font-medium text-[#1A1A1A]">
+        <p className="mt-4 font-medium text-white">
           The gap is closing fast. Try both. Decide for yourself.
         </p>
       </div>
@@ -75,14 +75,14 @@ const faqItems: FAQItem[] = [
   {
     question: "Will this work on my computer?",
     content: (
-      <div className="space-y-3 text-gray-600">
-        <p className="font-medium text-[#1A1A1A]">If you have:</p>
+      <div className="space-y-3 text-gray-300">
+        <p className="font-medium text-white">If you have:</p>
         <ul className="ml-4 list-inside list-disc space-y-1">
           <li>Chrome 113+ or Edge 113+</li>
           <li>4GB+ of available RAM</li>
           <li>A graphics card (even integrated graphics)</li>
         </ul>
-        <p className="mt-4 font-medium text-[#1A1A1A]">Then yes, it'll work.</p>
+        <p className="mt-4 font-medium text-white">Then yes, it'll work.</p>
         <p>We've tested on:</p>
         <ul className="ml-4 list-inside list-disc space-y-1">
           <li>MacBooks (M1, M2, M3, Intel)</li>
@@ -98,8 +98,8 @@ const faqItems: FAQItem[] = [
   {
     question: "Can you see my conversations?",
     content: (
-      <div className="space-y-3 text-gray-600">
-        <p className="font-medium text-[#1A1A1A]">No. And we can prove it.</p>
+      <div className="space-y-3 text-gray-300">
+        <p className="font-medium text-white">No. And we can prove it.</p>
         <ol className="ml-4 list-inside list-decimal space-y-1">
           <li>Open browser developer tools (F12)</li>
           <li>Go to Network tab</li>
@@ -110,7 +110,7 @@ const faqItems: FAQItem[] = [
           Your conversations never leave your browser. We literally CAN'T see them.
         </p>
         <p>Plus, we're open source. Audit the code yourself.</p>
-        <p className="font-medium text-[#1A1A1A]">
+        <p className="font-medium text-white">
           If you find tracking, we'll give you $10,000. (Spoiler: You won't find any.)
         </p>
       </div>
@@ -119,13 +119,13 @@ const faqItems: FAQItem[] = [
   {
     question: "What happens to my conversations if I clear my browser?",
     content: (
-      <div className="space-y-3 text-gray-600">
-        <p className="font-medium text-[#1A1A1A]">They're deleted. Forever.</p>
+      <div className="space-y-3 text-gray-300">
+        <p className="font-medium text-white">They're deleted. Forever.</p>
         <p>
           Lokul stores everything locally in your browser. Clear browser data = conversations gone.
         </p>
         <p>This is by design. Privacy means you're in control.</p>
-        <p className="mt-4 font-medium text-[#1A1A1A]">Want to keep conversations?</p>
+        <p className="mt-4 font-medium text-white">Want to keep conversations?</p>
         <p>Export them before clearing:</p>
         <ul className="ml-4 list-inside list-disc space-y-1">
           <li>Markdown (.md)</li>
@@ -139,8 +139,8 @@ const faqItems: FAQItem[] = [
   {
     question: "Is this legal?",
     content: (
-      <div className="space-y-3 text-gray-600">
-        <p className="font-medium text-[#1A1A1A]">Yes! 100% legal.</p>
+      <div className="space-y-3 text-gray-300">
+        <p className="font-medium text-white">Yes! 100% legal.</p>
         <p>The AI models we use are open source and licensed for commercial use:</p>
         <ul className="ml-4 list-inside list-disc space-y-1">
           <li>Phi (Microsoft - MIT License)</li>
@@ -149,7 +149,7 @@ const faqItems: FAQItem[] = [
         </ul>
         <p className="mt-4">This isn't piracy. This is how open source is supposed to work.</p>
         <p>The big AI companies want you to think AI requires massive servers and subscriptions.</p>
-        <p className="font-medium text-[#1A1A1A]">It doesn't.</p>
+        <p className="font-medium text-white">It doesn't.</p>
         <p>Your laptop is powerful enough.</p>
       </div>
     ),
@@ -178,8 +178,8 @@ function AccordionItem({ item, isOpen, onToggle, index, isVisible }: AccordionIt
       <div
         className={`group rounded-2xl border-2 transition-all duration-300 ${
           isOpen
-            ? "border-[#FF6B35]/30 bg-white shadow-[0_8px_30px_rgba(255,107,53,0.12)]"
-            : "border-transparent bg-white/60 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:border-[#FF6B35]/20 hover:bg-white hover:shadow-[0_8px_30px_rgba(255,107,53,0.08)]"
+            ? "border-[#FF6B35]/30 bg-[#121212] shadow-[0_8px_30px_rgba(255,107,53,0.12)]"
+            : "border-white/10 bg-[#101010]/90 shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:border-[#FF6B35]/20 hover:bg-[#121212] hover:shadow-[0_8px_30px_rgba(255,107,53,0.08)]"
         }`}
       >
         <button
@@ -199,7 +199,7 @@ function AccordionItem({ item, isOpen, onToggle, index, isVisible }: AccordionIt
             </div>
             <span
               className={`text-lg font-semibold transition-colors duration-200 ${
-                isOpen ? "text-[#1A1A1A]" : "text-gray-700 group-hover:text-[#1A1A1A]"
+                isOpen ? "text-white" : "text-gray-300 group-hover:text-white"
               }`}
             >
               {item.question}
@@ -209,13 +209,11 @@ function AccordionItem({ item, isOpen, onToggle, index, isVisible }: AccordionIt
             className={`ml-4 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
               isOpen
                 ? "bg-[#FF6B35]/10 text-[#FF6B35]"
-                : "bg-gray-100 text-gray-400 group-hover:bg-[#FF6B35]/10 group-hover:text-[#FF6B35]"
+                : "bg-[#1b1b1b] text-gray-400 group-hover:bg-[#FF6B35]/10 group-hover:text-[#FF6B35]"
             }`}
           >
             <ChevronDown
-              className={`h-5 w-5 transition-transform duration-300 ${
-                isOpen ? "rotate-180" : ""
-              }`}
+              className={`h-5 w-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
             />
           </div>
         </button>
@@ -225,7 +223,7 @@ function AccordionItem({ item, isOpen, onToggle, index, isVisible }: AccordionIt
           }`}
         >
           <div className="overflow-hidden">
-            <div className="border-t border-gray-100 px-6 pb-6 pt-4">
+            <div className="border-t border-white/10 px-6 pt-4 pb-6">
               <div className="pl-14">{item.content}</div>
             </div>
           </div>
@@ -276,7 +274,7 @@ export function FAQSection() {
     <section
       id="faq"
       ref={sectionRef}
-      className="relative overflow-hidden bg-[#FFF8F0] py-16 md:py-24"
+      className="relative overflow-hidden bg-[#070707] py-16 md:py-24"
     >
       {/* Background decoration */}
       <div className="pointer-events-none absolute inset-0">
@@ -292,19 +290,19 @@ export function FAQSection() {
           }`}
         >
           {/* Badge */}
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/20 bg-white px-4 py-2 shadow-sm">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#111111] px-4 py-2 shadow-sm">
             <HelpCircle className="h-4 w-4 text-[#FF6B35]" />
             <span className="text-sm font-medium text-[#FF6B35]">FAQ</span>
           </div>
 
-          <h2 className="mb-4 text-4xl font-bold text-[#1A1A1A] md:text-5xl">
+          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
             Questions?{" "}
             <span className="relative">
               <span className="relative z-10">Answered.</span>
               <span className="absolute right-0 bottom-1 left-0 h-3 bg-[#FF6B35]/20" />
             </span>
           </h2>
-          <p className="mx-auto max-w-xl text-lg text-gray-600">
+          <p className="mx-auto max-w-xl text-lg text-gray-300">
             Everything you need to know about Lokul. Can&apos;t find what you&apos;re looking for?
             Reach out to our community.
           </p>
@@ -332,19 +330,21 @@ export function FAQSection() {
           style={{ transitionDelay: "600ms" }}
         >
           <div className="mb-8 text-center">
-            <p className="text-lg font-medium text-[#1A1A1A]">Still have questions?</p>
-            <p className="text-gray-500">We&apos;re here to help. Choose your preferred way to connect.</p>
+            <p className="text-lg font-medium text-white">Still have questions?</p>
+            <p className="text-gray-400">
+              We&apos;re here to help. Choose your preferred way to connect.
+            </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
             {/* Discord Card */}
-            <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#111111] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
               <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FF6B35] to-[#FFB84D]" />
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF6B35]/10 text-[#FF6B35] transition-all duration-300 group-hover:bg-[#FF6B35] group-hover:text-white group-hover:shadow-[0_8px_20px_rgba(255,107,53,0.4)]">
                 <MessageCircle className="h-6 w-6" />
               </div>
-              <h3 className="mb-2 font-bold text-[#1A1A1A]">Join Discord</h3>
-              <p className="mb-4 text-sm text-gray-500">Get help from the community and team</p>
+              <h3 className="mb-2 font-bold text-white">Join Discord</h3>
+              <p className="mb-4 text-sm text-gray-400">Get help from the community and team</p>
               <Button
                 variant="secondary"
                 size="sm"
@@ -355,13 +355,13 @@ export function FAQSection() {
             </div>
 
             {/* Email Card */}
-            <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#111111] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
               <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FF6B35] to-[#FFB84D]" />
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF6B35]/10 text-[#FF6B35] transition-all duration-300 group-hover:bg-[#FF6B35] group-hover:text-white group-hover:shadow-[0_8px_20px_rgba(255,107,53,0.4)]">
                 <Mail className="h-6 w-6" />
               </div>
-              <h3 className="mb-2 font-bold text-[#1A1A1A]">Email Us</h3>
-              <p className="mb-4 text-sm text-gray-500">Private support for sensitive questions</p>
+              <h3 className="mb-2 font-bold text-white">Email Us</h3>
+              <p className="mb-4 text-sm text-gray-400">Private support for sensitive questions</p>
               <Button
                 variant="secondary"
                 size="sm"
@@ -372,13 +372,13 @@ export function FAQSection() {
             </div>
 
             {/* Docs Card */}
-            <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#111111] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
               <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FF6B35] to-[#FFB84D]" />
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF6B35]/10 text-[#FF6B35] transition-all duration-300 group-hover:bg-[#FF6B35] group-hover:text-white group-hover:shadow-[0_8px_20px_rgba(255,107,53,0.4)]">
                 <BookOpen className="h-6 w-6" />
               </div>
-              <h3 className="mb-2 font-bold text-[#1A1A1A]">Read Docs</h3>
-              <p className="mb-4 text-sm text-gray-500">Detailed guides and API reference</p>
+              <h3 className="mb-2 font-bold text-white">Read Docs</h3>
+              <p className="mb-4 text-sm text-gray-400">Detailed guides and API reference</p>
               <Button
                 variant="secondary"
                 size="sm"

@@ -72,7 +72,7 @@ function UseCaseCard({
   if (useCase.isCTA) {
     return (
       <div
-        className={`group relative col-span-3 flex flex-col justify-center overflow-hidden rounded-2xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-700 hover:shadow-[0_8px_30px_rgba(255,107,53,0.12)] lg:col-span-1 ${
+        className={`group relative col-span-3 flex flex-col justify-center overflow-hidden rounded-2xl border border-white/10 bg-[#111111] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.35)] transition-all duration-700 hover:shadow-[0_8px_30px_rgba(255,107,53,0.12)] lg:col-span-1 ${
           isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
         }`}
         style={{ transitionDelay: `${index * 100}ms` }}
@@ -81,8 +81,8 @@ function UseCaseCard({
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FF6B35] to-[#FFB84D]" />
 
         <div className="relative z-10 text-center">
-          <h3 className="mb-2 text-xl font-bold text-[#1A1A1A]">{useCase.name}</h3>
-          <p className="mb-4 text-sm text-gray-500">{useCase.description}</p>
+          <h3 className="mb-2 text-xl font-bold text-white">{useCase.name}</h3>
+          <p className="mb-4 text-sm text-gray-400">{useCase.description}</p>
           <Button variant="cta" size="sm" onClick={onCTAClick}>
             Get Started
             <ArrowRight className="ml-2 h-4 w-4" />
@@ -94,7 +94,7 @@ function UseCaseCard({
 
   return (
     <div
-      className={`group relative col-span-3 overflow-hidden rounded-2xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-700 hover:shadow-[0_8px_30px_rgba(255,107,53,0.12)] lg:col-span-${
+      className={`group relative col-span-3 overflow-hidden rounded-2xl border border-white/10 bg-[#111111] shadow-[0_4px_20px_rgba(0,0,0,0.35)] transition-all duration-700 hover:shadow-[0_8px_30px_rgba(255,107,53,0.12)] lg:col-span-${
         useCase.className.includes("col-span-2") ? "2" : "1"
       } ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}
       style={{ transitionDelay: `${index * 100}ms` }}
@@ -103,7 +103,7 @@ function UseCaseCard({
       <div className="absolute inset-x-0 top-0 z-10 h-1 bg-gradient-to-r from-[#FF6B35] to-[#FFB84D]" />
 
       {/* Image section - natural size */}
-      <div className="relative flex items-center justify-center bg-white p-6">
+      <div className="relative flex items-center justify-center bg-[#151515] p-6">
         <img
           src={useCase.image}
           alt={useCase.name}
@@ -117,16 +117,16 @@ function UseCaseCard({
       {/* Content */}
       <div className="relative p-6">
         <div className="mb-4">
-          <h3 className="mb-2 text-xl font-bold text-[#1A1A1A] transition-colors group-hover:text-[#FF6B35]">
+          <h3 className="mb-2 text-xl font-bold text-white transition-colors group-hover:text-[#FF6B35]">
             {useCase.name}
           </h3>
-          <p className="text-sm text-gray-600">{useCase.description}</p>
+          <p className="text-sm text-gray-300">{useCase.description}</p>
         </div>
 
         {/* Quote */}
         <div className="border-t border-gray-100 pt-4">
-          <p className="mb-2 text-sm text-gray-500 italic">{useCase.quote}</p>
-          <p className="text-xs text-gray-400">{useCase.attribution}</p>
+          <p className="mb-2 text-sm text-gray-400 italic">{useCase.quote}</p>
+          <p className="text-xs text-gray-500">{useCase.attribution}</p>
         </div>
       </div>
     </div>
@@ -169,7 +169,7 @@ export function UseCasesSection() {
     <section
       id="use-cases"
       ref={sectionRef}
-      className="relative overflow-hidden bg-[#FFF8F0] py-16 md:py-24"
+      className="relative overflow-hidden bg-[#070707] py-16 md:py-24"
     >
       {/* Background decoration */}
       <div className="pointer-events-none absolute inset-0">
@@ -185,19 +185,19 @@ export function UseCasesSection() {
           }`}
         >
           {/* Badge */}
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/20 bg-white px-4 py-2 shadow-sm">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#111111] px-4 py-2 shadow-sm">
             <Sparkles className="h-4 w-4 text-[#FF6B35]" />
             <span className="text-sm font-medium text-[#FF6B35]">Use Cases</span>
           </div>
 
-          <h2 className="mb-4 text-4xl font-bold text-[#1A1A1A] md:text-5xl">
+          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
             Who Uses{" "}
             <span className="relative">
               <span className="relative z-10">Lokul?</span>
               <span className="absolute right-0 bottom-1 left-0 h-3 bg-[#FF6B35]/20" />
             </span>
           </h2>
-          <p className="mx-auto max-w-xl text-lg text-gray-600">
+          <p className="mx-auto max-w-xl text-lg text-gray-300">
             Real people, real use cases. See how others are using private AI.
           </p>
         </div>

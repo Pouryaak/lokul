@@ -24,7 +24,8 @@ const storyBeats = [
     icon: Shield,
     title: "But what if...",
     subtitle: "Your privacy was real?",
-    description: "No data centers. No tracking. No subscription. Just you and your AI, alone together.",
+    description:
+      "No data centers. No tracking. No subscription. Just you and your AI, alone together.",
     theme: "light",
   },
   {
@@ -65,17 +66,13 @@ function StoryBeat({
             ? "bg-[#1A1A1A] text-white"
             : isCTA
               ? "bg-gradient-to-br from-[#FF6B35] to-[#FFB84D] text-white shadow-[0_20px_60px_rgba(255,107,53,0.4)]"
-              : "bg-white text-[#1A1A1A] shadow-[0_8px_40px_rgba(0,0,0,0.08)]"
+              : "bg-[#111111] text-white shadow-[0_8px_40px_rgba(0,0,0,0.25)]"
         }`}
       >
         {/* Decorative gradient orb */}
         <div
-          className={`pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full blur-3xl ${
-            isDark
-              ? "bg-[#FF6B35]/10"
-              : isCTA
-                ? "bg-white/20"
-                : "bg-[#FF6B35]/5"
+          className={`pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full blur-3xl ${
+            isDark ? "bg-[#FF6B35]/10" : isCTA ? "bg-white/20" : "bg-[#FF6B35]/5"
           }`}
         />
 
@@ -95,22 +92,18 @@ function StoryBeat({
         {/* Content */}
         <div className="relative">
           <p
-            className={`mb-2 text-sm font-semibold uppercase tracking-wider ${
+            className={`mb-2 text-sm font-semibold tracking-wider uppercase ${
               isDark ? "text-[#FF6B35]" : isCTA ? "text-white/80" : "text-[#FF6B35]"
             }`}
           >
             {beat.subtitle}
           </p>
-          <h3
-            className={`mb-4 text-2xl font-bold md:text-3xl ${
-              isCTA ? "text-white" : ""
-            }`}
-          >
+          <h3 className={`mb-4 text-2xl font-bold md:text-3xl ${isCTA ? "text-white" : ""}`}>
             {beat.title}
           </h3>
           <p
             className={`text-lg leading-relaxed ${
-              isDark ? "text-gray-400" : isCTA ? "text-white/90" : "text-gray-600"
+              isDark ? "text-gray-400" : isCTA ? "text-white/90" : "text-gray-300"
             }`}
           >
             {beat.description}
@@ -119,11 +112,8 @@ function StoryBeat({
 
         {/* Progress line for CTA card */}
         {isCTA && (
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
-            <div
-              className="h-full animate-pulse bg-white"
-              style={{ width: "60%" }}
-            />
+          <div className="absolute right-0 bottom-0 left-0 h-1 bg-white/20">
+            <div className="h-full animate-pulse bg-white" style={{ width: "60%" }} />
           </div>
         )}
       </div>
@@ -170,11 +160,11 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
     <section
       id="final-cta"
       ref={sectionRef}
-      className="relative overflow-hidden bg-[#FFF8F0] py-16 md:py-24"
+      className="relative overflow-hidden bg-[#050505] py-16 md:py-24"
     >
       {/* Background decoration */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-[#FF6B35]/5 blur-[120px]" />
+        <div className="absolute top-0 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-[#FF6B35]/5 blur-[120px]" />
       </div>
 
       <div className="relative mx-auto max-w-[1000px] px-4">
@@ -185,14 +175,12 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
           }`}
         >
           {/* Badge */}
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/20 bg-white px-4 py-2 shadow-sm">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#111111] px-4 py-2 shadow-sm">
             <Sparkles className="h-4 w-4 text-[#FF6B35]" />
-            <span className="text-sm font-medium text-[#FF6B35]">
-              The Choice Is Yours
-            </span>
+            <span className="text-sm font-medium text-[#FF6B35]">The Choice Is Yours</span>
           </div>
 
-          <h2 className="mb-4 text-4xl font-bold text-[#1A1A1A] md:text-5xl lg:text-6xl">
+          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
             A Story in{" "}
             <span className="relative">
               <span className="relative z-10">Three Acts</span>
@@ -204,28 +192,21 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
         {/* Story Beats Grid */}
         <div className="mb-16 grid gap-6 md:grid-cols-3">
           {storyBeats.map((beat, index) => (
-            <StoryBeat
-              key={index}
-              beat={beat}
-              index={index}
-              isVisible={isVisible}
-            />
+            <StoryBeat key={index} beat={beat} index={index} isVisible={isVisible} />
           ))}
         </div>
 
         {/* The Grand Finale CTA */}
         <div
           className={`transition-all duration-1000 ${
-            showCTA
-              ? "translate-y-0 scale-100 opacity-100"
-              : "translate-y-8 scale-95 opacity-0"
+            showCTA ? "translate-y-0 scale-100 opacity-100" : "translate-y-8 scale-95 opacity-0"
           }`}
         >
           <div className="relative overflow-hidden rounded-3xl bg-[#1A1A1A] p-8 text-center md:p-16">
             {/* Animated background glow */}
             <div className="pointer-events-none absolute inset-0">
-              <div className="absolute left-1/4 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-[#FF6B35]/20 blur-[100px]" />
-              <div className="absolute right-1/4 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-[#FFB84D]/10 blur-[100px]" />
+              <div className="absolute top-1/2 left-1/4 h-96 w-96 -translate-y-1/2 rounded-full bg-[#FF6B35]/20 blur-[100px]" />
+              <div className="absolute top-1/2 right-1/4 h-96 w-96 -translate-y-1/2 rounded-full bg-[#FFB84D]/10 blur-[100px]" />
             </div>
 
             {/* Content */}
@@ -245,8 +226,7 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
               </h3>
 
               <p className="mx-auto mb-8 max-w-xl text-lg text-gray-400">
-                Join thousands who've already made the switch. Your data. Your
-                device. Your AI.
+                Join thousands who've already made the switch. Your data. Your device. Your AI.
               </p>
 
               {/* CTA Button */}
@@ -288,7 +268,7 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
           }`}
           style={{ transitionDelay: "400ms" }}
         >
-          <p className="text-gray-500 italic">
+          <p className="text-gray-400 italic">
             "The best time to take back your privacy was yesterday."
             <br />
             <span className="text-[#FF6B35]">The second best time is now.</span>

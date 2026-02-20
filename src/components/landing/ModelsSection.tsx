@@ -102,8 +102,8 @@ function ModelLogo({ logo, name, isHovered }: { logo: string; name: string; isHo
 
   return (
     <div
-      className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 p-2 transition-all duration-300 ${
-        isHovered ? "scale-110 bg-white shadow-lg" : ""
+      className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1a1a1a] p-2 transition-all duration-300 ${
+        isHovered ? "scale-110 bg-[#232323] shadow-lg" : ""
       }`}
     >
       <img
@@ -143,10 +143,10 @@ function ModelCard({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`group relative flex flex-col items-center rounded-2xl border-2 bg-white p-6 text-center transition-all duration-300 ${
+        className={`group relative flex flex-col items-center rounded-2xl border-2 bg-[#111111] p-6 text-center transition-all duration-300 ${
           isHovered
             ? "border-[#FF6B35]/20 shadow-[0_12px_40px_rgba(255,107,53,0.12)]"
-            : "border-transparent shadow-[0_4px_20px_rgba(0,0,0,0.04)]"
+            : "border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
         }`}
       >
         {/* Logo */}
@@ -155,16 +155,16 @@ function ModelCard({
         </div>
 
         {/* Model Name */}
-        <h3 className="mb-1 text-lg font-bold text-[#1A1A1A]">{model.name}</h3>
+        <h3 className="mb-1 text-lg font-bold text-white">{model.name}</h3>
 
         {/* Company */}
-        <p className="text-sm text-gray-500">{model.company}</p>
+        <p className="text-sm text-gray-400">{model.company}</p>
 
         {/* Status indicator */}
         <div className="mt-3 flex items-center gap-1.5">
           <div className={`h-2 w-2 rounded-full ${isAvailable ? "bg-[#FF6B35]" : "bg-gray-400"}`} />
           <span
-            className={`text-xs font-medium ${isAvailable ? "text-[#FF6B35]" : "text-gray-500"}`}
+            className={`text-xs font-medium ${isAvailable ? "text-[#FF6B35]" : "text-gray-400"}`}
           >
             {isAvailable ? "Available" : "Coming Soon"}
           </span>
@@ -213,7 +213,7 @@ export function ModelsSection() {
     <section
       id="models"
       ref={sectionRef}
-      className="relative overflow-hidden bg-[#FFF8F0] py-16 md:py-24 md:pt-10"
+      className="relative overflow-hidden bg-[#050505] py-16 md:py-24 md:pt-10"
     >
       {/* Background decoration */}
       <div className="pointer-events-none absolute inset-0">
@@ -229,33 +229,33 @@ export function ModelsSection() {
           }`}
         >
           {/* Badge */}
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/20 bg-white px-4 py-2 shadow-sm">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#111111] px-4 py-2 shadow-sm">
             <Cpu className="h-4 w-4 text-[#FF6B35]" />
             <span className="text-sm font-medium text-[#FF6B35]">Models</span>
           </div>
 
-          <h2 className="mb-4 text-4xl font-bold text-[#1A1A1A] md:text-5xl">
+          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
             All the{" "}
             <span className="relative">
               <span className="relative z-10">Best Models</span>
               <span className="absolute right-0 bottom-1 left-0 h-3 bg-[#FF6B35]/20" />
             </span>
           </h2>
-          <p className="mx-auto max-w-xl text-lg text-gray-600">
+          <p className="mx-auto max-w-xl text-lg text-gray-300">
             From research labs to your device. All running 100% locally.
           </p>
 
           {/* Stats */}
           <div className="mt-8 flex items-center justify-center gap-6">
-            <div className="rounded-full bg-white px-4 py-2 shadow-sm">
-              <span className="text-sm font-medium text-[#1A1A1A]">
+            <div className="rounded-full border border-white/10 bg-[#111111] px-4 py-2 shadow-sm">
+              <span className="text-sm font-medium text-white">
                 <span className="font-bold text-[#FF6B35]">{availableCount}</span> Available
               </span>
             </div>
             <div className="h-4 w-px bg-gray-300" />
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-[#FF6B35]" />
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-sm font-medium text-gray-300">
                 {comingSoonCount} Coming Soon
               </span>
             </div>
@@ -276,7 +276,7 @@ export function ModelsSection() {
           }`}
           style={{ transitionDelay: "600ms" }}
         >
-          <p className="mb-6 text-gray-500">
+          <p className="mb-6 text-gray-400">
             Start with any available model. Switch anytime. All locally.
           </p>
           <Button variant="cta" size="lg" onClick={scrollToCTA}>
