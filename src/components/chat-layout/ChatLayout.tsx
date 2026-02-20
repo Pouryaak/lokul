@@ -7,7 +7,7 @@
  * Based on @blocks/sidebar-02 pattern from shadcn.
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Activity, PanelLeft } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -109,6 +109,10 @@ function ChatLayoutContent({
   const toggleMemoryPanel = useMemoryStore((state) => state.togglePanel);
   const isDownloadPanelOpen = useConversationModelStore((state) => state.isDownloadManagerOpen);
   const closeDownloadPanel = useConversationModelStore((state) => state.closeDownloadManager);
+  const previousOpenMobileRef = useRef(openMobile);
+  const previousMemoryOpenRef = useRef(isMemoryPanelOpen);
+  const previousPerformanceOpenRef = useRef(showPerformancePanel);
+  const previousDownloadOpenRef = useRef(isDownloadPanelOpen);
 
   const setMobileSidebarOpen = useCallback(
     (nextOpen: boolean) => {
@@ -187,9 +191,7 @@ function ChatLayoutContent({
     isMobile,
     mobilePanel,
     openMemoryPanel,
-    openMobile,
     setMobileSidebarOpen,
-    setOpenMobile,
   ]);
 
   useEffect(() => {
@@ -199,27 +201,50 @@ function ChatLayoutContent({
   }, [isDownloadPanelOpen, isMobile, mobileController, mobilePanel]);
 
   useEffect(() => {
-    if (isMobile && !openMobile && mobilePanel === "sidebar") {
+    if (isMobile && previousOpenMobileRef.current && !openMobile && mobilePanel === "sidebar") {
       mobileController.closePanel("sidebar");
     }
+
+    previousOpenMobileRef.current = openMobile;
   }, [isMobile, mobileController, mobilePanel, openMobile]);
 
   useEffect(() => {
-    if (isMobile && !isMemoryPanelOpen && mobilePanel === "memory") {
+    if (
+      isMobile &&
+      previousMemoryOpenRef.current &&
+      !isMemoryPanelOpen &&
+      mobilePanel === "memory"
+    ) {
       mobileController.closePanel("memory");
     }
+
+    previousMemoryOpenRef.current = isMemoryPanelOpen;
   }, [isMemoryPanelOpen, isMobile, mobileController, mobilePanel]);
 
   useEffect(() => {
-    if (isMobile && !showPerformancePanel && mobilePanel === "performance") {
+    if (
+      isMobile &&
+      previousPerformanceOpenRef.current &&
+      !showPerformancePanel &&
+      mobilePanel === "performance"
+    ) {
       mobileController.closePanel("performance");
     }
+
+    previousPerformanceOpenRef.current = showPerformancePanel;
   }, [isMobile, mobileController, mobilePanel, showPerformancePanel]);
 
   useEffect(() => {
-    if (isMobile && !isDownloadPanelOpen && mobilePanel === "downloads") {
+    if (
+      isMobile &&
+      previousDownloadOpenRef.current &&
+      !isDownloadPanelOpen &&
+      mobilePanel === "downloads"
+    ) {
       mobileController.closePanel("downloads");
     }
+
+    previousDownloadOpenRef.current = isDownloadPanelOpen;
   }, [isDownloadPanelOpen, isMobile, mobileController, mobilePanel]);
 
   const handleMemoryClick = () => {

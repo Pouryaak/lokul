@@ -255,7 +255,15 @@ Plans:
 6. User can import conversation from JSON backup
 7. PWA manifest allows "Add to Home Screen" installation
 
-**Plans:** TBD
+**Plans:** 4 plans in 2 waves
+
+**Wave 1** (parallel):
+- [ ] 05-01-PLAN.md — Responsive shell polish: compact mobile-first header, sidebar drawer defaults, and single-panel mobile focus
+- [ ] 05-02-PLAN.md — Long-thread browsing with upward chunk loading and bottom-first open behavior for existing conversations
+
+**Wave 2** (parallel, depends on 05-01):
+- [ ] 05-03-PLAN.md — Per-chat top-bar 3-dot import/export menu with Markdown/JSON/Text parity and guided JSON conflict handling
+- [ ] 05-04-PLAN.md — Install eligibility and compact status indicator UX, first-successful-chat gate, and manifest install metadata hardening
 
 ---
 
