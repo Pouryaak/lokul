@@ -7,6 +7,7 @@
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { FileText, Lock, Brain, Plus, Eye } from "lucide-react";
 import { useRef, useState } from "react";
+import { PrivacyAnimation } from "./PrivacyAnimation";
 
 const blurInVariants = {
   hidden: { opacity: 0, filter: "blur(10px)" },
@@ -363,54 +364,23 @@ function DocumentsPanel() {
 function PrivacyPanel() {
   return (
     <div className="flex h-full flex-col">
-      {/* Visual */}
-      <div className="mb-8 flex h-64 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-[#111111]">
-        <div className="relative">
-          {/* Device outline */}
-          <div className="relative h-48 w-72 rounded-lg border-2 border-white/20 bg-[#0a0a0a] shadow-2xl">
-            {/* Screen content */}
-            <div className="absolute inset-4 flex flex-col items-center justify-center gap-2 rounded border border-white/10 bg-[#0f0f0f] p-3">
-              <div className="text-primary/80 flex items-center gap-2 text-[11px]">
-                <div className="bg-primary/60 h-2 w-2 rounded-full" />
-                Your conversations
-              </div>
-              <div className="text-primary/80 flex items-center gap-2 text-[11px]">
-                <div className="bg-primary/60 h-2 w-2 rounded-full" />
-                Your documents
-              </div>
-              <div className="text-primary/80 flex items-center gap-2 text-[11px]">
-                <div className="bg-primary/60 h-2 w-2 rounded-full" />
-                Your memories
-              </div>
-              <div className="text-primary/80 flex items-center gap-2 text-[11px]">
-                <div className="bg-primary/60 h-2 w-2 rounded-full" />
-                Your AI model
-              </div>
-            </div>
-          </div>
-          <p
-            className="mt-4 text-center text-[11px] text-white/30"
-            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
-          >
-            This is the entire system.
-            <br />
-            What you see is what exists.
-          </p>
+      <div className="mb-8 flex-1 items-center justify-center overflow-hidden rounded-xl bg-[#060606]">
+        <div className="flex h-full flex-col items-center justify-center p-6">
+          <PrivacyAnimation />
         </div>
       </div>
 
-      {/* Content */}
       <div>
         <h4
-          className="mb-4 text-2xl text-white"
+          className="mb-4 text-[28px] leading-tight text-white"
           style={{
             fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
             fontStyle: "italic",
           }}
         >
-          Nothing leaves.
+          Works everywhere.
           <br />
-          Full stop.
+          Tells no one.
         </h4>
 
         <p
@@ -420,47 +390,27 @@ function PrivacyPanel() {
             fontWeight: 300,
           }}
         >
-          Lokul runs entirely on your device using WebGPU. When you chat, no request is sent
-          anywhere. When you upload a document, it never touches a server. When you close the tab,
-          nothing is retained elsewhere.
+          After the first download, Lokul needs nothing.
+          <br />
+          No signal. No server. No permission from anyone.
+          <br />
+          Your device is the only infrastructure it needs.
         </p>
 
-        {/* Institution Card */}
-        <div className="mb-6 rounded-lg border border-white/10 bg-white/[0.02] p-5">
-          <h5
-            className="mb-2 text-sm font-semibold text-white"
-            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
-          >
-            SAFE FOR ANY INSTITUTION
-          </h5>
-          <p
-            className="text-sm leading-relaxed text-gray-400"
-            style={{
-              fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif',
-              fontWeight: 300,
-            }}
-          >
-            Hospitals. Law firms. Schools. Government agencies. Any organisation with data
-            compliance requirements can use Lokul with confidence — because there is no data leaving
-            the user&apos;s device to govern.
-          </p>
-        </div>
-
-        <div className="mb-6 space-y-2 text-sm text-gray-300">
+        <div className="flex flex-wrap gap-2">
           {[
-            "Works completely offline after first model download",
-            "Zero network requests during any conversation",
-            "Open source — every line of code is publicly verifiable",
-            "No account, no login, no data collection",
-            "Survives in airplane mode, remote locations, secure facilities",
-            "The only AI your IT department doesn't need to approve",
+            "Zero network requests",
+            "Full offline after download",
+            "Open source verified",
+            "No account ever",
           ].map((item) => (
-            <div key={item} className="flex items-center gap-2">
-              <span className="text-primary">✦</span>
-              <span style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}>
-                {item}
-              </span>
-            </div>
+            <span
+              key={item}
+              className="rounded-full border border-[rgba(255,107,53,0.3)] bg-[rgba(255,107,53,0.1)] px-3 py-1.5 text-[11px] text-white/80"
+              style={{ fontFamily: '"Syne", sans-serif' }}
+            >
+              ✓ {item}
+            </span>
           ))}
         </div>
       </div>
