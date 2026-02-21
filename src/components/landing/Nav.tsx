@@ -121,6 +121,7 @@ export function Nav({ onStart }: NavProps) {
                   key={link.label}
                   onClick={() => handleLinkClick(link)}
                   className="relative cursor-pointer text-sm text-gray-400 transition-colors duration-300 hover:text-[#FF6B35]"
+                  style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.97 }}
                 >

@@ -19,12 +19,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
         primary:
           "bg-gradient-to-r from-[#FF6B35] to-[#FFB84D] text-white shadow-[0_0_30px_rgba(255,107,53,0.4)] hover:shadow-[0_0_40px_rgba(255,107,53,0.6)] hover:-translate-y-0.5",
-        cta:
-          "group relative overflow-hidden bg-gradient-to-r from-[#FF6B35] via-[#FF8C42] to-[#FFB84D] text-white shadow-[0_8px_32px_rgba(255,107,53,0.5),inset_0_1px_0_rgba(255,255,255,0.3)] hover:shadow-[0_12px_48px_rgba(255,107,53,0.7),inset_0_1px_0_rgba(255,255,255,0.4)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700",
+        cta: "group relative overflow-hidden bg-gradient-to-r from-[#FF6B35] via-[#FF8C42] to-[#FFB84D] text-white shadow-[0_8px_32px_rgba(255,107,53,0.5),inset_0_1px_0_rgba(255,255,255,0.3)] hover:shadow-[0_12px_48px_rgba(255,107,53,0.7),inset_0_1px_0_rgba(255,255,255,0.4)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700",
         secondary:
           "bg-white text-[#FF6B35] border-2 border-[#FF6B35] hover:bg-[#FFF8F0] hover:-translate-y-0.5",
         outline:
@@ -32,8 +30,7 @@ const buttonVariants = cva(
         ghost: "bg-transparent text-[#FF6B35] hover:bg-[#FFF8F0] hover:-translate-y-0.5",
         white:
           "bg-white text-[#FF6B35] shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1",
-        destructive:
-          "bg-destructive text-white hover:bg-destructive/90",
+        destructive: "bg-destructive text-white hover:bg-destructive/90",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
@@ -80,13 +77,27 @@ export interface ButtonProps
  * ```
  */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, loading = false, loadingText, children, disabled, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      loading = false,
+      loadingText,
+      children,
+      disabled,
+      asChild = false,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
         className={cn(buttonVariants({ variant, size }), className)}
         ref={ref}
         disabled={disabled || loading}
+        style={{ fontFamily: '"Instrument Serif", "Iowan Old Style", serif' }}
         {...props}
       >
         {loading ? (
@@ -108,7 +119,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               <path
                 className="opacity-75"
                 fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                d="M4 12a8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
             {loadingText || children}

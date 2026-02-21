@@ -35,7 +35,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 1.45, ease: "easeOut" }}
-            style={{ fontFamily: '"Syne", "Avenir Next", "Segoe UI", sans-serif' }}
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
           >
             <span>Works in your browser</span>
             <span className="h-3 w-px bg-[#FF6B35]/35" />
@@ -92,7 +92,6 @@ export function HeroSection({ onStart }: HeroSectionProps) {
                 size="lg"
                 onClick={onStart}
                 className="group relative h-[52px] rounded-full px-8 text-[16px] font-semibold"
-                style={{ fontFamily: '"Syne", "Avenir Next", "Segoe UI", sans-serif' }}
               >
                 <span className="pointer-events-none absolute inset-0 -translate-x-[140%] bg-gradient-to-r from-transparent via-white/35 to-transparent transition-transform duration-700 group-hover:translate-x-[140%]" />
                 <span className="relative z-10">Start for free &nbsp;→</span>
@@ -108,7 +107,6 @@ export function HeroSection({ onStart }: HeroSectionProps) {
                 }
               }}
               className="group h-[52px] rounded-full bg-transparent px-1 text-[16px] font-medium text-[var(--hero-text-secondary)] hover:bg-transparent hover:text-white"
-              style={{ fontFamily: '"Syne", "Avenir Next", "Segoe UI", sans-serif' }}
             >
               <span className="relative">
                 See how it works &nbsp;↓
@@ -126,7 +124,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
             <div className="mb-4 h-px w-full bg-white/8" />
             <div
               className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center text-[12px] tracking-[0.08em] text-[var(--hero-text-tertiary)] lg:justify-start lg:text-left"
-              style={{ fontFamily: '"Syne", "Avenir Next", "Segoe UI", sans-serif' }}
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
             >
               {proofItems.map((item, index) => (
                 <span key={item} className="inline-flex items-center">

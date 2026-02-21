@@ -9,11 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { ArrowRight, Cpu, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-/**
- * Model data - all open source models
- */
 const models = [
-  // Available now
   {
     id: "phi",
     name: "Phi-4",
@@ -35,7 +31,6 @@ const models = [
     status: "available",
     logo: "/mistral-logo.png",
   },
-  // Coming soon
   {
     id: "gemma",
     name: "Gemma 2",
@@ -94,9 +89,6 @@ const models = [
   },
 ];
 
-/**
- * Model logo component
- */
 function ModelLogo({ logo, name, isHovered }: { logo: string; name: string; isHovered: boolean }) {
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -118,9 +110,6 @@ function ModelLogo({ logo, name, isHovered }: { logo: string; name: string; isHo
   );
 }
 
-/**
- * Model card component
- */
 function ModelCard({
   model,
   index,
@@ -149,22 +138,31 @@ function ModelCard({
             : "border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
         }`}
       >
-        {/* Logo */}
         <div className="mb-4">
           <ModelLogo logo={model.logo} name={model.name} isHovered={isHovered} />
         </div>
 
-        {/* Model Name */}
-        <h3 className="mb-1 text-lg font-bold text-white">{model.name}</h3>
+        <h3
+          className="mb-1 text-lg font-bold text-white"
+          style={{
+            fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+          }}
+        >
+          {model.name}
+        </h3>
 
-        {/* Company */}
-        <p className="text-sm text-gray-400">{model.company}</p>
+        <p
+          className="text-sm text-gray-400"
+          style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+        >
+          {model.company}
+        </p>
 
-        {/* Status indicator */}
         <div className="mt-3 flex items-center gap-1.5">
           <div className={`h-2 w-2 rounded-full ${isAvailable ? "bg-[#FF6B35]" : "bg-gray-400"}`} />
           <span
             className={`text-xs font-medium ${isAvailable ? "text-[#FF6B35]" : "text-gray-400"}`}
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
           >
             {isAvailable ? "Available" : "Coming Soon"}
           </span>
@@ -174,9 +172,6 @@ function ModelCard({
   );
 }
 
-/**
- * Models showcase section
- */
 export function ModelsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -215,68 +210,88 @@ export function ModelsSection() {
       ref={sectionRef}
       className="relative overflow-hidden bg-[#050505] py-16 md:py-24 md:pt-10"
     >
-      {/* Background decoration */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-1/4 -left-20 h-80 w-80 rounded-full bg-[#FF6B35]/5 blur-3xl" />
         <div className="absolute -right-20 bottom-1/4 h-80 w-80 rounded-full bg-[#FFB84D]/5 blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-[1000px] px-4">
-        {/* Header */}
         <div
           className={`mb-12 text-center transition-all duration-700 md:mb-16 ${
             isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
-          {/* Badge */}
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#111111] px-4 py-2 shadow-sm">
             <Cpu className="h-4 w-4 text-[#FF6B35]" />
-            <span className="text-sm font-medium text-[#FF6B35]">Models</span>
+            <span
+              className="text-sm font-medium text-[#FF6B35]"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
+              Models
+            </span>
           </div>
 
-          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
+          <h2
+            className="mb-4 text-4xl font-bold text-white md:text-5xl"
+            style={{
+              fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+              fontStyle: "italic",
+            }}
+          >
             All the{" "}
             <span className="relative">
               <span className="relative z-10">Best Models</span>
               <span className="absolute right-0 bottom-1 left-0 h-3 bg-[#FF6B35]/20" />
             </span>
           </h2>
-          <p className="mx-auto max-w-xl text-lg text-gray-300">
+          <p
+            className="mx-auto max-w-xl text-lg text-gray-300"
+            style={{
+              fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif',
+              fontWeight: 300,
+            }}
+          >
             From research labs to your device. All running 100% locally.
           </p>
 
-          {/* Stats */}
           <div className="mt-8 flex items-center justify-center gap-6">
             <div className="rounded-full border border-white/10 bg-[#111111] px-4 py-2 shadow-sm">
-              <span className="text-sm font-medium text-white">
+              <span
+                className="text-sm font-medium text-white"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
                 <span className="font-bold text-[#FF6B35]">{availableCount}</span> Available
               </span>
             </div>
             <div className="h-4 w-px bg-gray-300" />
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-[#FF6B35]" />
-              <span className="text-sm font-medium text-gray-300">
+              <span
+                className="text-sm font-medium text-gray-300"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
                 {comingSoonCount} Coming Soon
               </span>
             </div>
           </div>
         </div>
 
-        {/* Models Grid */}
         <div className="mb-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:gap-6">
           {models.map((model, index) => (
             <ModelCard key={model.id} model={model} index={index} isVisible={isVisible} />
           ))}
         </div>
 
-        {/* Bottom CTA */}
         <div
           className={`text-center transition-all duration-700 ${
             isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
           style={{ transitionDelay: "600ms" }}
         >
-          <p className="mb-6 text-gray-400">
+          <p
+            className="mb-6 text-gray-400"
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+          >
             Start with any available model. Switch anytime. All locally.
           </p>
           <Button variant="cta" size="lg" onClick={scrollToCTA}>
