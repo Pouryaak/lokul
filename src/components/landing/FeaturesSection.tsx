@@ -1,0 +1,576 @@
+/**
+ * FeaturesSection Component - Premium feature showcase with tabs
+ *
+ * Three features: Memory, Document Vault, Private & Offline
+ */
+
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import { FileText, Lock, Brain, Plus, Eye } from "lucide-react";
+import { useRef, useState } from "react";
+
+const blurInVariants = {
+  hidden: { opacity: 0, filter: "blur(10px)" },
+  visible: { opacity: 1, filter: "blur(0px)" },
+};
+
+const tabs = [
+  {
+    id: "memory",
+    number: "01",
+    title: "Memory",
+    description: "Lokul learns and remembers you across every conversation.",
+    icon: Brain,
+  },
+  {
+    id: "documents",
+    number: "02",
+    title: "Document Vault",
+    description: "Upload anything. Ask anything. Your documents, always available.",
+    icon: FileText,
+  },
+  {
+    id: "privacy",
+    number: "03",
+    title: "Private & Offline",
+    description: "Nothing leaves your device. Safe for any institution, any person.",
+    icon: Lock,
+  },
+];
+
+function TabButton({
+  tab,
+  isActive,
+  onClick,
+}: {
+  tab: (typeof tabs)[0];
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`group relative w-full cursor-pointer py-6 pr-6 pl-10 text-left transition-all duration-300 ${
+        isActive ? "bg-primary/5" : "hover:bg-white/[0.02]"
+      }`}
+    >
+      <div
+        className={`absolute top-0 left-0 h-full w-[3px] transition-all duration-300 ${
+          isActive
+            ? "bg-primary shadow-[0_0_20px_rgba(255,107,53,0.5),0_0_40px_rgba(255,107,53,0.3)]"
+            : "bg-white/10 group-hover:bg-white/20"
+        }`}
+      />
+      <span
+        className={`mb-2 block text-[11px] font-medium tracking-wider transition-colors ${
+          isActive ? "text-primary" : "text-white/30"
+        }`}
+        style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+      >
+        {tab.number}
+      </span>
+      <h3
+        className={`mb-2 text-lg font-semibold transition-colors ${
+          isActive ? "text-white" : "text-[#5a5550]"
+        }`}
+        style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+      >
+        {tab.title}
+      </h3>
+      <p
+        className={`text-[13px] leading-relaxed transition-colors ${
+          isActive ? "text-gray-400" : "text-[#5a5550]/80"
+        }`}
+        style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif', fontWeight: 300 }}
+      >
+        {tab.description}
+      </p>
+    </button>
+  );
+}
+
+function MemoryPanel() {
+  return (
+    <div className="flex h-full flex-col">
+      {/* Mockup */}
+      <div className="mb-8 flex-1 overflow-hidden rounded-xl border border-white/10 bg-[#111111]">
+        <div className="flex h-full">
+          {/* Chat */}
+          <div className="flex-1 border-r border-white/10 p-4">
+            <div className="mb-3 flex justify-end">
+              <div className="bg-primary max-w-[80%] rounded-2xl rounded-br-md px-4 py-2.5 text-sm text-white">
+                Can you help me prep for my presentation tomorrow?
+              </div>
+            </div>
+            <div className="flex justify-start">
+              <div className="flex items-start gap-2">
+                <img src="/lokul-logo.png" alt="" className="mt-1 h-4 w-4" />
+                <div className="max-w-[80%] rounded-2xl rounded-bl-md bg-white/10 px-4 py-2.5 text-sm text-gray-200">
+                  Of course — want me to lean into the data-heavy approach you prefer, or keep it
+                  story-first this time?
+                  <span className="bg-primary ml-1 inline-block h-4 w-2 animate-pulse" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Memory Sidebar */}
+          <div className="w-44 p-4">
+            <p
+              className="mb-3 text-[10px] font-medium tracking-wider text-white/40 uppercase"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
+              What Lokul knows
+            </p>
+            <div className="space-y-3 text-xs text-gray-400">
+              <div>
+                <span className="text-white/60">👤 You</span>
+                <div className="mt-1 space-y-0.5 pl-1 text-[11px]">
+                  <div>Name: Alex</div>
+                  <div>Based in: Berlin</div>
+                </div>
+              </div>
+              <div>
+                <span className="text-white/60">💼 Work</span>
+                <div className="mt-1 space-y-0.5 pl-1 text-[11px]">
+                  <div>Product manager, Series B</div>
+                  <motion.div
+                    animate={{ opacity: [1, 0.5, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="bg-primary/20 text-primary rounded px-1"
+                  >
+                    Presenting to board tomorrow
+                  </motion.div>
+                </div>
+              </div>
+              <div>
+                <span className="text-white/60">❤️ Preferences</span>
+                <div className="mt-1 space-y-0.5 pl-1 text-[11px]">
+                  <div>Data-first, then narrative</div>
+                  <div>Bullet points over paragraphs</div>
+                  <div>Concise — no filler</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div>
+        <h4
+          className="mb-4 text-2xl text-white"
+          style={{
+            fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+            fontStyle: "italic",
+          }}
+        >
+          It remembers you.
+          <br />
+          Not just this session.
+          <br />
+          Every session.
+        </h4>
+
+        <p
+          className="mb-6 leading-relaxed text-gray-400"
+          style={{
+            fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif',
+            fontWeight: 300,
+          }}
+        >
+          Most AI starts from zero every time you open it. Lokul carries your context forward — your
+          name, your work, your preferences, your goals — automatically, privately, and always under
+          your control.
+        </p>
+
+        <div className="mb-6 space-y-2 text-sm text-gray-300">
+          {[
+            "Learns from every conversation automatically",
+            "You see exactly what it knows — no hidden profile",
+            "Edit or delete any memory in one tap",
+            "Shared across all your conversations, not just one",
+          ].map((item) => (
+            <div key={item} className="flex items-center gap-2">
+              <span className="text-primary">✦</span>
+              <span style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}>
+                {item}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <p
+          className="text-sm text-white/30 italic"
+          style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+        >
+          Cloud AI stores what you tell it too. The difference is: you can&apos;t see theirs, you
+          can&apos;t edit yours, and neither can you delete it.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function DocumentsPanel() {
+  return (
+    <div className="flex h-full flex-col">
+      {/* Mockup */}
+      <div className="mb-8 flex-1 overflow-hidden rounded-xl border border-white/10 bg-[#111111]">
+        <div className="flex h-full">
+          {/* Document Vault */}
+          <div className="w-44 border-r border-white/10 p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <FileText className="text-primary h-4 w-4" />
+              <span
+                className="text-xs font-medium text-white/60"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
+                Document Vault
+              </span>
+            </div>
+            <div className="space-y-2">
+              {[
+                { name: "Q4 Financial Report.pdf", active: true },
+                { name: "Employment Contract.docx", active: false },
+                { name: "Research Paper — AI Ethics.pdf", active: false },
+                { name: "Meeting Notes — Feb 2026.txt", active: true },
+                { name: "Product Roadmap.xlsx", active: false },
+              ].map((doc) => (
+                <div key={doc.name} className="flex items-center gap-2">
+                  <span className="text-xs text-white/40">📄</span>
+                  <span
+                    className="flex-1 truncate text-[11px] text-gray-400"
+                    style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+                  >
+                    {doc.name}
+                  </span>
+                  <div
+                    className={`h-2 w-2 rounded-full ${doc.active ? "bg-primary" : "bg-white/20"}`}
+                  />
+                </div>
+              ))}
+              <button className="text-primary/60 hover:text-primary mt-2 flex w-full items-center gap-1 text-[11px]">
+                <Plus className="h-3 w-3" />
+                <span style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}>
+                  Add documents
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Chat */}
+          <div className="flex-1 p-4">
+            <div className="mb-3 flex justify-end">
+              <div className="flex items-center gap-2">
+                <span className="bg-primary/20 text-primary rounded-full px-2 py-0.5 text-[10px] font-medium">
+                  <Eye className="mr-1 inline h-3 w-3" />
+                  Proof Mode: ON
+                </span>
+              </div>
+            </div>
+            <div className="mb-3 flex justify-end">
+              <div className="bg-primary max-w-[80%] rounded-2xl rounded-br-md px-4 py-2.5 text-sm text-white">
+                What were our Q4 margins compared to Q3?
+              </div>
+            </div>
+            <div className="flex justify-start">
+              <div className="flex items-start gap-2">
+                <img src="/lokul-logo.png" alt="" className="mt-1 h-4 w-4" />
+                <div className="max-w-[85%] rounded-2xl rounded-bl-md bg-white/10 px-4 py-2.5 text-sm text-gray-200">
+                  Based on your Q4 Financial Report, gross margin was 67.3% in Q4 versus 61.8% in Q3
+                  — an improvement of 5.5 points. The main driver was...
+                  <div className="mt-2 rounded bg-white/5 px-2 py-1 text-[10px] text-gray-400">
+                    📄 Q4 Financial Report.pdf — page 4
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div>
+        <h4
+          className="mb-4 text-2xl text-white"
+          style={{
+            fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+            fontStyle: "italic",
+          }}
+        >
+          Your documents.
+          <br />
+          Always available.
+          <br />
+          Never uploaded.
+        </h4>
+
+        <p
+          className="mb-6 leading-relaxed text-gray-400"
+          style={{
+            fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif',
+            fontWeight: 300,
+          }}
+        >
+          Upload PDFs, Word docs, spreadsheets, text files — anything. Lokul reads them locally and
+          stores them in your vault. Ask questions anytime — not just in the session you uploaded
+          them.
+        </p>
+
+        {/* Proof Mode Card */}
+        <div className="border-l-primary mb-6 rounded-lg border-l-2 bg-white/[0.02] p-5">
+          <h5
+            className="text-primary mb-2 text-sm font-semibold"
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+          >
+            ⬡ PROOF MODE
+          </h5>
+          <p
+            className="text-sm leading-relaxed text-gray-400"
+            style={{
+              fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif',
+              fontWeight: 300,
+            }}
+          >
+            Turn on Proof Mode and Lokul will only answer using your documents. No general
+            knowledge. No hallucination. Every answer has a source citation you can verify —
+            document name and page number.
+          </p>
+        </div>
+
+        <div className="mb-6 space-y-2 text-sm text-gray-300">
+          {[
+            "Any file type — PDF, Word, Excel, plain text",
+            "Stored permanently in your vault, not just this session",
+            "Choose which documents are active at any time",
+            "Proof Mode: answers sourced from documents only",
+            "Every answer shows which document and page it came from",
+            "All processing happens locally — your files never leave",
+          ].map((item) => (
+            <div key={item} className="flex items-center gap-2">
+              <span className="text-primary">✦</span>
+              <span style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}>
+                {item}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PrivacyPanel() {
+  return (
+    <div className="flex h-full flex-col">
+      {/* Visual */}
+      <div className="mb-8 flex h-64 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-[#111111]">
+        <div className="relative">
+          {/* Device outline */}
+          <div className="relative h-48 w-72 rounded-lg border-2 border-white/20 bg-[#0a0a0a] shadow-2xl">
+            {/* Screen content */}
+            <div className="absolute inset-4 flex flex-col items-center justify-center gap-2 rounded border border-white/10 bg-[#0f0f0f] p-3">
+              <div className="text-primary/80 flex items-center gap-2 text-[11px]">
+                <div className="bg-primary/60 h-2 w-2 rounded-full" />
+                Your conversations
+              </div>
+              <div className="text-primary/80 flex items-center gap-2 text-[11px]">
+                <div className="bg-primary/60 h-2 w-2 rounded-full" />
+                Your documents
+              </div>
+              <div className="text-primary/80 flex items-center gap-2 text-[11px]">
+                <div className="bg-primary/60 h-2 w-2 rounded-full" />
+                Your memories
+              </div>
+              <div className="text-primary/80 flex items-center gap-2 text-[11px]">
+                <div className="bg-primary/60 h-2 w-2 rounded-full" />
+                Your AI model
+              </div>
+            </div>
+          </div>
+          <p
+            className="mt-4 text-center text-[11px] text-white/30"
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+          >
+            This is the entire system.
+            <br />
+            What you see is what exists.
+          </p>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div>
+        <h4
+          className="mb-4 text-2xl text-white"
+          style={{
+            fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+            fontStyle: "italic",
+          }}
+        >
+          Nothing leaves.
+          <br />
+          Full stop.
+        </h4>
+
+        <p
+          className="mb-6 leading-relaxed text-gray-400"
+          style={{
+            fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif',
+            fontWeight: 300,
+          }}
+        >
+          Lokul runs entirely on your device using WebGPU. When you chat, no request is sent
+          anywhere. When you upload a document, it never touches a server. When you close the tab,
+          nothing is retained elsewhere.
+        </p>
+
+        {/* Institution Card */}
+        <div className="mb-6 rounded-lg border border-white/10 bg-white/[0.02] p-5">
+          <h5
+            className="mb-2 text-sm font-semibold text-white"
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+          >
+            SAFE FOR ANY INSTITUTION
+          </h5>
+          <p
+            className="text-sm leading-relaxed text-gray-400"
+            style={{
+              fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif',
+              fontWeight: 300,
+            }}
+          >
+            Hospitals. Law firms. Schools. Government agencies. Any organisation with data
+            compliance requirements can use Lokul with confidence — because there is no data leaving
+            the user&apos;s device to govern.
+          </p>
+        </div>
+
+        <div className="mb-6 space-y-2 text-sm text-gray-300">
+          {[
+            "Works completely offline after first model download",
+            "Zero network requests during any conversation",
+            "Open source — every line of code is publicly verifiable",
+            "No account, no login, no data collection",
+            "Survives in airplane mode, remote locations, secure facilities",
+            "The only AI your IT department doesn't need to approve",
+          ].map((item) => (
+            <div key={item} className="flex items-center gap-2">
+              <span className="text-primary">✦</span>
+              <span style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}>
+                {item}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const panelComponents = {
+  memory: MemoryPanel,
+  documents: DocumentsPanel,
+  privacy: PrivacyPanel,
+};
+
+export function FeaturesSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [activeTab, setActiveTab] = useState("memory");
+  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
+
+  const ActivePanel = panelComponents[activeTab as keyof typeof panelComponents];
+
+  return (
+    <section
+      id="features"
+      ref={sectionRef}
+      className="relative overflow-hidden bg-[#080808] py-24 md:py-32"
+    >
+      <div className="pointer-events-none absolute inset-0">
+        <div className="bg-primary/5 absolute top-1/3 left-1/4 h-96 w-96 rounded-full blur-3xl" />
+        <div className="bg-primary/3 absolute right-1/4 bottom-1/3 h-96 w-96 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-16 text-center">
+          <motion.p
+            variants={blurInVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="text-primary mb-6 text-[11px] tracking-[0.18em] uppercase"
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+          >
+            What Lokul Can Do
+          </motion.p>
+
+          <motion.h2
+            variants={blurInVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+            className="text-[clamp(2rem,5vw,3rem)] leading-[1.15] text-white"
+            style={{
+              fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+              fontStyle: "italic",
+            }}
+          >
+            More than a chat.
+            <br />A private workspace.
+          </motion.h2>
+        </div>
+
+        {/* Two Column Layout */}
+        <motion.div
+          variants={blurInVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+          className="flex flex-col gap-8 lg:flex-row lg:gap-0"
+        >
+          {/* Left - Tabs */}
+          <div className="w-full lg:w-[40%] lg:pr-8">
+            <div className="divide-y divide-white/5 rounded-xl border border-white/10 bg-[#0c0c0c]">
+              {tabs.map((tab) => (
+                <TabButton
+                  key={tab.id}
+                  tab={tab}
+                  isActive={activeTab === tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                />
+              ))}
+            </div>
+            <p
+              className="mt-6 text-center text-sm text-white/25 italic lg:text-left"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
+              All three work together.
+              <br />
+              All three stay on your machine.
+            </p>
+          </div>
+
+          {/* Divider */}
+          <div className="hidden w-px bg-white/[0.06] lg:block" />
+
+          {/* Right - Content */}
+          <div className="min-h-[600px] w-full lg:w-[60%] lg:pl-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              >
+                <ActivePanel />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}

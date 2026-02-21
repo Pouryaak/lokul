@@ -4,7 +4,7 @@ import { Toaster } from "sonner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ChatLayout } from "./components/chat-layout/ChatLayout";
 import GradualBlur from "./components/GradualBlur";
-import { MemorySection } from "./components/landing/MemorySection";
+import { FeaturesSection } from "./components/landing/FeaturesSection";
 import { ComparisonSection } from "./components/landing/ComparisonSection";
 import { FAQSection } from "./components/landing/FAQSection";
 import { FinalCTASection } from "./components/landing/FinalCTASection";
@@ -46,14 +46,14 @@ function LandingPage() {
       <HeroSection onStart={handleStart} />
       <ProblemSolutionSection />
       <ModelsSection />
-      <MemorySection />
+      <FeaturesSection />
       <ComparisonSection />
       <HowItWorksSection />
       <TechnicalTrustSection />
       <FAQSection />
       <FinalCTASection onStart={handleStart} />
       <FooterSection />
-      <GradualBlur preset="footer" target="page" strength={3} height="8rem" />
+      <GradualBlur preset="footer" target="page" strength={1.5} height="5rem" />
     </div>
   );
 }
