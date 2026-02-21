@@ -52,7 +52,7 @@ const MEMORY_ITEMS = [
 function GhostCursor({ state }: { state: CursorState }) {
   return (
     <motion.div
-      className="pointer-events-none absolute z-50"
+      className="pointer-events-none absolute top-0 left-0 z-[100]"
       animate={{
         x: state.x,
         y: state.y,
@@ -60,33 +60,25 @@ function GhostCursor({ state }: { state: CursorState }) {
       }}
       transition={{
         type: "spring",
-        stiffness: 80,
-        damping: 20,
-        mass: 0.5,
-      }}
-      style={{
-        marginLeft: -4,
-        marginTop: -4,
+        stiffness: 120,
+        damping: 18,
+        mass: 0.3,
       }}
     >
       <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
         fill="none"
         style={{
-          filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
+          filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.4))",
         }}
       >
         <motion.path
-          d="M4 4L4 18L8 14L11 20L14 18L11 12L16 12L4 4Z"
+          d="M3 3L3 15L7 11L10 17L13 15L10 9L15 9L3 3Z"
           fill="white"
-          stroke="rgba(0,0,0,0.2)"
-          strokeWidth="1"
-          animate={{
-            scale: state.isHovering ? 1.15 : 1,
-          }}
-          style={{ transformOrigin: "4px 4px" }}
+          stroke="rgba(0,0,0,0.3)"
+          strokeWidth="0.5"
         />
       </svg>
     </motion.div>
