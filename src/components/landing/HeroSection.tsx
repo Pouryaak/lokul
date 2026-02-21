@@ -31,16 +31,16 @@ export function HeroSection({ onStart }: HeroSectionProps) {
       <div className="relative z-10 mx-auto grid w-full max-w-[1220px] items-center gap-10 lg:grid-cols-[55%_45%] lg:gap-2">
         <div>
           <motion.div
-            className="mb-7 inline-flex items-center gap-3 rounded-full border border-[#FF6B35]/30 bg-[#0f0f0f]/85 px-4 py-2 text-[10px] font-semibold tracking-[0.18em] text-[var(--hero-badge-text)] uppercase backdrop-blur-sm"
+            className="border-primary/30 mb-7 inline-flex items-center gap-3 rounded-full border bg-[#0f0f0f]/85 px-4 py-2 text-[10px] font-semibold tracking-[0.18em] text-[var(--hero-badge-text)] uppercase backdrop-blur-sm"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 1.45, ease: "easeOut" }}
             style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
           >
             <span>Works in your browser</span>
-            <span className="h-3 w-px bg-[#FF6B35]/35" />
+            <span className="bg-primary/35 h-3 w-px" />
             <span>Zero servers</span>
-            <span className="h-3 w-px bg-[#FF6B35]/35" />
+            <span className="bg-primary/35 h-3 w-px" />
             <span>Free forever</span>
           </motion.div>
 
@@ -62,7 +62,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
               animate={{ clipPath: "inset(0 0 0 0)" }}
               transition={{ duration: 0.5, delay: 1.85, ease: EASE }}
             >
-              Your AI. <span className="text-[#FF6B35]/70">No one else.</span>
+              Your AI. <span className="text-primary/70">No one else.</span>
             </motion.span>
           </h1>
 

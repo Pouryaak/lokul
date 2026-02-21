@@ -86,7 +86,7 @@ export function Nav({ onStart }: NavProps) {
             >
               {/* Glow effect behind logo */}
               <motion.div
-                className="absolute inset-0 rounded-full bg-[#FF6B35]/20"
+                className="bg-primary/20 absolute inset-0 rounded-full"
                 animate={{
                   scale: [1, 1.4, 1],
                   opacity: [0.2, 0.4, 0.2],
@@ -120,7 +120,7 @@ export function Nav({ onStart }: NavProps) {
                 <motion.button
                   key={link.label}
                   onClick={() => handleLinkClick(link)}
-                  className="relative cursor-pointer text-sm text-gray-400 transition-colors duration-300 hover:text-[#FF6B35]"
+                  className="hover:text-primary relative cursor-pointer text-sm text-gray-400 transition-colors duration-300"
                   style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.97 }}
@@ -128,7 +128,7 @@ export function Nav({ onStart }: NavProps) {
                   {link.label}
                   {/* Underline animation */}
                   <motion.span
-                    className="absolute -bottom-0.5 left-0 h-px w-0 bg-[#FF6B35]"
+                    className="bg-primary absolute -bottom-0.5 left-0 h-px w-0"
                     whileHover={{ width: "100%" }}
                     transition={{ duration: 0.2 }}
                   />

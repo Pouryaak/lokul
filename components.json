@@ -23,6 +23,7 @@
     "@magicui": "https://magicui.design/r/{name}",
     "@blocks": "https://blocks.so/r/{name}.json",
     "@ai-elements": "https://ai-sdk.dev/elements/api/registry/{name}.json",
-    "@scrollxui": "https://www.scrollxui.dev/registry/{name}.json"
+    "@scrollxui": "https://www.scrollxui.dev/registry/{name}.json",
+    "@react-bits": "https://reactbits.dev/r/{name}.json"
   }
 }

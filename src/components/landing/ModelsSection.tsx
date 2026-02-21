@@ -1,13 +1,14 @@
 /**
- * ModelsSection Component - Premium model showcase grid
+ * ModelsSection Component - Premium model showcase with LogoStepper
  *
- * Elegant grid showcasing all AI models Lokul supports.
- * Clean, premium design with logos in a grid layout.
+ * Animated showcase of AI models with smooth transitions.
  */
 
 import { Button } from "@/components/ui/Button";
+import { LogoStepper } from "@/components/ui/logo-stepper";
+import { motion, useInView } from "framer-motion";
 import { ArrowRight, Cpu, Sparkles } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
 const models = [
   {
@@ -25,6 +26,13 @@ const models = [
     logo: "/meta-logo.webp",
   },
   {
+    id: "llama3.2",
+    name: "Llama 3.2 8B",
+    company: "Meta",
+    status: "available",
+    logo: "/meta-logo.webp",
+  },
+  {
     id: "mistral",
     name: "Mistral",
     company: "Mistral AI",
@@ -35,14 +43,14 @@ const models = [
     id: "gemma",
     name: "Gemma 2",
     company: "Google",
-    status: "coming-soon",
+    status: "available",
     logo: "/gemma-logo.png",
   },
   {
     id: "qwen",
     name: "Qwen 2.5",
     company: "Alibaba",
-    status: "coming-soon",
+    status: "available",
     logo: "/qwen-logo.webp",
   },
   {
@@ -53,146 +61,27 @@ const models = [
     logo: "/deepseek-logo.png",
   },
   {
-    id: "qwq",
-    name: "QwQ",
-    company: "Alibaba",
-    status: "coming-soon",
-    logo: "/qwen-logo.webp",
-  },
-  {
     id: "nemotron",
     name: "Nemotron",
     company: "NVIDIA",
     status: "coming-soon",
     logo: "/nvidia-logo.png",
   },
-  {
-    id: "yi",
-    name: "Yi",
-    company: "01.AI",
-    status: "coming-soon",
-    logo: "/yi-logo.png",
-  },
-  {
-    id: "wizardlm",
-    name: "WizardLM",
-    company: "Microsoft",
-    status: "coming-soon",
-    logo: "/microsoft-logo.png",
-  },
-  {
-    id: "codellama",
-    name: "CodeLlama",
-    company: "Meta",
-    status: "coming-soon",
-    logo: "/meta-logo.webp",
-  },
 ];
 
-function ModelLogo({ logo, name, isHovered }: { logo: string; name: string; isHovered: boolean }) {
-  const [imageLoaded, setImageLoaded] = useState(false);
+const logoItems = models.map((model) => ({
+  icon: <img src={model.logo} alt={model.name} className="h-10 w-10 object-contain" />,
+  label: model.name,
+}));
 
-  return (
-    <div
-      className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1a1a1a] p-2 transition-all duration-300 ${
-        isHovered ? "scale-110 bg-[#232323] shadow-lg" : ""
-      }`}
-    >
-      <img
-        src={logo}
-        alt={`${name} logo`}
-        className={`h-full w-full object-contain transition-opacity duration-300 ${
-          imageLoaded ? "opacity-100" : "opacity-0"
-        }`}
-        onLoad={() => setImageLoaded(true)}
-      />
-    </div>
-  );
-}
-
-function ModelCard({
-  model,
-  index,
-  isVisible,
-}: {
-  model: (typeof models)[0];
-  index: number;
-  isVisible: boolean;
-}) {
-  const [isHovered, setIsHovered] = useState(false);
-  const isAvailable = model.status === "available";
-
-  return (
-    <div
-      className={`transition-all duration-700 ${
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-      }`}
-      style={{ transitionDelay: `${index * 50}ms` }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div
-        className={`group relative flex flex-col items-center rounded-2xl border-2 bg-[#111111] p-6 text-center transition-all duration-300 ${
-          isHovered
-            ? "border-[#FF6B35]/20 shadow-[0_12px_40px_rgba(255,107,53,0.12)]"
-            : "border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
-        }`}
-      >
-        <div className="mb-4">
-          <ModelLogo logo={model.logo} name={model.name} isHovered={isHovered} />
-        </div>
-
-        <h3
-          className="mb-1 text-lg font-bold text-white"
-          style={{
-            fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
-          }}
-        >
-          {model.name}
-        </h3>
-
-        <p
-          className="text-sm text-gray-400"
-          style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
-        >
-          {model.company}
-        </p>
-
-        <div className="mt-3 flex items-center gap-1.5">
-          <div className={`h-2 w-2 rounded-full ${isAvailable ? "bg-[#FF6B35]" : "bg-gray-400"}`} />
-          <span
-            className={`text-xs font-medium ${isAvailable ? "text-[#FF6B35]" : "text-gray-400"}`}
-            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
-          >
-            {isAvailable ? "Available" : "Coming Soon"}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
+const blurInVariants = {
+  hidden: { opacity: 0, filter: "blur(10px)" },
+  visible: { opacity: 1, filter: "blur(0px)" },
+};
 
 export function ModelsSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.05, rootMargin: "-50px" }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.35 });
 
   const scrollToCTA = () => {
     const ctaSection = document.getElementById("final-cta");
@@ -208,30 +97,36 @@ export function ModelsSection() {
     <section
       id="models"
       ref={sectionRef}
-      className="relative overflow-hidden bg-[#050505] py-16 md:py-24 md:pt-10"
+      className="relative overflow-hidden bg-[#050505] py-16 md:py-24"
     >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-1/4 -left-20 h-80 w-80 rounded-full bg-[#FF6B35]/5 blur-3xl" />
-        <div className="absolute -right-20 bottom-1/4 h-80 w-80 rounded-full bg-[#FFB84D]/5 blur-3xl" />
+        <div className="bg-primary/5 absolute top-1/4 -left-20 h-80 w-80 rounded-full blur-3xl" />
+        <div className="bg-primary/5 absolute -right-20 bottom-1/4 h-80 w-80 rounded-full blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-[1000px] px-4">
-        <div
-          className={`mb-12 text-center transition-all duration-700 md:mb-16 ${
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-          }`}
-        >
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#111111] px-4 py-2 shadow-sm">
-            <Cpu className="h-4 w-4 text-[#FF6B35]" />
+        <div className="mb-12 text-center md:mb-16">
+          <motion.div
+            variants={blurInVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="border-primary/30 mb-6 inline-flex items-center gap-2 rounded-full border bg-[#111111] px-4 py-2 shadow-sm"
+          >
+            <Cpu className="text-primary h-4 w-4" />
             <span
-              className="text-sm font-medium text-[#FF6B35]"
+              className="text-primary text-sm font-medium"
               style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
             >
               Models
             </span>
-          </div>
+          </motion.div>
 
-          <h2
+          <motion.h2
+            variants={blurInVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
             className="mb-4 text-4xl font-bold text-white md:text-5xl"
             style={{
               fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
@@ -239,12 +134,17 @@ export function ModelsSection() {
             }}
           >
             All the{" "}
-            <span className="relative">
+            <span className="text-primary relative">
               <span className="relative z-10">Best Models</span>
-              <span className="absolute right-0 bottom-1 left-0 h-3 bg-[#FF6B35]/20" />
+              <span className="bg-primary/20 absolute right-0 bottom-1 left-0 h-3" />
             </span>
-          </h2>
-          <p
+          </motion.h2>
+
+          <motion.p
+            variants={blurInVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
             className="mx-auto max-w-xl text-lg text-gray-300"
             style={{
               fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif',
@@ -252,20 +152,26 @@ export function ModelsSection() {
             }}
           >
             From research labs to your device. All running 100% locally.
-          </p>
+          </motion.p>
 
-          <div className="mt-8 flex items-center justify-center gap-6">
+          <motion.div
+            variants={blurInVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+            className="mt-8 flex items-center justify-center gap-6"
+          >
             <div className="rounded-full border border-white/10 bg-[#111111] px-4 py-2 shadow-sm">
               <span
                 className="text-sm font-medium text-white"
                 style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
               >
-                <span className="font-bold text-[#FF6B35]">{availableCount}</span> Available
+                <span className="text-primary font-bold">{availableCount}</span> Available
               </span>
             </div>
             <div className="h-4 w-px bg-gray-300" />
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-[#FF6B35]" />
+              <Sparkles className="text-primary h-4 w-4" />
               <span
                 className="text-sm font-medium text-gray-300"
                 style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
@@ -273,31 +179,46 @@ export function ModelsSection() {
                 {comingSoonCount} Coming Soon
               </span>
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        <div className="mb-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:gap-6">
-          {models.map((model, index) => (
-            <ModelCard key={model.id} model={model} index={index} isVisible={isVisible} />
-          ))}
-        </div>
-
-        <div
-          className={`text-center transition-all duration-700 ${
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-          }`}
-          style={{ transitionDelay: "600ms" }}
+        <motion.div
+          variants={blurInVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
         >
-          <p
+          <LogoStepper
+            logos={logoItems}
+            direction="loop"
+            animationDelay={1.5}
+            animationDuration={0.5}
+            visibleCount={7}
+          />
+        </motion.div>
+
+        <div className="text-center">
+          <motion.p
+            variants={blurInVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
             className="mb-6 text-gray-400"
             style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
           >
             Start with any available model. Switch anytime. All locally.
-          </p>
-          <Button variant="cta" size="lg" onClick={scrollToCTA}>
-            Start Chatting — Free
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          </motion.p>
+          <motion.div
+            variants={blurInVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
+          >
+            <Button variant="cta" size="lg" onClick={scrollToCTA}>
+              Start Chatting — Free
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </motion.div>
         </div>
       </div>
     </section>

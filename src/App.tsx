@@ -3,8 +3,9 @@ import { BrowserRouter, Outlet, Route, Routes, useNavigate } from "react-router-
 import { Toaster } from "sonner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ChatLayout } from "./components/chat-layout/ChatLayout";
+import GradualBlur from "./components/GradualBlur";
+import { MemorySection } from "./components/landing/MemorySection";
 import { ComparisonSection } from "./components/landing/ComparisonSection";
-import { DemoSection } from "./components/landing/DemoSection";
 import { FAQSection } from "./components/landing/FAQSection";
 import { FinalCTASection } from "./components/landing/FinalCTASection";
 import { FooterSection } from "./components/landing/FooterSection";
@@ -45,13 +46,14 @@ function LandingPage() {
       <HeroSection onStart={handleStart} />
       <ProblemSolutionSection />
       <ModelsSection />
-      <DemoSection />
+      <MemorySection />
       <ComparisonSection />
       <HowItWorksSection />
       <TechnicalTrustSection />
       <FAQSection />
       <FinalCTASection onStart={handleStart} />
       <FooterSection />
+      <GradualBlur preset="footer" target="page" strength={3} height="8rem" />
     </div>
   );
 }

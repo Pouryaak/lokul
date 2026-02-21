@@ -16,7 +16,7 @@ const Node = forwardRef<HTMLDivElement, NodeProps>(function Node(
 ) {
   const toneClass =
     tone === "safe"
-      ? "border-[#FF6B35]/60 bg-[#FF6B35]/15 text-[#ffd9c7] shadow-[0_0_28px_rgba(0,0,0,0.35),0_0_20px_rgba(255,107,53,0.4)]"
+      ? "border-primary/60 bg-primary/15 text-[#ffd9c7] shadow-[0_0_28px_rgba(0,0,0,0.35),0_0_20px_rgba(255,107,53,0.4)]"
       : tone === "alert"
         ? "border-white/20 bg-white/5 text-[#d7d1cc] shadow-[0_0_28px_rgba(0,0,0,0.35)]"
         : "border-white/16 bg-[#151515] text-[#e9e4df] shadow-[0_0_28px_rgba(0,0,0,0.35)]";
@@ -76,7 +76,7 @@ export function ProblemSolutionSection() {
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="mb-6 text-[11px] tracking-[0.18em] text-[#FF6B35] uppercase"
+              className="text-primary mb-6 text-[11px] tracking-[0.18em] uppercase"
               style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
             >
               The Problem

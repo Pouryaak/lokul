@@ -39,6 +39,7 @@
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.34.2",
     "lucide-react": "^0.475.0",
+    "mathjs": "^14.9.1",
     "media-chrome": "^4.17.2",
     "motion": "^12.34.3",
     "nanoid": "^5.1.6",
