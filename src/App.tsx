@@ -14,6 +14,7 @@ import { HowItWorksSection } from "./components/landing/HowItWorksSection";
 import { Nav } from "./components/landing/Nav";
 import { ModelsSection } from "./components/landing/ModelsSection";
 import { ProblemSolutionSection } from "./components/landing/ProblemSolutionSection";
+import { RoomSection } from "./components/landing/RoomSection";
 import { TechnicalTrustSection } from "./components/landing/TechnicalTrustSection";
 import { LoadingScreen } from "./components/onboarding/LoadingScreen";
 import { SMART_MODEL, getModelById } from "./lib/ai/models";
@@ -47,6 +48,7 @@ function LandingPage() {
       <ProblemSolutionSection />
       <ModelsSection />
       <FeaturesSection />
+      <RoomSection />
       <ComparisonSection />
       <HowItWorksSection />
       <TechnicalTrustSection />
