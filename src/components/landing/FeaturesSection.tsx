@@ -5,9 +5,10 @@
  */
 
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { FileText, Lock, Brain, Plus, Eye } from "lucide-react";
+import { FileText, Lock, Brain } from "lucide-react";
 import { useRef, useState } from "react";
 import { PrivacyAnimation } from "./PrivacyAnimation";
+import { DocumentVaultAnimation } from "./DocumentVaultAnimation";
 
 const blurInVariants = {
   hidden: { opacity: 0, filter: "blur(10px)" },
@@ -215,85 +216,13 @@ function MemoryPanel() {
 function DocumentsPanel() {
   return (
     <div className="flex h-full flex-col">
-      {/* Mockup */}
-      <div className="mb-8 flex-1 overflow-hidden rounded-xl border border-white/10 bg-[#111111]">
-        <div className="flex h-full">
-          {/* Document Vault */}
-          <div className="w-44 border-r border-white/10 p-4">
-            <div className="mb-3 flex items-center gap-2">
-              <FileText className="text-primary h-4 w-4" />
-              <span
-                className="text-xs font-medium text-white/60"
-                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
-              >
-                Document Vault
-              </span>
-            </div>
-            <div className="space-y-2">
-              {[
-                { name: "Q4 Financial Report.pdf", active: true },
-                { name: "Employment Contract.docx", active: false },
-                { name: "Research Paper — AI Ethics.pdf", active: false },
-                { name: "Meeting Notes — Feb 2026.txt", active: true },
-                { name: "Product Roadmap.xlsx", active: false },
-              ].map((doc) => (
-                <div key={doc.name} className="flex items-center gap-2">
-                  <span className="text-xs text-white/40">📄</span>
-                  <span
-                    className="flex-1 truncate text-[11px] text-gray-400"
-                    style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
-                  >
-                    {doc.name}
-                  </span>
-                  <div
-                    className={`h-2 w-2 rounded-full ${doc.active ? "bg-primary" : "bg-white/20"}`}
-                  />
-                </div>
-              ))}
-              <button className="text-primary/60 hover:text-primary mt-2 flex w-full items-center gap-1 text-[11px]">
-                <Plus className="h-3 w-3" />
-                <span style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}>
-                  Add documents
-                </span>
-              </button>
-            </div>
-          </div>
-
-          {/* Chat */}
-          <div className="flex-1 p-4">
-            <div className="mb-3 flex justify-end">
-              <div className="flex items-center gap-2">
-                <span className="bg-primary/20 text-primary rounded-full px-2 py-0.5 text-[10px] font-medium">
-                  <Eye className="mr-1 inline h-3 w-3" />
-                  Proof Mode: ON
-                </span>
-              </div>
-            </div>
-            <div className="mb-3 flex justify-end">
-              <div className="bg-primary max-w-[80%] rounded-2xl rounded-br-md px-4 py-2.5 text-sm text-white">
-                What were our Q4 margins compared to Q3?
-              </div>
-            </div>
-            <div className="flex justify-start">
-              <div className="flex items-start gap-2">
-                <img src="/lokul-logo.png" alt="" className="mt-1 h-4 w-4" />
-                <div className="max-w-[85%] rounded-2xl rounded-bl-md bg-white/10 px-4 py-2.5 text-sm text-gray-200">
-                  Based on your Q4 Financial Report, gross margin was 67.3% in Q4 versus 61.8% in Q3
-                  — an improvement of 5.5 points. The main driver was...
-                  <div className="mt-2 rounded bg-white/5 px-2 py-1 text-[10px] text-gray-400">
-                    📄 Q4 Financial Report.pdf — page 4
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="mb-6 flex-1 items-center justify-center overflow-hidden">
+        <DocumentVaultAnimation />
       </div>
 
-      {/* Content */}
       <div>
         <h4
-          className="mb-4 text-2xl text-white"
+          className="mb-4 text-[26px] leading-tight text-white"
           style={{
             fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
             fontStyle: "italic",
@@ -301,9 +230,11 @@ function DocumentsPanel() {
         >
           Your documents.
           <br />
-          Always available.
+          Always there.
           <br />
-          Never uploaded.
+          Always private.
+          <br />
+          Always sourced.
         </h4>
 
         <p
@@ -313,47 +244,25 @@ function DocumentsPanel() {
             fontWeight: 300,
           }}
         >
-          Upload PDFs, Word docs, spreadsheets, text files — anything. Lokul reads them locally and
-          stores them in your vault. Ask questions anytime — not just in the session you uploaded
-          them.
+          Upload once. Ask forever. Every answer traceable to the exact page it came from — all on
+          your device.
         </p>
 
-        {/* Proof Mode Card */}
-        <div className="border-l-primary mb-6 rounded-lg border-l-2 bg-white/[0.02] p-5">
-          <h5
-            className="text-primary mb-2 text-sm font-semibold"
-            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
-          >
-            ⬡ PROOF MODE
-          </h5>
-          <p
-            className="text-sm leading-relaxed text-gray-400"
-            style={{
-              fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif',
-              fontWeight: 300,
-            }}
-          >
-            Turn on Proof Mode and Lokul will only answer using your documents. No general
-            knowledge. No hallucination. Every answer has a source citation you can verify —
-            document name and page number.
-          </p>
-        </div>
-
-        <div className="mb-6 space-y-2 text-sm text-gray-300">
+        <div className="flex flex-wrap gap-2">
           {[
-            "Any file type — PDF, Word, Excel, plain text",
-            "Stored permanently in your vault, not just this session",
-            "Choose which documents are active at any time",
-            "Proof Mode: answers sourced from documents only",
-            "Every answer shows which document and page it came from",
-            "All processing happens locally — your files never leave",
+            "Persistent vault",
+            "Any file type",
+            "Proof Mode",
+            "Source citations",
+            "Local only",
           ].map((item) => (
-            <div key={item} className="flex items-center gap-2">
-              <span className="text-primary">✦</span>
-              <span style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}>
-                {item}
-              </span>
-            </div>
+            <span
+              key={item}
+              className="rounded-full border border-[rgba(255,107,53,0.3)] bg-[rgba(255,107,53,0.1)] px-3 py-1.5 text-[11px] text-white/80"
+              style={{ fontFamily: '"Syne", sans-serif' }}
+            >
+              ✓ {item}
+            </span>
           ))}
         </div>
       </div>
