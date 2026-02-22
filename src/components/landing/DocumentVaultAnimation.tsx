@@ -1,20 +1,13 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 interface CursorState {
   x: number;
   y: number;
   scale: number;
   isDragging: boolean;
-}
-
-interface VaultFile {
-  id: string;
-  name: string;
-  addedAgo: string;
-  isNew?: boolean;
 }
 
 interface Message {
@@ -25,14 +18,6 @@ interface Message {
   warning?: string;
   isStreaming: boolean;
 }
-
-const INITIAL_FILES: VaultFile[] = [
-  { id: "1", name: "Employment Contract 2024.pdf", addedAgo: "Added 3 months ago" },
-  { id: "2", name: "Q4 Financial Report.pdf", addedAgo: "Added 6 weeks ago" },
-  { id: "3", name: "NDA — Meridian Partners.pdf", addedAgo: "Added 4 weeks ago" },
-  { id: "4", name: "Board Meeting Notes — Jan.txt", addedAgo: "Added 2 weeks ago" },
-  { id: "5", name: "Supplier Agreement — Draft.pdf", addedAgo: "Added yesterday" },
-];
 
 const DOCUMENT_CONTENT_1 = `CONSULTING AGREEMENT
 
@@ -111,104 +96,88 @@ function GhostCursor({ state }: { state: CursorState }) {
   );
 }
 
-function VaultSidebar({
-  files,
+function DropZone({
+  isActive,
   isUploading,
   uploadProgress,
-  showDropZoneActive,
-  isOpen,
 }: {
-  files: VaultFile[];
+  isActive: boolean;
   isUploading: boolean;
   uploadProgress: number;
-  showDropZoneActive: boolean;
-  isOpen: boolean;
 }) {
   return (
     <motion.div
-      className="flex h-full flex-col border-r border-white/5 bg-[#0a0a0a]"
-      initial={{ width: "25%" }}
-      animate={{ width: isOpen ? "25%" : "0%" }}
-      transition={{ duration: 0.4, ease: "easeInOut" }}
-      style={{ overflow: "hidden" }}
+      className="flex h-full w-full flex-col items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
     >
-      <div className="border-b border-white/5 p-3">
-        <p
-          className="text-[10px] font-medium tracking-wider text-[#ff6b35]/70 uppercase"
-          style={{ fontFamily: '"Syne", sans-serif' }}
-        >
-          Document Vault
-        </p>
-      </div>
-
-      <div className="p-2">
-        <div className="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5">
-          <span className="text-[10px] text-white/30">Search your vault...</span>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-2">
-        {files.map((file, index) => (
-          <motion.div
-            key={file.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.3 }}
-            className={`mb-2 cursor-pointer rounded-lg p-2 transition-colors hover:bg-white/5 ${
-              file.isNew ? "bg-[#ff6b35]/10" : ""
-            }`}
-          >
-            <div className="flex items-start gap-2">
-              <span className="text-xs">📄</span>
-              <div className="min-w-0 flex-1">
-                <p
-                  className="truncate text-[11px] text-white/90"
-                  style={{ fontFamily: '"DM Sans", sans-serif' }}
-                >
-                  {file.name}
-                </p>
-                <p
-                  className={`text-[9px] ${file.isNew ? "text-[#ff6b35]" : "text-white/40"}`}
-                  style={{ fontFamily: '"Syne", sans-serif' }}
-                >
-                  {file.addedAgo}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      <div className="p-2">
+      <motion.div
+        className="flex h-[260px] w-[380px] flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8"
+        animate={{
+          borderColor: isActive
+            ? "rgba(255,107,53,0.7)"
+            : isUploading
+              ? "rgba(255,107,53,0.5)"
+              : "rgba(255,255,255,0.2)",
+          backgroundColor: isActive ? "rgba(255,107,53,0.05)" : "rgba(255,255,255,0.02)",
+          scale: isActive ? 1.02 : 1,
+        }}
+        transition={{ duration: 0.2 }}
+      >
         <motion.div
-          className="rounded-lg border-2 border-dashed p-4 text-center"
-          animate={{
-            borderColor: showDropZoneActive ? "rgba(255,107,53,0.6)" : "rgba(255,255,255,0.15)",
-          }}
+          className="mb-4 text-4xl"
+          animate={{ scale: isActive ? 1.1 : 1, y: isActive ? -5 : 0 }}
         >
-          <p className="text-[10px] text-white/40" style={{ fontFamily: '"Syne", sans-serif' }}>
-            + Drop files here
-          </p>
-          {isUploading && (
-            <div className="mt-2">
-              <div className="h-1 overflow-hidden rounded-full bg-white/10">
-                <motion.div
-                  className="h-full bg-[#ff6b35]"
-                  initial={{ width: "0%" }}
-                  animate={{ width: `${uploadProgress}%` }}
-                  transition={{ duration: 0.1 }}
-                />
-              </div>
-              <p
-                className="mt-1 text-[9px] text-white/50"
-                style={{ fontFamily: '"Syne", sans-serif' }}
-              >
+          📄
+        </motion.div>
+        <p
+          className="mb-2 text-[18px] text-white/80"
+          style={{ fontFamily: '"DM Sans", sans-serif' }}
+        >
+          Drop your document here
+        </p>
+        <p className="text-[12px] text-white/40" style={{ fontFamily: '"Syne", sans-serif' }}>
+          PDF, Word, Excel, or text files
+        </p>
+
+        {isUploading && (
+          <motion.div
+            className="mt-6 w-full max-w-[260px]"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+              <motion.div
+                className="h-full rounded-full bg-[#ff6b35]"
+                initial={{ width: "0%" }}
+                animate={{ width: `${uploadProgress}%` }}
+                transition={{ duration: 0.1 }}
+              />
+            </div>
+            <div className="mt-3 flex items-center justify-center gap-2">
+              <motion.div
+                className="h-2 w-2 rounded-full bg-[#ff6b35]"
+                animate={{ opacity: [1, 0.3, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              />
+              <p className="text-[11px] text-white/50" style={{ fontFamily: '"Syne", sans-serif' }}>
                 Reading locally...
               </p>
             </div>
-          )}
-        </motion.div>
-      </div>
+          </motion.div>
+        )}
+      </motion.div>
+
+      <motion.p
+        className="mt-6 text-[10px] text-white/30"
+        style={{ fontFamily: '"Syne", sans-serif' }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        ↑ 0kb/s ↓ 0kb/s — Nothing leaves your device
+      </motion.p>
     </motion.div>
   );
 }
@@ -217,10 +186,12 @@ function DocumentViewer({
   documentContent,
   highlightedSection,
   scrollToSection,
+  isVisible,
 }: {
   documentContent: string;
   highlightedSection: string | null;
   scrollToSection: string | null;
+  isVisible: boolean;
 }) {
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -238,12 +209,17 @@ function DocumentViewer({
   const lines = documentContent.split("\n");
 
   return (
-    <div className="flex h-full flex-[1.8] flex-col border-r border-white/5 bg-[#080808]">
+    <motion.div
+      className="flex h-full flex-[1.6] flex-col border-r border-white/5 bg-[#080808]"
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : -20 }}
+      transition={{ duration: 0.4 }}
+    >
       <div className="flex items-center justify-between border-b border-white/5 px-3 py-2">
         <div className="flex items-center gap-2">
           <span className="text-xs">📄</span>
           <span
-            className="text-[11px] text-white/70"
+            className="truncate text-[11px] text-white/70"
             style={{ fontFamily: '"DM Sans", sans-serif' }}
           >
             Consulting_Agreement_Final.pdf
@@ -311,7 +287,7 @@ function DocumentViewer({
       <div className="border-t border-white/5 px-3 py-1.5 text-center">
         <span className="text-[9px] text-white/30">Page 1 of 8</span>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -321,23 +297,26 @@ function ConversationPanel({
   isTyping,
   typedText,
   inputFocused,
-  messagesEndRef,
   messagesContainerRef,
+  isVisible,
 }: {
   messages: Message[];
   isProofMode: boolean;
   isTyping: boolean;
   typedText: string;
   inputFocused: boolean;
-  messagesEndRef: React.RefObject<HTMLDivElement | null>;
   messagesContainerRef: React.RefObject<HTMLDivElement | null>;
+  isVisible: boolean;
 }) {
   return (
-    <div
-      className="flex h-full flex-[1.2] flex-col transition-colors"
+    <motion.div
+      className="flex h-full flex-1 flex-col transition-colors"
       style={{
         backgroundColor: isProofMode ? "rgba(255,107,53,0.03)" : "#0a0a0a",
       }}
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 20 }}
+      transition={{ duration: 0.4 }}
     >
       <div className="border-b border-white/5 p-3">
         <div className="flex items-center justify-between">
@@ -353,7 +332,7 @@ function ConversationPanel({
               />
             </motion.div>
           </div>
-          <span className="text-[9px] text-white/40">3 of 5 active</span>
+          <span className="text-[9px] text-white/40">1 active doc</span>
         </div>
         {isProofMode && (
           <motion.p
@@ -362,7 +341,7 @@ function ConversationPanel({
             className="mt-1.5 text-[9px] text-[#ff6b35]/70"
             style={{ fontFamily: '"Syne", sans-serif' }}
           >
-            Only referencing: 3 active documents
+            Only referencing: 1 active document
           </motion.p>
         )}
       </div>
@@ -450,7 +429,6 @@ function ConversationPanel({
             </div>
           </motion.div>
         )}
-        <div ref={messagesEndRef} />
       </div>
 
       <div className="border-t border-white/5 p-2">
@@ -468,7 +446,7 @@ function ConversationPanel({
         <span className="text-[9px] text-white/30">↑ 0kb/s ↓ 0kb/s</span>
         <span className="text-[9px] text-green-500/60">● Local only</span>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -480,31 +458,14 @@ export function DocumentVaultAnimation() {
     isDragging: false,
   });
 
-  const [files, setFiles] = useState<VaultFile[]>(INITIAL_FILES);
+  const [phase, setPhase] = useState<"dropzone" | "workspace">("dropzone");
+  const [isDropActive, setIsDropActive] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [showDropZoneActive, setShowDropZoneActive] = useState(false);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
-  const [dragFileX, setDragFileX] = useState(-60);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [dragFilePos, setDragFilePos] = useState({ x: -80, y: 180 });
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "initial-1",
-      role: "user",
-      content: "Summarise the key terms of the Meridian NDA",
-      isStreaming: false,
-    },
-    {
-      id: "initial-2",
-      role: "assistant",
-      content:
-        "The NDA covers a 3-year confidentiality period, mutual obligations, and excludes...",
-      citation: "NDA — Meridian Partners · p.2",
-      isStreaming: false,
-    },
-  ]);
-
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isProofMode, setIsProofMode] = useState(false);
   const [highlightedSection, setHighlightedSection] = useState<string | null>(null);
   const [scrollToSection, setScrollToSection] = useState<string | null>(null);
@@ -515,7 +476,6 @@ export function DocumentVaultAnimation() {
 
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const typingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -569,29 +529,13 @@ export function DocumentVaultAnimation() {
   );
 
   const runAnimation = useCallback(() => {
-    setFiles(INITIAL_FILES);
+    setPhase("dropzone");
+    setIsDropActive(false);
     setIsUploading(false);
     setUploadProgress(0);
-    setShowDropZoneActive(false);
     setIsDraggingFile(false);
-    setDragFileX(-60);
-    setSidebarOpen(true);
-    setMessages([
-      {
-        id: "initial-1",
-        role: "user",
-        content: "Summarise the key terms of the Meridian NDA",
-        isStreaming: false,
-      },
-      {
-        id: "initial-2",
-        role: "assistant",
-        content:
-          "The NDA covers a 3-year confidentiality period, mutual obligations, and excludes...",
-        citation: "NDA — Meridian Partners · p.2",
-        isStreaming: false,
-      },
-    ]);
+    setDragFilePos({ x: -80, y: 180 });
+    setMessages([]);
     setIsProofMode(false);
     setHighlightedSection(null);
     setScrollToSection(null);
@@ -602,51 +546,52 @@ export function DocumentVaultAnimation() {
     setCursorState({ x: 300, y: 200, scale: 1, isDragging: false });
 
     const executeScene = async () => {
-      // Scene 1: Workspace arrives
-      await new Promise((r) => (animationRef.current = setTimeout(r, 200)));
+      await new Promise((r) => (animationRef.current = setTimeout(r, 500)));
       setIsUiVisible(true);
-      await new Promise((r) => (animationRef.current = setTimeout(r, 1800)));
 
-      // Scene 2: New document arrives
-      moveCursor(50, 340);
-      await new Promise((r) => (animationRef.current = setTimeout(r, 600)));
+      await new Promise((r) => (animationRef.current = setTimeout(r, 800)));
+      moveCursor(20, 180);
+      await new Promise((r) => (animationRef.current = setTimeout(r, 400)));
+
       setCursorState((prev) => ({ ...prev, isDragging: true }));
       setIsDraggingFile(true);
-      setShowDropZoneActive(true);
 
-      // Drag file animation
       for (let i = 0; i <= 100; i++) {
-        await new Promise((r) => (animationRef.current = setTimeout(r, 8)));
-        setDragFileX(-60 + (i / 100) * 80);
-        setCursorState((prev) => ({ ...prev, x: 30 + (i / 100) * 50, y: 340 }));
+        await new Promise((r) => (animationRef.current = setTimeout(r, 10)));
+        const progress = i / 100;
+        setDragFilePos({
+          x: -80 + progress * 380,
+          y: 180 + Math.sin(progress * Math.PI) * -30,
+        });
+        setCursorState((prev) => ({
+          ...prev,
+          x: -60 + progress * 380,
+          y: 180 + Math.sin(progress * Math.PI) * -30,
+        }));
+
+        if (i === 70) {
+          setIsDropActive(true);
+        }
       }
 
       setCursorState((prev) => ({ ...prev, isDragging: false }));
       setIsDraggingFile(false);
       setIsUploading(true);
 
-      // Upload progress
       for (let i = 0; i <= 100; i++) {
-        await new Promise((r) => (animationRef.current = setTimeout(r, 15)));
+        await new Promise((r) => (animationRef.current = setTimeout(r, 12)));
         setUploadProgress(i);
       }
 
       setIsUploading(false);
-      setShowDropZoneActive(false);
-      setFiles((prev) => [
-        { id: "new", name: "Consulting_Agreement_Final.pdf", addedAgo: "Just now", isNew: true },
-        ...prev,
-      ]);
-      setDragFileX(-60);
+      setIsDropActive(false);
       await new Promise((r) => (animationRef.current = setTimeout(r, 300)));
 
-      // Close sidebar after upload
-      setSidebarOpen(false);
-      await new Promise((r) => (animationRef.current = setTimeout(r, 500)));
+      setPhase("workspace");
+      await new Promise((r) => (animationRef.current = setTimeout(r, 600)));
 
-      // Scene 3: Ask question
       moveCursor(440, 350);
-      await new Promise((r) => (animationRef.current = setTimeout(r, 700)));
+      await new Promise((r) => (animationRef.current = setTimeout(r, 600)));
       setInputFocused(true);
       await new Promise((r) => (animationRef.current = setTimeout(r, 200)));
       clickCursor();
@@ -673,14 +618,14 @@ export function DocumentVaultAnimation() {
         );
       });
 
-      await new Promise((r) => (animationRef.current = setTimeout(r, 500)));
+      await new Promise((r) => (animationRef.current = setTimeout(r, 400)));
 
-      // Lokul responds
       setMessages((prev) => [
         ...prev,
         { id: "resp-1", role: "assistant", content: "", citation: CITATION_1, isStreaming: true },
       ]);
       scrollToBottom();
+      setScrollToSection("8.2");
 
       await new Promise<void>((resolve) => {
         let text = "";
@@ -697,29 +642,24 @@ export function DocumentVaultAnimation() {
             setMessages((prev) =>
               prev.map((m) => (m.id === "resp-1" ? { ...m, isStreaming: false } : m))
             );
+            setHighlightedSection("8.2");
             scrollToBottom();
             resolve();
           },
-          15
+          18
         );
       });
 
-      // Scene 4: Document highlights
-      await new Promise((r) => (animationRef.current = setTimeout(r, 300)));
-      setScrollToSection("8.2");
-      setHighlightedSection("8.2");
-      await new Promise((r) => (animationRef.current = setTimeout(r, 2500)));
+      await new Promise((r) => (animationRef.current = setTimeout(r, 2000)));
 
-      // Scene 5: Proof Mode toggle
       moveCursor(480, 18);
-      await new Promise((r) => (animationRef.current = setTimeout(r, 800)));
+      await new Promise((r) => (animationRef.current = setTimeout(r, 700)));
       clickCursor();
       setIsProofMode(true);
-      await new Promise((r) => (animationRef.current = setTimeout(r, 800)));
-
-      // Scene 6: Proof Mode question
-      moveCursor(440, 350);
       await new Promise((r) => (animationRef.current = setTimeout(r, 600)));
+
+      moveCursor(440, 350);
+      await new Promise((r) => (animationRef.current = setTimeout(r, 500)));
       setInputFocused(true);
       clickCursor();
       setIsTyping(true);
@@ -745,9 +685,8 @@ export function DocumentVaultAnimation() {
         );
       });
 
-      await new Promise((r) => (animationRef.current = setTimeout(r, 400)));
+      await new Promise((r) => (animationRef.current = setTimeout(r, 300)));
 
-      // Lokul responds with warning
       setMessages((prev) => [
         ...prev,
         {
@@ -760,6 +699,7 @@ export function DocumentVaultAnimation() {
         },
       ]);
       scrollToBottom();
+      setScrollToSection("11.1");
 
       await new Promise<void>((resolve) => {
         let text = "";
@@ -776,6 +716,7 @@ export function DocumentVaultAnimation() {
             setMessages((prev) =>
               prev.map((m) => (m.id === "resp-2" ? { ...m, isStreaming: false } : m))
             );
+            setHighlightedSection("11.1");
             scrollToBottom();
             resolve();
           },
@@ -783,11 +724,8 @@ export function DocumentVaultAnimation() {
         );
       });
 
-      setScrollToSection("11.1");
-      setHighlightedSection("11.1");
-      await new Promise((r) => (animationRef.current = setTimeout(r, 2000)));
+      await new Promise((r) => (animationRef.current = setTimeout(r, 2500)));
 
-      // Reset
       setIsUiVisible(false);
       await new Promise((r) => (animationRef.current = setTimeout(r, 800)));
     };
@@ -804,49 +742,64 @@ export function DocumentVaultAnimation() {
   }, [runAnimation]);
 
   return (
-    <div className="relative w-full overflow-hidden rounded-xl" style={{ maxWidth: "100%" }}>
+    <div className="relative w-full overflow-hidden rounded-xl" style={{ maxWidth: "600px" }}>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isUiVisible ? 1 : 0.3 }}
         transition={{ duration: 0.8 }}
         className="relative h-[400px] overflow-hidden bg-[#0a0a0a]"
       >
-        <div className="flex h-full">
-          <VaultSidebar
-            files={files}
-            isUploading={isUploading}
-            uploadProgress={uploadProgress}
-            showDropZoneActive={showDropZoneActive}
-            isOpen={sidebarOpen}
-          />
-          <DocumentViewer
-            documentContent={DOCUMENT_CONTENT_1}
-            highlightedSection={highlightedSection}
-            scrollToSection={scrollToSection}
-          />
-          <ConversationPanel
-            messages={messages}
-            isProofMode={isProofMode}
-            isTyping={isTyping}
-            typedText={typedText}
-            inputFocused={inputFocused}
-            messagesEndRef={messagesEndRef}
-            messagesContainerRef={messagesContainerRef}
-          />
-        </div>
-
-        {/* Dragging file indicator */}
-        <AnimatePresence>
-          {isDraggingFile && (
+        <AnimatePresence mode="wait">
+          {phase === "dropzone" ? (
+            <DropZone
+              key="dropzone"
+              isActive={isDropActive}
+              isUploading={isUploading}
+              uploadProgress={uploadProgress}
+            />
+          ) : (
             <motion.div
-              className="pointer-events-none absolute z-40 flex items-center gap-2 rounded-lg border border-[#ff6b35]/30 bg-[#1a1a1a] px-3 py-2"
-              style={{ left: dragFileX, top: 320 }}
+              key="workspace"
+              className="flex h-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <span className="text-xs">📄</span>
-              <span className="text-[10px] text-white/80">Consulting_Agreement_Final.pdf</span>
+              <DocumentViewer
+                documentContent={DOCUMENT_CONTENT_1}
+                highlightedSection={highlightedSection}
+                scrollToSection={scrollToSection}
+                isVisible={phase === "workspace"}
+              />
+              <ConversationPanel
+                messages={messages}
+                isProofMode={isProofMode}
+                isTyping={isTyping}
+                typedText={typedText}
+                inputFocused={inputFocused}
+                messagesContainerRef={messagesContainerRef}
+                isVisible={phase === "workspace"}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isDraggingFile && (
+            <motion.div
+              className="pointer-events-none absolute z-40 flex items-center gap-2 rounded-lg border border-[#ff6b35]/40 bg-[#1a1a1a] px-3 py-2 shadow-lg"
+              style={{ left: dragFilePos.x, top: dragFilePos.y }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+            >
+              <span className="text-sm">📄</span>
+              <span
+                className="text-[11px] text-white/90"
+                style={{ fontFamily: '"DM Sans", sans-serif' }}
+              >
+                Consulting_Agreement_Final.pdf
+              </span>
             </motion.div>
           )}
         </AnimatePresence>
