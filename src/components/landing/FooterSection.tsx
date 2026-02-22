@@ -108,7 +108,7 @@ export function FooterSection() {
 
   return (
     <footer className="border-t border-gray-800 bg-[#1A1A1A]">
-      <div className="mx-auto max-w-[860px] px-4 py-16">
+      <div className="content-container py-16">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
           {/* Brand Column */}
           <div className="md:col-span-1">

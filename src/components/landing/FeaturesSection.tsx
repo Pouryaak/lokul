@@ -351,7 +351,7 @@ export function FeaturesSection() {
         <div className="bg-primary/3 absolute right-1/4 bottom-1/3 h-96 w-96 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8">
+      <div className="content-container relative">
         {/* Header */}
         <div className="mb-16 text-center">
           <motion.p

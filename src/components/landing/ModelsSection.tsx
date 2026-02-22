@@ -104,7 +104,7 @@ export function ModelsSection() {
         <div className="bg-primary/5 absolute -right-20 bottom-1/4 h-80 w-80 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-[1000px] px-4">
+      <div className="content-container relative">
         <div className="mb-12 text-center md:mb-16">
           <motion.div
             variants={blurInVariants}

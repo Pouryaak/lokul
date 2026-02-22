@@ -4,7 +4,6 @@ import { Toaster } from "sonner";
 import { ChatLayout } from "./components/chat-layout/ChatLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import GradualBlur from "./components/GradualBlur";
-import { ComparisonSection } from "./components/landing/ComparisonSection";
 import { FAQSection } from "./components/landing/FAQSection";
 import { FeaturesSection } from "./components/landing/FeaturesSection";
 import { FinalCTASection } from "./components/landing/FinalCTASection";
@@ -49,7 +48,6 @@ function LandingPage() {
       <RoomSection />
       <ModelsSection />
       <FeaturesSection />
-      <ComparisonSection />
       <HowItWorksSection />
       <TechnicalTrustSection />
       <FAQSection />

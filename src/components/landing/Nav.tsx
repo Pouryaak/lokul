@@ -59,7 +59,7 @@ export function Nav({ onStart }: NavProps) {
       />
 
       {/* Nav content */}
-      <nav className="relative mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+      <nav className="content-container relative">
         <div className="flex h-16 items-center justify-between">
           {/* Left: Logo with animated spark */}
           <motion.a

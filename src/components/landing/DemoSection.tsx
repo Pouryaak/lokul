@@ -61,7 +61,7 @@ export function DemoSection() {
 
   return (
     <section id="demo" className="bg-gradient-to-b from-[#050505] to-[#0d0d0d] py-20 md:py-32">
-      <div className="mx-auto max-w-[860px] px-4">
+      <div className="content-container">
         {/* Header */}
         <div className="mb-12 text-center">
           <h2

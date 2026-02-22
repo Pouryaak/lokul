@@ -282,7 +282,7 @@ export function FAQSection() {
         <div className="absolute -right-20 bottom-1/4 h-80 w-80 rounded-full bg-[#FFB84D]/5 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-[900px] px-4">
+      <div className="content-container relative">
         {/* Header */}
         <div
           className={`mb-12 text-center transition-all duration-700 md:mb-16 ${

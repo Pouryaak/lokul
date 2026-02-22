@@ -67,7 +67,7 @@ export function ProblemSolutionSection() {
       ref={sectionRef}
       className="relative overflow-hidden bg-[#0f0f0f] py-24 md:py-32"
     >
-      <div className="relative mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8">
+      <div className="content-container relative">
         <div className="grid gap-12 lg:grid-cols-[32%_36%_32%] lg:gap-4">
           {/* LEFT COLUMN - The Problem */}
           <div className="flex flex-col items-center justify-center text-center">

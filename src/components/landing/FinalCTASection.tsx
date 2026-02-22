@@ -167,7 +167,7 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
         <div className="absolute top-0 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-[#FF6B35]/5 blur-[120px]" />
       </div>
 
-      <div className="relative mx-auto max-w-[1000px] px-4">
+      <div className="content-container relative">
         {/* Section Header */}
         <div
           className={`mb-16 text-center transition-all duration-1000 ${

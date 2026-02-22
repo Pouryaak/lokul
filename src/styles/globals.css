@@ -87,6 +87,28 @@
     text-wrap: balance;
   }
 
+  .content-container {
+    max-width: var(--content-max-width);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .content-container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .content-container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
   .animate-hero-ember-breathe {
     animation: hero-ember-breathe 6s ease-in-out infinite alternate;
   }
@@ -217,6 +239,7 @@
 
 :root {
   --radius: 0.625rem;
+  --content-max-width: 1000px;
   --hero-text-muted: #b7b1ac;
   --hero-text-secondary: rgba(255, 255, 255, 0.88);
   --hero-text-tertiary: #b6b0aa;

@@ -116,9 +116,7 @@ function VerificationRow({
               <h3 className="text-xl font-bold text-white">{step.title}</h3>
               <span
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition-all duration-500 ${
-                  isActive
-                    ? "bg-[#FF6B35]/20 text-[#FF6B35]"
-                    : "bg-gray-800 text-gray-500"
+                  isActive ? "bg-[#FF6B35]/20 text-[#FF6B35]" : "bg-gray-800 text-gray-500"
                 }`}
               >
                 {step.status}
@@ -134,10 +132,7 @@ function VerificationRow({
               <div className="overflow-hidden">
                 <div className="mt-4 grid gap-2 md:grid-cols-2">
                   {step.details.map((detail, dIndex) => (
-                    <div
-                      key={dIndex}
-                      className="flex items-center gap-2 text-sm text-gray-400"
-                    >
+                    <div key={dIndex} className="flex items-center gap-2 text-sm text-gray-400">
                       <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-[#FF6B35]" />
                       {detail}
                     </div>
@@ -210,32 +205,25 @@ export function TechnicalTrustSection() {
   }, [isScanning, isVisible]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative overflow-hidden bg-[#1A1A1A] py-16 md:py-24"
-    >
+    <section ref={sectionRef} className="relative overflow-hidden bg-[#1A1A1A] py-16 md:py-24">
       {/* Warm gradient glows */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-0 top-0 h-[500px] w-[500px] rounded-full bg-[#FF6B35]/10 blur-[120px]" />
-        <div className="absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-[#FFB84D]/5 blur-[120px]" />
+        <div className="absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-[#FF6B35]/10 blur-[120px]" />
+        <div className="absolute right-0 bottom-0 h-[500px] w-[500px] rounded-full bg-[#FFB84D]/5 blur-[120px]" />
       </div>
 
-      <div className="relative mx-auto max-w-[1000px] px-4">
+      <div className="content-container relative">
         {/* Header */}
         <div
           className={`mb-12 transition-all duration-700 md:mb-16 ${
-            isVisible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-8 opacity-0"
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
           {/* Badge */}
           <div className="mb-6 flex justify-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#FF6B35]/10 px-4 py-2">
               <Shield className="h-4 w-4 text-[#FF6B35]" />
-              <span className="text-sm font-medium text-[#FF6B35]">
-                Verified & Auditable
-              </span>
+              <span className="text-sm font-medium text-[#FF6B35]">Verified & Auditable</span>
             </div>
           </div>
 
@@ -245,7 +233,7 @@ export function TechnicalTrustSection() {
               How Do I Know It&apos;s{" "}
               <span className="relative">
                 <span className="relative z-10">Really</span>
-                <span className="absolute bottom-1 left-0 right-0 h-3 bg-[#FF6B35]/30" />
+                <span className="absolute right-0 bottom-1 left-0 h-3 bg-[#FF6B35]/30" />
               </span>{" "}
               Private?
             </h2>
@@ -275,9 +263,7 @@ export function TechnicalTrustSection() {
         {/* Trust badge */}
         <div
           className={`text-center transition-all duration-700 ${
-            isVisible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-8 opacity-0"
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
           style={{ transitionDelay: "800ms" }}
         >
@@ -287,18 +273,12 @@ export function TechnicalTrustSection() {
                 <Sparkles className="h-6 w-6 text-[#FF6B35]" />
               </div>
               <div className="text-left">
-                <p className="text-sm font-bold text-white">
-                  Still skeptical? Good.
-                </p>
-                <p className="text-xs text-gray-500">
-                  That&apos;s the right attitude for privacy.
-                </p>
+                <p className="text-sm font-bold text-white">Still skeptical? Good.</p>
+                <p className="text-xs text-gray-500">That&apos;s the right attitude for privacy.</p>
               </div>
             </div>
             <button
-              onClick={() =>
-                window.open("https://github.com/pouryaak/lokul", "_blank")
-              }
+              onClick={() => window.open("https://github.com/pouryaak/lokul", "_blank")}
               className="group flex cursor-pointer items-center gap-2 rounded-xl bg-white px-8 py-4 text-sm font-semibold text-[#1A1A1A] transition-all hover:bg-[#FF6B35] hover:text-white"
             >
               Audit the Code Yourself

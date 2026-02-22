@@ -28,7 +28,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         }}
       />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-[1220px] items-center gap-10 lg:grid-cols-[55%_45%] lg:gap-2">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1000px] items-center gap-10 lg:grid-cols-[55%_45%] lg:gap-2">
         <div>
           <motion.div
             className="border-primary/30 mb-7 inline-flex items-center gap-3 rounded-full border bg-[#0f0f0f]/85 px-4 py-2 text-[10px] font-semibold tracking-[0.18em] text-[var(--hero-badge-text)] uppercase backdrop-blur-sm"
