@@ -1,18 +1,18 @@
 import { useCallback, useEffect } from "react";
 import { BrowserRouter, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import { Toaster } from "sonner";
-import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ChatLayout } from "./components/chat-layout/ChatLayout";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import GradualBlur from "./components/GradualBlur";
-import { FeaturesSection } from "./components/landing/FeaturesSection";
 import { ComparisonSection } from "./components/landing/ComparisonSection";
 import { FAQSection } from "./components/landing/FAQSection";
+import { FeaturesSection } from "./components/landing/FeaturesSection";
 import { FinalCTASection } from "./components/landing/FinalCTASection";
 import { FooterSection } from "./components/landing/FooterSection";
 import { HeroSection } from "./components/landing/HeroSection";
 import { HowItWorksSection } from "./components/landing/HowItWorksSection";
-import { Nav } from "./components/landing/Nav";
 import { ModelsSection } from "./components/landing/ModelsSection";
+import { Nav } from "./components/landing/Nav";
 import { ProblemSolutionSection } from "./components/landing/ProblemSolutionSection";
 import { RoomSection } from "./components/landing/RoomSection";
 import { TechnicalTrustSection } from "./components/landing/TechnicalTrustSection";
@@ -46,9 +46,9 @@ function LandingPage() {
       <Nav onStart={handleStart} />
       <HeroSection onStart={handleStart} />
       <ProblemSolutionSection />
+      <RoomSection />
       <ModelsSection />
       <FeaturesSection />
-      <RoomSection />
       <ComparisonSection />
       <HowItWorksSection />
       <TechnicalTrustSection />
