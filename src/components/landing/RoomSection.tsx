@@ -102,9 +102,9 @@ export function RoomSection() {
           </motion.p>
         </div>
 
-        {/* Robots - 3x size, left side - fade in/out */}
+        {/* Robots - larger on mobile, left side - fade in/out */}
         <motion.div
-          className="absolute bottom-[0%] -left-45 w-full max-w-[1200px]"
+          className="absolute bottom-[0%] -left-30 w-[170%] md:-left-45 md:w-full md:max-w-[1200px]"
           style={{
             opacity: robotsOpacity,
           }}
@@ -163,9 +163,9 @@ export function RoomSection() {
           </div>
         </motion.div>
 
-        {/* Lokul - 3x size, right side - fade in/out */}
+        {/* Lokul - larger on mobile, positioned higher and more right on mobile */}
         <motion.div
-          className="absolute right-0 bottom-[0%] w-full max-w-[1200px]"
+          className="absolute right-[-35%] bottom-[8%] w-[190%] md:right-0 md:bottom-[0%] md:w-full md:max-w-[1200px]"
           style={{
             opacity: lokulOpacity,
           }}
