@@ -8,22 +8,19 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronDown, HelpCircle, MessageCircle, Mail, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
-/**
- * FAQ item data structure
- */
 interface FAQItem {
   question: string;
   content: React.ReactNode;
 }
 
-/**
- * FAQ data
- */
 const faqItems: FAQItem[] = [
   {
     question: "Is it really free? What's the catch?",
     content: (
-      <div className="space-y-3 text-gray-300">
+      <div
+        className="space-y-3 text-gray-300"
+        style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+      >
         <p className="font-medium text-white">Yes. Actually free. No catch.</p>
         <p>The AI models we use (Phi, Llama, Mistral) are open source and free to use.</p>
         <p>The code is open source and free to use.</p>
@@ -38,7 +35,10 @@ const faqItems: FAQItem[] = [
   {
     question: "How good is it compared to ChatGPT?",
     content: (
-      <div className="space-y-3 text-gray-300">
+      <div
+        className="space-y-3 text-gray-300"
+        style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+      >
         <p className="font-medium text-white">Honest answer: It depends.</p>
         <div className="space-y-4">
           <div>
@@ -75,7 +75,10 @@ const faqItems: FAQItem[] = [
   {
     question: "Will this work on my computer?",
     content: (
-      <div className="space-y-3 text-gray-300">
+      <div
+        className="space-y-3 text-gray-300"
+        style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+      >
         <p className="font-medium text-white">If you have:</p>
         <ul className="ml-4 list-inside list-disc space-y-1">
           <li>Chrome 113+ or Edge 113+</li>
@@ -98,7 +101,10 @@ const faqItems: FAQItem[] = [
   {
     question: "Can you see my conversations?",
     content: (
-      <div className="space-y-3 text-gray-300">
+      <div
+        className="space-y-3 text-gray-300"
+        style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+      >
         <p className="font-medium text-white">No. And we can prove it.</p>
         <ol className="ml-4 list-inside list-decimal space-y-1">
           <li>Open browser developer tools (F12)</li>
@@ -119,7 +125,10 @@ const faqItems: FAQItem[] = [
   {
     question: "What happens to my conversations if I clear my browser?",
     content: (
-      <div className="space-y-3 text-gray-300">
+      <div
+        className="space-y-3 text-gray-300"
+        style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+      >
         <p className="font-medium text-white">They're deleted. Forever.</p>
         <p>
           Lokul stores everything locally in your browser. Clear browser data = conversations gone.
@@ -139,7 +148,10 @@ const faqItems: FAQItem[] = [
   {
     question: "Is this legal?",
     content: (
-      <div className="space-y-3 text-gray-300">
+      <div
+        className="space-y-3 text-gray-300"
+        style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+      >
         <p className="font-medium text-white">Yes! 100% legal.</p>
         <p>The AI models we use are open source and licensed for commercial use:</p>
         <ul className="ml-4 list-inside list-disc space-y-1">
@@ -156,9 +168,6 @@ const faqItems: FAQItem[] = [
   },
 ];
 
-/**
- * FAQ Accordion Item component with premium animations
- */
 interface AccordionItemProps {
   item: FAQItem;
   isOpen: boolean;
@@ -201,6 +210,7 @@ function AccordionItem({ item, isOpen, onToggle, index, isVisible }: AccordionIt
               className={`text-lg font-semibold transition-colors duration-200 ${
                 isOpen ? "text-white" : "text-gray-300 group-hover:text-white"
               }`}
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
             >
               {item.question}
             </span>
@@ -233,9 +243,6 @@ function AccordionItem({ item, isOpen, onToggle, index, isVisible }: AccordionIt
   );
 }
 
-/**
- * Premium FAQ section with animated accordion
- */
 export function FAQSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -276,39 +283,49 @@ export function FAQSection() {
       ref={sectionRef}
       className="relative overflow-hidden bg-[#070707] py-16 md:py-24"
     >
-      {/* Background decoration */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-1/4 -left-20 h-80 w-80 rounded-full bg-[#FF6B35]/5 blur-3xl" />
         <div className="absolute -right-20 bottom-1/4 h-80 w-80 rounded-full bg-[#FFB84D]/5 blur-3xl" />
       </div>
 
       <div className="content-container relative">
-        {/* Header */}
         <div
           className={`mb-12 text-center transition-all duration-700 md:mb-16 ${
             isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
-          {/* Badge */}
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#111111] px-4 py-2 shadow-sm">
             <HelpCircle className="h-4 w-4 text-[#FF6B35]" />
-            <span className="text-sm font-medium text-[#FF6B35]">FAQ</span>
+            <span
+              className="text-sm font-medium text-[#FF6B35]"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
+              FAQ
+            </span>
           </div>
 
-          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
+          <h2
+            className="mb-4 text-4xl text-white md:text-5xl"
+            style={{
+              fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+              fontStyle: "italic",
+            }}
+          >
             Questions?{" "}
             <span className="relative">
-              <span className="relative z-10">Answered.</span>
+              <span className="relative z-10 text-white">Answered.</span>
               <span className="absolute right-0 bottom-1 left-0 h-3 bg-[#FF6B35]/20" />
             </span>
           </h2>
-          <p className="mx-auto max-w-xl text-lg text-gray-300">
+          <p
+            className="mx-auto max-w-xl text-lg text-gray-300"
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+          >
             Everything you need to know about Lokul. Can&apos;t find what you&apos;re looking for?
             Reach out to our community.
           </p>
         </div>
 
-        {/* Accordion */}
         <div className="mb-16 space-y-4">
           {faqItems.map((item, index) => (
             <AccordionItem
@@ -322,7 +339,6 @@ export function FAQSection() {
           ))}
         </div>
 
-        {/* Bottom CTAs - Premium Support Cards */}
         <div
           className={`transition-all duration-700 ${
             isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
@@ -330,21 +346,38 @@ export function FAQSection() {
           style={{ transitionDelay: "600ms" }}
         >
           <div className="mb-8 text-center">
-            <p className="text-lg font-medium text-white">Still have questions?</p>
-            <p className="text-gray-400">
+            <p
+              className="text-lg font-medium text-white"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
+              Still have questions?
+            </p>
+            <p
+              className="text-gray-400"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
               We&apos;re here to help. Choose your preferred way to connect.
             </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
-            {/* Discord Card */}
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#111111] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
               <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FF6B35] to-[#FFB84D]" />
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF6B35]/10 text-[#FF6B35] transition-all duration-300 group-hover:bg-[#FF6B35] group-hover:text-white group-hover:shadow-[0_8px_20px_rgba(255,107,53,0.4)]">
                 <MessageCircle className="h-6 w-6" />
               </div>
-              <h3 className="mb-2 font-bold text-white">Join Discord</h3>
-              <p className="mb-4 text-sm text-gray-400">Get help from the community and team</p>
+              <h3
+                className="mb-2 font-bold text-white"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
+                Join Discord
+              </h3>
+              <p
+                className="mb-4 text-sm text-gray-400"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
+                Get help from the community and team
+              </p>
               <Button
                 variant="secondary"
                 size="sm"
@@ -354,14 +387,23 @@ export function FAQSection() {
               </Button>
             </div>
 
-            {/* Email Card */}
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#111111] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
               <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FF6B35] to-[#FFB84D]" />
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF6B35]/10 text-[#FF6B35] transition-all duration-300 group-hover:bg-[#FF6B35] group-hover:text-white group-hover:shadow-[0_8px_20px_rgba(255,107,53,0.4)]">
                 <Mail className="h-6 w-6" />
               </div>
-              <h3 className="mb-2 font-bold text-white">Email Us</h3>
-              <p className="mb-4 text-sm text-gray-400">Private support for sensitive questions</p>
+              <h3
+                className="mb-2 font-bold text-white"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
+                Email Us
+              </h3>
+              <p
+                className="mb-4 text-sm text-gray-400"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
+                Private support for sensitive questions
+              </p>
               <Button
                 variant="secondary"
                 size="sm"
@@ -371,14 +413,23 @@ export function FAQSection() {
               </Button>
             </div>
 
-            {/* Docs Card */}
             <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#111111] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,107,53,0.15)]">
               <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#FF6B35] to-[#FFB84D]" />
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#FF6B35]/10 text-[#FF6B35] transition-all duration-300 group-hover:bg-[#FF6B35] group-hover:text-white group-hover:shadow-[0_8px_20px_rgba(255,107,53,0.4)]">
                 <BookOpen className="h-6 w-6" />
               </div>
-              <h3 className="mb-2 font-bold text-white">Read Docs</h3>
-              <p className="mb-4 text-sm text-gray-400">Detailed guides and API reference</p>
+              <h3
+                className="mb-2 font-bold text-white"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
+                Read Docs
+              </h3>
+              <p
+                className="mb-4 text-sm text-gray-400"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
+                Detailed guides and API reference
+              </p>
               <Button
                 variant="secondary"
                 size="sm"
@@ -389,10 +440,9 @@ export function FAQSection() {
             </div>
           </div>
 
-          {/* Final CTA */}
           <div className="mt-12 text-center">
             <Button variant="cta" size="lg" onClick={scrollToCTA}>
-              Try Lokul Free — No Signup
+              Try Lokul Free - No Signup
             </Button>
           </div>
         </div>

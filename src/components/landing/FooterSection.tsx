@@ -6,26 +6,17 @@
 
 import { Github, MessageCircle, Twitter } from "lucide-react";
 
-/**
- * Footer link data structure
- */
 interface FooterLink {
   label: string;
   href: string;
   external?: boolean;
 }
 
-/**
- * Footer column data structure
- */
 interface FooterColumn {
   title: string;
   links: FooterLink[];
 }
 
-/**
- * Footer columns data
- */
 const footerColumns: FooterColumn[] = [
   {
     title: "Product",
@@ -59,18 +50,12 @@ const footerColumns: FooterColumn[] = [
   },
 ];
 
-/**
- * Social link data structure
- */
 interface SocialLink {
   icon: React.ReactNode;
   href: string;
   label: string;
 }
 
-/**
- * Social links data
- */
 const socialLinks: SocialLink[] = [
   {
     icon: <Github className="h-5 w-5" />,
@@ -89,9 +74,6 @@ const socialLinks: SocialLink[] = [
   },
 ];
 
-/**
- * Footer section with 4 columns
- */
 export function FooterSection() {
   const handleLinkClick = (link: FooterLink) => {
     if (link.external) {
@@ -110,43 +92,62 @@ export function FooterSection() {
     <footer className="border-t border-gray-800 bg-[#1A1A1A]">
       <div className="content-container py-16">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
-          {/* Brand Column */}
           <div className="md:col-span-1">
-            {/* Logo */}
             <div className="mb-4 flex items-center gap-2">
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-[#FF6B35]/30 blur-lg" />
                 <img src="/lokul-logo.png" alt="" className="relative h-8 w-8" />
               </div>
-              <span className="text-xl font-bold text-white">Lokul</span>
+              <span
+                className="text-xl font-bold text-white"
+                style={{
+                  fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+                  fontStyle: "italic",
+                }}
+              >
+                Lokul
+              </span>
             </div>
 
-            {/* Tagline */}
-            <p className="mb-4 text-gray-400">Your AI. Your browser. Your privacy.</p>
+            <p
+              className="mb-4 text-gray-400"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
+              Your AI. Your browser. Your privacy.
+            </p>
 
-            {/* Description */}
-            <p className="mb-6 text-sm text-gray-500">
+            <p
+              className="mb-6 text-sm text-gray-500"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
               ChatGPT-quality AI that runs 100% in your browser.
             </p>
 
-            {/* Copyright */}
-            <p className="text-sm text-gray-600">
+            <p
+              className="text-sm text-gray-600"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
               © 2026 Lokul
               <br />
               Open source. MIT License.
             </p>
           </div>
 
-          {/* Link Columns */}
           {footerColumns.map((column, index) => (
             <div key={index}>
-              <h3 className="mb-4 font-semibold text-white">{column.title}</h3>
+              <h3
+                className="mb-4 font-semibold text-white"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
+                {column.title}
+              </h3>
               <ul className="space-y-3">
                 {column.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
                     <button
                       onClick={() => handleLinkClick(link)}
                       className="cursor-pointer text-left text-gray-400 transition-colors hover:text-[#FF6B35]"
+                      style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
                     >
                       {link.label}
                     </button>
@@ -157,10 +158,8 @@ export function FooterSection() {
           ))}
         </div>
 
-        {/* Bottom Section */}
         <div className="mt-12 border-t border-gray-800 pt-8">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            {/* Social Links */}
             <div className="flex items-center gap-4">
               {socialLinks.map((social, index) => (
                 <a
@@ -176,8 +175,10 @@ export function FooterSection() {
               ))}
             </div>
 
-            {/* Made with love */}
-            <p className="text-sm text-gray-500">
+            <p
+              className="text-sm text-gray-500"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
               Made with <span className="text-red-500">♥</span> for privacy by{" "}
               <a
                 className="font-semibold text-[#FF6B35] hover:underline"
@@ -187,12 +188,12 @@ export function FooterSection() {
               </a>
             </p>
 
-            {/* Star on GitHub */}
             <a
               href="https://github.com/pouryaak/lokul"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-gray-400 transition-colors hover:text-[#FF6B35]"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
             >
               <span>★</span>
               Star us on GitHub

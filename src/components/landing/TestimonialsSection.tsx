@@ -66,7 +66,13 @@ export function TestimonialsSection() {
       <div className="content-container">
         {/* Header */}
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
+          <h2
+            className="mb-4 text-4xl text-white md:text-5xl"
+            style={{
+              fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+              fontStyle: "italic",
+            }}
+          >
             Don't Just Take Our Word For It
           </h2>
         </div>
@@ -84,14 +90,27 @@ export function TestimonialsSection() {
               </div>
 
               {/* Quote */}
-              <blockquote className="mb-6 flex-1 text-lg leading-relaxed text-gray-100 italic">
+              <blockquote
+                className="mb-6 flex-1 text-lg leading-relaxed text-gray-100 italic"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
                 "{testimonial.quote}"
               </blockquote>
 
               {/* Attribution */}
               <div className="border-t border-white/10 pt-4">
-                <p className="font-medium text-white">- {testimonial.name}</p>
-                <p className="text-sm text-gray-400">{testimonial.title}</p>
+                <p
+                  className="font-medium text-white"
+                  style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+                >
+                  - {testimonial.name}
+                </p>
+                <p
+                  className="text-sm text-gray-400"
+                  style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+                >
+                  {testimonial.title}
+                </p>
               </div>
             </Card>
           ))}
@@ -99,8 +118,16 @@ export function TestimonialsSection() {
 
         {/* Bottom Stats */}
         <div className="text-center">
-          <p className="mb-2 text-lg text-gray-300">Join 12,847 developers who trust Lokul</p>
-          <p className="text-gray-400">
+          <p
+            className="mb-2 text-lg text-gray-300"
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+          >
+            Join 12,847 developers who trust Lokul
+          </p>
+          <p
+            className="text-gray-400"
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+          >
             <span className="text-[#FF6B35]">★★★★★</span> Rated 4.9/5 on GitHub
           </p>
         </div>

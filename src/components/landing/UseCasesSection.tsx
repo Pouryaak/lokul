@@ -187,17 +187,31 @@ export function UseCasesSection() {
           {/* Badge */}
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#111111] px-4 py-2 shadow-sm">
             <Sparkles className="h-4 w-4 text-[#FF6B35]" />
-            <span className="text-sm font-medium text-[#FF6B35]">Use Cases</span>
+            <span
+              className="text-sm font-medium text-[#FF6B35]"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
+              Use Cases
+            </span>
           </div>
 
-          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
+          <h2
+            className="mb-4 text-4xl text-white md:text-5xl"
+            style={{
+              fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+              fontStyle: "italic",
+            }}
+          >
             Who Uses{" "}
             <span className="relative">
               <span className="relative z-10">Lokul?</span>
               <span className="absolute right-0 bottom-1 left-0 h-3 bg-[#FF6B35]/20" />
             </span>
           </h2>
-          <p className="mx-auto max-w-xl text-lg text-gray-300">
+          <p
+            className="mx-auto max-w-xl text-lg text-gray-300"
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+          >
             Real people, real use cases. See how others are using private AI.
           </p>
         </div>

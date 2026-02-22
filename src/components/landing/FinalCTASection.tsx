@@ -9,9 +9,6 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Sparkles, Shield, Lock, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
-/**
- * Story beat data for the narrative
- */
 const storyBeats = [
   {
     icon: EyeOff,
@@ -37,9 +34,6 @@ const storyBeats = [
   },
 ];
 
-/**
- * Animated story beat card
- */
 function StoryBeat({
   beat,
   index,
@@ -69,14 +63,12 @@ function StoryBeat({
               : "bg-[#111111] text-white shadow-[0_8px_40px_rgba(0,0,0,0.25)]"
         }`}
       >
-        {/* Decorative gradient orb */}
         <div
           className={`pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full blur-3xl ${
             isDark ? "bg-[#FF6B35]/10" : isCTA ? "bg-white/20" : "bg-[#FF6B35]/5"
           }`}
         />
 
-        {/* Icon */}
         <div
           className={`mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl ${
             isDark
@@ -89,28 +81,34 @@ function StoryBeat({
           <Icon className="h-7 w-7" />
         </div>
 
-        {/* Content */}
         <div className="relative">
           <p
             className={`mb-2 text-sm font-semibold tracking-wider uppercase ${
               isDark ? "text-[#FF6B35]" : isCTA ? "text-white/80" : "text-[#FF6B35]"
             }`}
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
           >
             {beat.subtitle}
           </p>
-          <h3 className={`mb-4 text-2xl font-bold md:text-3xl ${isCTA ? "text-white" : ""}`}>
+          <h3
+            className="mb-4 text-2xl text-white md:text-3xl"
+            style={{
+              fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+              fontStyle: "italic",
+            }}
+          >
             {beat.title}
           </h3>
           <p
             className={`text-lg leading-relaxed ${
               isDark ? "text-gray-400" : isCTA ? "text-white/90" : "text-gray-300"
             }`}
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
           >
             {beat.description}
           </p>
         </div>
 
-        {/* Progress line for CTA card */}
         {isCTA && (
           <div className="absolute right-0 bottom-0 left-0 h-1 bg-white/20">
             <div className="h-full animate-pulse bg-white" style={{ width: "60%" }} />
@@ -121,17 +119,10 @@ function StoryBeat({
   );
 }
 
-/**
- * Props for FinalCTASection
- */
 export interface FinalCTASectionProps {
-  /** Callback when user clicks Start Chatting */
   onStart: () => void;
 }
 
-/**
- * Cinematic final CTA with narrative storytelling
- */
 export function FinalCTASection({ onStart }: FinalCTASectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -142,7 +133,6 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          // Show main CTA after story beats animate
           setTimeout(() => setShowCTA(true), 1500);
         }
       },
@@ -162,56 +152,59 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
       ref={sectionRef}
       className="relative overflow-hidden bg-[#050505] py-16 md:py-24"
     >
-      {/* Background decoration */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-0 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-[#FF6B35]/5 blur-[120px]" />
       </div>
 
       <div className="content-container relative">
-        {/* Section Header */}
         <div
           className={`mb-16 text-center transition-all duration-1000 ${
             isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
-          {/* Badge */}
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#FF6B35]/30 bg-[#111111] px-4 py-2 shadow-sm">
             <Sparkles className="h-4 w-4 text-[#FF6B35]" />
-            <span className="text-sm font-medium text-[#FF6B35]">The Choice Is Yours</span>
+            <span
+              className="text-sm font-medium text-[#FF6B35]"
+              style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+            >
+              The Choice Is Yours
+            </span>
           </div>
 
-          <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
-            A Story in{" "}
+          <h2
+            className="mb-4 text-4xl md:text-5xl lg:text-6xl"
+            style={{
+              fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+              fontStyle: "italic",
+            }}
+          >
+            <span className="text-white">A Story in </span>
             <span className="relative">
-              <span className="relative z-10">Three Acts</span>
+              <span className="relative z-10 text-white">Three Acts</span>
               <span className="absolute right-0 bottom-1 left-0 h-3 bg-[#FF6B35]/20" />
             </span>
           </h2>
         </div>
 
-        {/* Story Beats Grid */}
         <div className="mb-16 grid gap-6 md:grid-cols-3">
           {storyBeats.map((beat, index) => (
             <StoryBeat key={index} beat={beat} index={index} isVisible={isVisible} />
           ))}
         </div>
 
-        {/* The Grand Finale CTA */}
         <div
           className={`transition-all duration-1000 ${
             showCTA ? "translate-y-0 scale-100 opacity-100" : "translate-y-8 scale-95 opacity-0"
           }`}
         >
           <div className="relative overflow-hidden rounded-3xl bg-[#1A1A1A] p-8 text-center md:p-16">
-            {/* Animated background glow */}
             <div className="pointer-events-none absolute inset-0">
               <div className="absolute top-1/2 left-1/4 h-96 w-96 -translate-y-1/2 rounded-full bg-[#FF6B35]/20 blur-[100px]" />
               <div className="absolute top-1/2 right-1/4 h-96 w-96 -translate-y-1/2 rounded-full bg-[#FFB84D]/10 blur-[100px]" />
             </div>
 
-            {/* Content */}
             <div className="relative">
-              {/* Sparkle animation */}
               <div className="mb-6 flex justify-center">
                 <div className="relative">
                   <div className="absolute inset-0 animate-pulse rounded-full bg-[#FF6B35]/30 blur-xl" />
@@ -221,15 +214,23 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
                 </div>
               </div>
 
-              <h3 className="mb-4 text-3xl font-bold text-white md:text-4xl lg:text-5xl">
-                Ready to Take Control?
+              <h3
+                className="mb-4 text-3xl md:text-4xl lg:text-5xl"
+                style={{
+                  fontFamily: '"Instrument Serif", "Iowan Old Style", serif',
+                  fontStyle: "italic",
+                }}
+              >
+                <span className="text-white">Ready to Take Control?</span>
               </h3>
 
-              <p className="mx-auto mb-8 max-w-xl text-lg text-gray-400">
+              <p
+                className="mx-auto mb-8 max-w-xl text-lg text-gray-400"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
                 Join thousands who've already made the switch. Your data. Your device. Your AI.
               </p>
 
-              {/* CTA Button */}
               <div className="mb-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                 <Button
                   variant="cta"
@@ -237,13 +238,15 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
                   onClick={onStart}
                   className="group min-w-[280px] shadow-[0_8px_40px_rgba(255,107,53,0.4)]"
                 >
-                  Start Chatting — Free
+                  Start Chatting - Free
                   <ArrowRight className="ml-2 h-6 w-6 transition-transform group-hover:translate-x-1" />
                 </Button>
               </div>
 
-              {/* Trust indicators */}
-              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
+              <div
+                className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500"
+                style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+              >
                 <span className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-green-500" />
                   No email required
@@ -261,14 +264,16 @@ export function FinalCTASection({ onStart }: FinalCTASectionProps) {
           </div>
         </div>
 
-        {/* Closing thought */}
         <div
           className={`mt-12 text-center transition-all duration-1000 ${
             showCTA ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
           style={{ transitionDelay: "400ms" }}
         >
-          <p className="text-gray-400 italic">
+          <p
+            className="text-gray-400 italic"
+            style={{ fontFamily: '"DM Sans", "Avenir Next", "Segoe UI", sans-serif' }}
+          >
             "The best time to take back your privacy was yesterday."
             <br />
             <span className="text-[#FF6B35]">The second best time is now.</span>
