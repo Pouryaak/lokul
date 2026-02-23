@@ -12,17 +12,23 @@ Lokul is a ChatGPT-quality AI chat interface that runs **100% in the browser** u
 
 ### Validated
 
-(Scaffold stage - no features implemented yet)
+- ✓ Chat interface with streaming responses (ChatGPT-style UX) — Phase 2/2.1
+- ✓ Model management with 3 tiers — Phase 3
+- ✓ Performance monitoring panel — Phase 1/2
+- ✓ Local storage for conversations (IndexedDB via Dexie.js) — Phase 2
+- ✓ Offline mode (Service Worker + PWA) — Phase 1/5
+- ✓ Conversation memory & context management — Phase 4
+- ✓ First-run experience (< 60 seconds to first message) — Phase 1
+- ✓ Routing (/chat, /chat/[id]) — Phase 2.1
+- ✓ AI SDK UI integration — Phase 2.1
+- ✓ Stabilized architecture (Result types, cancellation, error boundaries) — Phase 2.2
 
 ### Active
 
-- [ ] Chat interface with streaming responses (ChatGPT-style UX)
-- [ ] Model management with 3 tiers: Quick (Phi-2, ~80MB), Smart (Llama 3.2 3B, ~2.8GB), Genius (Mistral 7B, ~6.4GB)
-- [ ] Performance monitoring panel (memory, GPU status, tokens/sec)
-- [ ] Local storage for conversations (IndexedDB via Dexie.js)
-- [ ] Offline mode (Service Worker + PWA)
-- [ ] Conversation memory & context management (three-tier memory system)
-- [ ] First-run experience (< 60 seconds to first message)
+- [ ] Full-text search across all conversations
+- [ ] Chat deletion with 3-dot menu and confirmation
+- [ ] UI/UX polish (buttons, panels, colors, consistency)
+- [ ] Keyboard shortcuts
 
 ### Out of Scope
 
@@ -67,16 +73,26 @@ Lokul is a ChatGPT-quality AI chat interface that runs **100% in the browser** u
 **Offline:** Full functionality after first load without internet
 **First Load:** < 30 seconds for Quick Mode auto-load
 
+## Current Milestone: v1.1 UI Polish + Search + Delete
+
+**Goal:** Enhance UX with search capability, intuitive delete flow, and visual consistency
+
+**Target features:**
+- Full-text search across all conversations (command palette style)
+- Chat deletion via 3-dot menu with confirmation dialog
+- UI/UX polish (buttons, panels, colors, consistency)
+- Keyboard shortcuts (Cmd+K for search)
+
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| 100% browser-based | Privacy-first architecture | — Pending |
-| WebGPU over WebGL | Performance for AI inference | — Pending |
-| Local-only storage | Zero data leakage | — Pending |
-| Three model tiers | Balance speed vs quality vs storage | — Pending |
-| No user accounts | Simplified UX, no trust required | — Pending |
-| Open source (MIT) | Verifiable privacy | — Pending |
+| 100% browser-based | Privacy-first architecture | ✓ Good |
+| WebGPU over WebGL | Performance for AI inference | ✓ Good |
+| Local-only storage | Zero data leakage | ✓ Good |
+| Three model tiers | Balance speed vs quality vs storage | ✓ Good |
+| No user accounts | Simplified UX, no trust required | ✓ Good |
+| Open source (MIT) | Verifiable privacy | ✓ Good |
 
 ---
-*Last updated: 2026-02-17 after initialization*
+*Last updated: 2026-02-23 after v1.1 milestone kickoff*
