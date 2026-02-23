@@ -1,106 +1,67 @@
 # Requirements: Lokul
 
-**Defined:** 2026-02-17
+**Defined:** 2026-02-17 (v1.0), 2026-02-23 (v1.1)
 **Core Value:** Privacy by architecture, not by promise — Users can verify with their own eyes (DevTools Network tab) that conversations never leave their device
 
-## v1 Requirements
+---
 
-### Authentication
+## v1.0 Requirements (COMPLETE)
 
-*No authentication required for v1 — local-only anonymous usage*
+All v1.0 requirements shipped. See MILESTONES.md for details.
 
-### Chat Interface (CHAT)
+---
 
-- [x] **CHAT-01**: User can type messages in an auto-resizing input field
-- [x] **CHAT-02**: User can send messages with Enter key or Send button
-- [x] **CHAT-03**: AI responses stream token-by-token (word-by-word) without UI lag
-- [x] **CHAT-04**: Messages render with Markdown formatting (bold, italic, lists, code blocks)
-- [x] **CHAT-05**: Code blocks display with syntax highlighting (Shiki)
-- [x] **CHAT-06**: User can copy any message to clipboard with one click
-- [x] **CHAT-07**: User can regenerate the last AI response
-- [x] **CHAT-08**: User can clear the current conversation
-- [ ] **CHAT-09**: Chat interface is responsive (works on desktop and mobile)
-- [ ] **CHAT-10**: Message list virtualizes for long conversations (> 50 messages)
+## v1.1 Requirements
 
-### Model Management (MODEL)
+### Search (SRCH)
 
-- [x] **MODEL-01**: App auto-loads Quick Mode (Phi-2 2.7B, ~80MB) on first visit
-- [x] **MODEL-02**: User can see current active/requested model in chat controls (input selector + download manager)
-- [x] **MODEL-03**: User can switch to Smart Mode (Llama 3.2 3B, ~2.8GB) via dropdown
-- [x] **MODEL-04**: User can switch to Genius Mode (Mistral 7B, ~6.4GB) via dropdown
-- [x] **MODEL-05**: Download progress displays with percentage and time estimate
-- [x] **MODEL-06**: User can cancel an in-progress model download
-- [x] **MODEL-07**: Downloaded models persist in cache across browser sessions
-- [x] **MODEL-08**: Model switch does not require page reload (seamless transition)
+- [ ] **SRCH-01**: User can open search via Cmd/Ctrl+K keyboard shortcut
+- [ ] **SRCH-02**: User can search across all message content in all conversations
+- [ ] **SRCH-03**: Search results show matching text with conversation title and context
+- [ ] **SRCH-04**: User can click a search result to navigate to that conversation
+- [ ] **SRCH-05**: Search input is accessible from sidebar (above New Chat button)
 
-### Performance Monitoring (PERF)
+### Delete (DEL)
 
-- [x] **PERF-01**: Performance panel displays GPU status (Active/Inactive/Not Supported)
-- [x] **PERF-02**: Performance panel shows memory usage (MB / total available)
-- [ ] **PERF-03**: Performance panel shows tokens per second during generation
-- [ ] **PERF-04**: Performance panel shows last response time (ms)
-- [x] **PERF-05**: Visual indicator shows system health (Green/Yellow/Red)
-- [ ] **PERF-06**: Warning displayed if memory usage exceeds 75%
-- [ ] **PERF-07**: Suggestion to switch to Quick Mode shown if performance degrades
+- [ ] **DEL-01**: Each conversation in sidebar has a 3-dot menu (shadcn DropdownMenu)
+- [ ] **DEL-02**: User can click "Delete" from the 3-dot menu
+- [ ] **DEL-03**: Delete action shows confirmation dialog (shadcn AlertDialog) before removing
+- [ ] **DEL-04**: Confirmed delete removes conversation from IndexedDB and sidebar
 
-### Local Storage (STOR)
+### UI/UX Polish (UX)
 
-- [ ] **STOR-01**: All conversations auto-save to IndexedDB after every message
-- [ ] **STOR-02**: Conversation list displays in sidebar with titles and timestamps
-- [ ] **STOR-03**: User can view previous conversations from sidebar
-- [ ] **STOR-04**: User can delete a conversation
-- [ ] **STOR-05**: User can export current conversation as Markdown (.md)
-- [ ] **STOR-06**: User can export current conversation as JSON (.json)
-- [ ] **STOR-07**: User can export current conversation as Text (.txt)
-- [ ] **STOR-08**: User can import conversation from JSON backup
-- [x] **STOR-09**: Settings persist across sessions (theme, default model)
+- [ ] **UX-01**: Buttons have consistent styling across the app
+- [ ] **UX-02**: Panels have consistent spacing and visual hierarchy
+- [ ] **UX-03**: Colors are consistent with design system
+- [ ] **UX-04**: Responsive design works on desktop and mobile viewports
 
-### Offline Mode (OFFL)
+### Keyboard Shortcuts (KEY)
 
-- [x] **OFFL-01**: Service Worker caches application assets for offline use
-- [x] **OFFL-02**: Downloaded models remain available offline
-- [x] **OFFL-03**: Clear indicator shows "✅ Works Offline" or "⚠️ Online Required"
-- [x] **OFFL-04**: App functions without internet after first load (with cached model)
-- [x] **OFFL-05**: PWA manifest allows "Add to Home Screen" installation
+- [ ] **KEY-01**: Cmd/Ctrl+K opens global search
+- [ ] **KEY-02**: Cmd/Ctrl+N creates new conversation
+- [ ] **KEY-03**: Escape closes search/modal/panel
 
-### First-Run Experience (FIRST)
-
-- [x] **FIRST-01**: Landing page displays "Start Chatting" button within 2 seconds
-- [x] **FIRST-02**: Setup flow checks device capabilities (WebGPU support)
-- [x] **FIRST-03**: Setup flow shows honest progress steps during Quick Mode load
-- [x] **FIRST-04**: First message can be sent within 60 seconds of landing
-- [x] **FIRST-05**: Clear error shown if WebGPU not supported (browser compatibility)
-- [x] **FIRST-06**: New chats default to Smart Mode (prompt flow removed by approved scope update)
-
-### Memory & Context (MEM)
-
-- [ ] **MEM-01**: System extracts and saves key user facts (name, preferences, goals)
-- [ ] **MEM-02**: Core Facts memory persists indefinitely across all conversations
-- [ ] **MEM-03**: Context window management prevents token limit crashes
-- [ ] **MEM-04**: Auto-compaction triggers at 80% of model's context limit
-- [ ] **MEM-05**: User can view what facts the system remembers (Memory Panel)
-- [ ] **MEM-06**: User can edit Core Facts directly
-- [ ] **MEM-07**: User can clear all memory
+---
 
 ## v2 Requirements (Deferred)
 
-### Search & Organization
+### Advanced Search
 
-- **SRCH-01**: User can search conversation history by keyword
-- **SRCH-02**: User can organize conversations into folders
-- **SRCH-03**: User can favorite/star important conversations
+- **SRCH-06**: User can filter search by date range
+- **SRCH-07**: User can search within current conversation only
+
+### Organization
+
+- **ORG-01**: User can organize conversations into folders
+- **ORG-02**: User can favorite/star important conversations
 
 ### Advanced Features
 
 - **ADV-01**: User can upload and chat about PDF documents
 - **ADV-02**: User can set custom system prompts per conversation
-- **ADV-03**: User can configure keyboard shortcuts
+- **ADV-03**: User can configure custom keyboard shortcuts
 
-### Mobile Enhancements
-
-- **MOB-01**: Swipe gestures for common actions
-- **MOB-02**: Optimized mobile keyboard handling
-- **MOB-03**: Touch-friendly message actions
+---
 
 ## Out of Scope
 
@@ -116,69 +77,39 @@
 | Mobile native app | Responsive web sufficient for v1, separate codebase cost |
 | Plugin system | Security concerns, maintenance burden, no third-party code |
 | Analytics/tracking | Violates zero-tracking promise; use GitHub issues instead |
+| Server-side search (Algolia) | Requires network, violates privacy-first |
+
+---
 
 ## Traceability
 
+### v1.1 Requirements
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CHAT-01 | Phase 2 | Complete |
-| CHAT-02 | Phase 2 | Complete |
-| CHAT-03 | Phase 2 | Complete |
-| CHAT-04 | Phase 2 | Complete |
-| CHAT-05 | Phase 2 | Complete |
-| CHAT-06 | Phase 2 | Complete |
-| CHAT-07 | Phase 2 | Complete |
-| CHAT-08 | Phase 2 | Complete |
-| CHAT-09 | Phase 5 | Pending |
-| CHAT-10 | Phase 5 | Pending |
-| MODEL-01 | Phase 1 | Complete |
-| MODEL-02 | Phase 3 | Complete |
-| MODEL-03 | Phase 3 | Complete |
-| MODEL-04 | Phase 3 | Complete |
-| MODEL-05 | Phase 3 | Complete |
-| MODEL-06 | Phase 3 | Complete |
-| MODEL-07 | Phase 1 | Complete |
-| MODEL-08 | Phase 3 | Complete |
-| PERF-01 | Phase 1 | Complete |
-| PERF-02 | Phase 1 | Complete |
-| PERF-03 | Phase 2 | Pending |
-| PERF-04 | Phase 2 | Pending |
-| PERF-05 | Phase 1 | Complete |
-| PERF-06 | Phase 2 | Pending |
-| PERF-07 | Phase 2 | Pending |
-| STOR-01 | Phase 2 | Pending |
-| STOR-02 | Phase 2 | Pending |
-| STOR-03 | Phase 2 | Pending |
-| STOR-04 | Phase 2 | Pending |
-| STOR-05 | Phase 5 | Pending |
-| STOR-06 | Phase 5 | Pending |
-| STOR-07 | Phase 5 | Pending |
-| STOR-08 | Phase 5 | Pending |
-| STOR-09 | Phase 1 | Complete |
-| OFFL-01 | Phase 1 | Complete |
-| OFFL-02 | Phase 1 | Complete |
-| OFFL-03 | Phase 1 | Complete |
-| OFFL-04 | Phase 1 | Complete |
-| OFFL-05 | Phase 1 | Complete |
-| FIRST-01 | Phase 1 | Complete |
-| FIRST-02 | Phase 1 | Complete |
-| FIRST-03 | Phase 1 | Complete |
-| FIRST-04 | Phase 1 | Complete |
-| FIRST-05 | Phase 1 | Complete |
-| FIRST-06 | Phase 3 | Complete |
-| MEM-01 | Phase 4 | Pending |
-| MEM-02 | Phase 4 | Pending |
-| MEM-03 | Phase 4 | Pending |
-| MEM-04 | Phase 4 | Pending |
-| MEM-05 | Phase 4 | Pending |
-| MEM-06 | Phase 4 | Pending |
-| MEM-07 | Phase 4 | Pending |
+| SRCH-01 | Phase 6 | Pending |
+| SRCH-02 | Phase 6 | Pending |
+| SRCH-03 | Phase 6 | Pending |
+| SRCH-04 | Phase 6 | Pending |
+| SRCH-05 | Phase 6 | Pending |
+| DEL-01 | Phase 6 | Pending |
+| DEL-02 | Phase 6 | Pending |
+| DEL-03 | Phase 6 | Pending |
+| DEL-04 | Phase 6 | Pending |
+| UX-01 | Phase 7 | Pending |
+| UX-02 | Phase 7 | Pending |
+| UX-03 | Phase 7 | Pending |
+| UX-04 | Phase 7 | Pending |
+| KEY-01 | Phase 6 | Pending |
+| KEY-02 | Phase 6 | Pending |
+| KEY-03 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 56 total
-- Mapped to phases: 56
+- v1.1 requirements: 16 total
+- Mapped to phases: 16
 - Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-02-17*
-*Last updated: 2026-02-19 after Phase 3 completion*
+
+*Requirements defined: 2026-02-17 (v1.0)*
+*Last updated: 2026-02-23 after v1.1 milestone kickoff*
