@@ -42,7 +42,6 @@ function SidebarHeaderContent({ isCollapsed }: { isCollapsed: boolean }) {
     >
       <a href="/" className="flex items-center gap-2">
         <SidebarLogo className="h-8 w-8" />
-        {!isCollapsed && <span className="font-semibold text-white">Lokul</span>}
       </a>
 
       <motion.div

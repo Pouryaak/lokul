@@ -6,14 +6,7 @@ import { formatRelativeTime } from "./sidebar-time";
 
 export function SidebarLogo({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        "from-primary flex items-center justify-center rounded-lg bg-gradient-to-br to-orange-400",
-        className
-      )}
-    >
-      <MessageSquare className="h-5 w-5 text-white" />
-    </div>
+    <img src="/lokul-logo.png" alt="Lokul" className={cn("rounded-lg object-cover", className)} />
   );
 }
 

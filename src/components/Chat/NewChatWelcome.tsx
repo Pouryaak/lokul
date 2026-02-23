@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles, Lightbulb, Code, FileText, MessageSquare } from "lucide-react";
+import { Code, FileText, Lightbulb, MessageSquare, Sparkles } from "lucide-react";
 
 interface NewChatWelcomeProps {
   onSuggestionClick?: (text: string) => void;
@@ -130,17 +130,6 @@ export function NewChatWelcome({ onSuggestionClick }: NewChatWelcomeProps) {
             </button>
           ))}
         </motion.div>
-
-        {/* Privacy note */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-8 text-xs text-[var(--chat-text-subtle)]"
-          style={{ fontFamily: '"DM Sans", sans-serif' }}
-        >
-          Your conversations are stored locally and never leave your device.
-        </motion.p>
       </div>
     </div>
   );
