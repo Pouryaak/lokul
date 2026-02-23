@@ -120,6 +120,9 @@ interface InputSectionProps {
   className?: string;
 }
 
+const CHAT_NOISE_BACKGROUND_IMAGE =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.9'/%3E%3C/svg%3E\")";
+
 export function InputSection({
   conversationId,
   status,
@@ -132,9 +135,18 @@ export function InputSection({
       <div className="pointer-events-auto mx-auto max-w-3xl">
         <PromptInput
           onSubmit={onSubmit}
-          className="rounded-2xl bg-[var(--chat-input-bg)] text-[var(--chat-text-primary)] shadow-[0_14px_38px_rgba(0,0,0,0.38)]"
+          className="relative overflow-hidden rounded-2xl bg-[#0f0f0f] text-[var(--chat-text-primary)] shadow-[0_14px_38px_rgba(0,0,0,0.38)]"
           inputGroupClassName="border-0 bg-transparent shadow-none"
         >
+          {/* Grainy noise overlay */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.1] mix-blend-screen"
+            style={{
+              backgroundImage: CHAT_NOISE_BACKGROUND_IMAGE,
+              backgroundRepeat: "repeat",
+              backgroundSize: "220px 220px",
+            }}
+          />
           <PromptInputTextarea
             placeholder="Message Lokul..."
             className="min-h-[60px] text-[15px] text-[var(--chat-text-primary)] placeholder:text-[var(--chat-text-muted)]"

@@ -1,7 +1,7 @@
 /**
  * useGlobalShortcuts - Global keyboard shortcuts for the application
  *
- * Registers Cmd+K (search), Cmd+N (new chat), and Escape (close overlays)
+ * Registers Cmd+K (search), Cmd+M (new chat), and Escape (close overlays)
  * using react-hotkeys-hook. Overrides browser defaults for Cmd+K and Cmd+N.
  *
  * @example
@@ -16,6 +16,7 @@
  * ```
  */
 
+import { useEffect } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 /**
@@ -24,7 +25,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 interface GlobalShortcutsConfig {
   /** Callback when Cmd/Ctrl+K is pressed - opens search */
   onSearch: () => void;
-  /** Callback when Cmd/Ctrl+N is pressed - creates new chat */
+  /** Callback when Cmd/Ctrl+M is pressed - creates new chat */
   onNewChat: () => void;
   /** Optional callback when Escape is pressed - closes overlays */
   onEscape?: () => void;
@@ -40,7 +41,7 @@ interface GlobalShortcutsConfig {
  * Hook that registers global keyboard shortcuts
  *
  * - Cmd/Ctrl+K: Opens search (overrides browser default)
- * - Cmd/Ctrl+N: Creates new chat (overrides browser default)
+ * - Cmd/Ctrl+M: Creates new chat
  * - Escape: Closes overlays (search, dialogs, sheets)
  *
  * Shortcuts work globally including in form inputs (enableOnFormTags).
@@ -54,6 +55,24 @@ export function useGlobalShortcuts({
   dialogOpen,
   sheetOpen,
 }: GlobalShortcutsConfig): void {
+  // Native event listener for Cmd+M for new chat
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "m") {
+        event.preventDefault();
+        event.stopPropagation();
+        onNewChat();
+      }
+    };
+
+    // Add listener to window with capture phase to catch event early
+    window.addEventListener("keydown", handleKeyDown, true);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, [onNewChat]);
+
   // Cmd+K / Ctrl+K - Open search
   useHotkeys(
     "meta+k, ctrl+k",
@@ -66,20 +85,6 @@ export function useGlobalShortcuts({
       preventDefault: true,
     },
     [onSearch]
-  );
-
-  // Cmd+N / Ctrl+N - New chat
-  useHotkeys(
-    "meta+n, ctrl+n",
-    (event) => {
-      event.preventDefault();
-      onNewChat();
-    },
-    {
-      enableOnFormTags: true,
-      preventDefault: true,
-    },
-    [onNewChat]
   );
 
   // Escape - Close overlays (only if something is open)

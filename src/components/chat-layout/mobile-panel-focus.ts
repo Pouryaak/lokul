@@ -1,4 +1,4 @@
-export type MobilePanel = "none" | "sidebar" | "memory" | "performance" | "downloads";
+export type MobilePanel = "none" | "sidebar" | "memory" | "downloads";
 
 type SetMobilePanel = (value: MobilePanel | ((current: MobilePanel) => MobilePanel)) => void;
 

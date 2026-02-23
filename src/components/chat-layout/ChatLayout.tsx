@@ -8,7 +8,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Activity, PanelLeft } from "lucide-react";
+import { PanelLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { SidebarInset, SidebarProvider, useSidebar } from "@/components/ui/sidebar";
@@ -17,8 +17,7 @@ import { AppSidebar } from "./AppSidebar";
 import { ChatTopbarMenu } from "./chat-topbar-menu";
 import { CompactChatHeader } from "./compact-chat-header";
 import { createMobilePanelController, type MobilePanel } from "./mobile-panel-focus";
-import { StatusIndicator } from "@/components/performance/StatusIndicator";
-import { PerformancePanel } from "@/components/performance/PerformancePanel";
+import { PerformanceButton } from "@/components/performance/PerformanceButton";
 import { DownloadManager } from "@/components/model/DownloadManager";
 import { MemoryHeaderPill } from "@/components/memory/MemoryHeaderPill";
 import { MemoryPanel } from "@/components/memory/MemoryPanel";
@@ -114,7 +113,6 @@ function ChatLayoutContent({
   const { id: activeConversationId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { count } = useMemory();
-  const [showPerformancePanel, setShowPerformancePanel] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("none");
   const mobileController = useMemo(() => createMobilePanelController(setMobilePanel), []);
@@ -127,7 +125,6 @@ function ChatLayoutContent({
   const closeDownloadPanel = useConversationModelStore((state) => state.closeDownloadManager);
   const previousOpenMobileRef = useRef(openMobile);
   const previousMemoryOpenRef = useRef(isMemoryPanelOpen);
-  const previousPerformanceOpenRef = useRef(showPerformancePanel);
   const previousDownloadOpenRef = useRef(isDownloadPanelOpen);
 
   // Global keyboard shortcuts
@@ -135,18 +132,16 @@ function ChatLayoutContent({
     onSearch: () => setSearchOpen(true),
     onNewChat: () => navigate("/chat"),
     onEscape: () => {
-      // Close overlays in priority order: search > memory panel > performance panel > downloads
+      // Close overlays in priority order: search > memory panel > downloads
       if (searchOpen) {
         setSearchOpen(false);
       } else if (isMemoryPanelOpen) {
         closeMemoryPanel();
-      } else if (showPerformancePanel) {
-        setShowPerformancePanel(false);
       }
     },
     searchOpen,
     dialogOpen: isMemoryPanelOpen,
-    sheetOpen: showPerformancePanel || isDownloadPanelOpen,
+    sheetOpen: isDownloadPanelOpen,
   });
 
   const setMobileSidebarOpen = useCallback(
@@ -188,7 +183,6 @@ function ChatLayoutContent({
     if (mobilePanel === "sidebar") {
       setMobileSidebarOpen(true);
       closeMemoryPanel();
-      setShowPerformancePanel(false);
       closeDownloadPanel();
       return;
     }
@@ -196,15 +190,6 @@ function ChatLayoutContent({
     if (mobilePanel === "memory") {
       setMobileSidebarOpen(false);
       openMemoryPanel();
-      setShowPerformancePanel(false);
-      closeDownloadPanel();
-      return;
-    }
-
-    if (mobilePanel === "performance") {
-      setMobileSidebarOpen(false);
-      closeMemoryPanel();
-      setShowPerformancePanel(true);
       closeDownloadPanel();
       return;
     }
@@ -212,13 +197,11 @@ function ChatLayoutContent({
     if (mobilePanel === "downloads") {
       setMobileSidebarOpen(false);
       closeMemoryPanel();
-      setShowPerformancePanel(false);
       return;
     }
 
     setMobileSidebarOpen(false);
     closeMemoryPanel();
-    setShowPerformancePanel(false);
     closeDownloadPanel();
   }, [
     closeDownloadPanel,
@@ -259,19 +242,6 @@ function ChatLayoutContent({
   useEffect(() => {
     if (
       isMobile &&
-      previousPerformanceOpenRef.current &&
-      !showPerformancePanel &&
-      mobilePanel === "performance"
-    ) {
-      mobileController.closePanel("performance");
-    }
-
-    previousPerformanceOpenRef.current = showPerformancePanel;
-  }, [isMobile, mobileController, mobilePanel, showPerformancePanel]);
-
-  useEffect(() => {
-    if (
-      isMobile &&
       previousDownloadOpenRef.current &&
       !isDownloadPanelOpen &&
       mobilePanel === "downloads"
@@ -288,14 +258,6 @@ function ChatLayoutContent({
       return;
     }
     toggleMemoryPanel();
-  };
-
-  const handlePerformanceClick = () => {
-    if (isMobile) {
-      mobileController.togglePanel("performance");
-      return;
-    }
-    setShowPerformancePanel((current) => !current);
   };
 
   const handleSidebarClick = () => {
@@ -336,19 +298,8 @@ function ChatLayoutContent({
         }
         rightActions={
           <>
-            <StatusIndicator />
+            <PerformanceButton />
             <DownloadManager />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePerformanceClick}
-              aria-label={
-                showPerformancePanel ? "Hide performance panel" : "Show performance panel"
-              }
-              aria-pressed={showPerformancePanel}
-            >
-              <Activity className="h-4 w-4" />
-            </Button>
             {activeConversationId ? <ChatTopbarMenu conversationId={activeConversationId} /> : null}
           </>
         }
@@ -356,11 +307,6 @@ function ChatLayoutContent({
 
       <main className="relative z-10 flex-1 overflow-hidden">{children}</main>
 
-      {showPerformancePanel && (
-        <div className="absolute top-16 right-4 z-40">
-          <PerformancePanel onClose={() => setShowPerformancePanel(false)} />
-        </div>
-      )}
       <MemoryPanel open={isMemoryPanelOpen} onClose={closeMemoryPanel} />
     </SidebarInset>
   );

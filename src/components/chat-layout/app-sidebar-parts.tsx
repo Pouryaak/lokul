@@ -231,7 +231,7 @@ export function NewChatItem({
   onClick: () => void;
   isCollapsed: boolean;
 }) {
-  const shortcut = `${getModifierKey()}N`;
+  const shortcut = `${getModifierKey()}M`;
 
   return (
     <SidebarButton
