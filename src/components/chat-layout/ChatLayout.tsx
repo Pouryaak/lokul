@@ -9,7 +9,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Activity, PanelLeft } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { SidebarInset, SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/Button";
@@ -23,6 +23,7 @@ import { DownloadManager } from "@/components/model/DownloadManager";
 import { MemoryHeaderPill } from "@/components/memory/MemoryHeaderPill";
 import { MemoryPanel } from "@/components/memory/MemoryPanel";
 import { useMemory } from "@/hooks/useMemory";
+import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts";
 import { useConversationModelStore } from "@/store/conversationModelStore";
 import { useMemoryStore } from "@/store/memoryStore";
 
@@ -111,8 +112,10 @@ function ChatLayoutContent({
   className,
 }: Pick<ChatLayoutProps, "children" | "className">) {
   const { id: activeConversationId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { count } = useMemory();
   const [showPerformancePanel, setShowPerformancePanel] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("none");
   const mobileController = useMemo(() => createMobilePanelController(setMobilePanel), []);
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
@@ -126,6 +129,25 @@ function ChatLayoutContent({
   const previousMemoryOpenRef = useRef(isMemoryPanelOpen);
   const previousPerformanceOpenRef = useRef(showPerformancePanel);
   const previousDownloadOpenRef = useRef(isDownloadPanelOpen);
+
+  // Global keyboard shortcuts
+  useGlobalShortcuts({
+    onSearch: () => setSearchOpen(true),
+    onNewChat: () => navigate("/chat"),
+    onEscape: () => {
+      // Close overlays in priority order: search > memory panel > performance panel > downloads
+      if (searchOpen) {
+        setSearchOpen(false);
+      } else if (isMemoryPanelOpen) {
+        closeMemoryPanel();
+      } else if (showPerformancePanel) {
+        setShowPerformancePanel(false);
+      }
+    },
+    searchOpen,
+    dialogOpen: isMemoryPanelOpen,
+    sheetOpen: showPerformancePanel || isDownloadPanelOpen,
+  });
 
   const setMobileSidebarOpen = useCallback(
     (nextOpen: boolean) => {
