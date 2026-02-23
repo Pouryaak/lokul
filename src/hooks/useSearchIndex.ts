@@ -12,8 +12,8 @@ import {
   searchConversations as searchIndex,
   clearSearchIndex,
   isIndexInitialized,
+  type SearchResult,
 } from "@/lib/search/search-index";
-import type { SearchResult } from "@/lib/search/search-index";
 
 const DEBOUNCE_MS = 300;
 

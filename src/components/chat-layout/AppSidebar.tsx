@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -20,9 +20,11 @@ import {
   EmptyState,
   LoadingState,
   NewChatItem,
+  SearchButton,
   SettingsButton,
   SidebarLogo,
 } from "./app-sidebar-parts";
+import { SearchCommand } from "./SearchCommand";
 
 interface AppSidebarProps {
   onNewChat?: () => void;
@@ -67,6 +69,7 @@ interface ConversationSectionProps {
   isLoading: boolean;
   currentConversationId?: string;
   onNewChat: () => void;
+  onSearch: () => void;
   onConversationClick: (id: string) => void;
   onRename: (id: string, newTitle: string) => Promise<void>;
 }
@@ -84,11 +87,13 @@ function ConversationSection({
   isLoading,
   currentConversationId,
   onNewChat,
+  onSearch,
   onConversationClick,
   onRename,
 }: ConversationSectionProps) {
   return (
     <SidebarContent className="lokul-dark-scrollbar gap-4 px-2 py-4">
+      <SearchButton onClick={onSearch} isCollapsed={isCollapsed} />
       <NewChatItem onClick={onNewChat} isCollapsed={isCollapsed} />
       {!isCollapsed && <p className="px-3 text-xs font-medium text-gray-400">Conversations</p>}
 
@@ -127,6 +132,7 @@ export function AppSidebar({
   const { id: currentConversationId } = useParams<{ id: string }>();
   const { conversations, isLoading } = useConversations();
   const { renameConversation } = useConversationActions();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const handleNewChat = useCallback(() => {
     onNewChat?.();
@@ -134,6 +140,10 @@ export function AppSidebar({
       setOpenMobile(false);
     }
   }, [isMobile, onNewChat, setOpenMobile]);
+
+  const handleSearchClick = useCallback(() => {
+    setIsSearchOpen(true);
+  }, []);
 
   const handleConversationClick = useCallback(
     (id: string) => {
@@ -152,31 +162,36 @@ export function AppSidebar({
   );
 
   return (
-    <Sidebar
-      variant="inset"
-      collapsible="icon"
-      className={cn(
-        "[&_[data-sidebar=sidebar]]:!bg-[var(--chat-sidebar-bg)] [&_[data-slot=sidebar-container]]:!bg-[var(--chat-sidebar-bg)] [&_[data-slot=sidebar-inner]]:overflow-hidden [&_[data-slot=sidebar-inner]]:rounded-xl [&_[data-slot=sidebar-inner]]:border-[var(--chat-border-soft)] [&_[data-slot=sidebar-inner]]:!bg-[var(--chat-sidebar-bg)]",
-        className
-      )}
-    >
-      <div className="flex h-full w-full flex-col">
-        <SidebarHeaderContent isCollapsed={isCollapsed} />
+    <>
+      <Sidebar
+        variant="inset"
+        collapsible="icon"
+        className={cn(
+          "[&_[data-sidebar=sidebar]]:!bg-[var(--chat-sidebar-bg)] [&_[data-slot=sidebar-container]]:!bg-[var(--chat-sidebar-bg)] [&_[data-slot=sidebar-inner]]:overflow-hidden [&_[data-slot=sidebar-inner]]:rounded-xl [&_[data-slot=sidebar-inner]]:border-[var(--chat-border-soft)] [&_[data-slot=sidebar-inner]]:!bg-[var(--chat-sidebar-bg)]",
+          className
+        )}
+      >
+        <div className="flex h-full w-full flex-col">
+          <SidebarHeaderContent isCollapsed={isCollapsed} />
 
-        <ConversationSection
-          conversations={conversations}
-          isCollapsed={isCollapsed}
-          isLoading={isLoading}
-          currentConversationId={currentConversationId}
-          onNewChat={handleNewChat}
-          onConversationClick={handleConversationClick}
-          onRename={renameConversation}
-        />
+          <ConversationSection
+            conversations={conversations}
+            isCollapsed={isCollapsed}
+            isLoading={isLoading}
+            currentConversationId={currentConversationId}
+            onNewChat={handleNewChat}
+            onSearch={handleSearchClick}
+            onConversationClick={handleConversationClick}
+            onRename={renameConversation}
+          />
 
-        <SidebarFooter className="px-2">
-          <SettingsButton onClick={onSettingsClick || (() => {})} isCollapsed={isCollapsed} />
-        </SidebarFooter>
-      </div>
-    </Sidebar>
+          <SidebarFooter className="px-2">
+            <SettingsButton onClick={onSettingsClick || (() => {})} isCollapsed={isCollapsed} />
+          </SidebarFooter>
+        </div>
+      </Sidebar>
+
+      <SearchCommand open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+    </>
   );
 }
