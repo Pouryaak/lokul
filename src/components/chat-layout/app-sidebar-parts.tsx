@@ -1,8 +1,9 @@
 import { Plus, Settings, MessageSquare, Loader2 } from "lucide-react";
-import { memo, type ReactNode } from "react";
+import { memo, useState, useRef, useEffect, type ReactNode, type KeyboardEvent } from "react";
 import { cn } from "@/lib/utils";
 import type { Conversation } from "@/types/index";
 import { formatRelativeTime } from "./sidebar-time";
+import { ConversationItemMenu } from "./ConversationItemMenu";
 
 export function SidebarLogo({ className }: { className?: string }) {
   return (
@@ -52,6 +53,7 @@ interface ConversationItemProps {
   isActive: boolean;
   isCollapsed: boolean;
   onClick: () => void;
+  onRename: (id: string, newTitle: string) => Promise<void>;
 }
 
 export const ConversationItem = memo(function ConversationItem({
@@ -59,7 +61,54 @@ export const ConversationItem = memo(function ConversationItem({
   isActive,
   onClick,
   isCollapsed,
+  onRename,
 }: ConversationItemProps) {
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [renameValue, setRenameValue] = useState(conversation.title);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Focus input when entering rename mode
+  useEffect(() => {
+    if (isRenaming && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isRenaming]);
+
+  // Reset rename value when conversation changes
+  useEffect(() => {
+    if (!isRenaming) {
+      setRenameValue(conversation.title);
+    }
+  }, [conversation.title, isRenaming]);
+
+  const handleRenameClick = () => {
+    setIsRenaming(true);
+  };
+
+  const handleRenameSubmit = async () => {
+    const trimmedValue = renameValue.trim();
+    if (trimmedValue && trimmedValue !== conversation.title) {
+      await onRename(conversation.id, trimmedValue);
+    }
+    setIsRenaming(false);
+  };
+
+  const handleRenameCancel = () => {
+    setRenameValue(conversation.title);
+    setIsRenaming(false);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      void handleRenameSubmit();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      handleRenameCancel();
+    }
+  };
+
   if (isCollapsed) {
     return (
       <button
@@ -78,23 +127,42 @@ export const ConversationItem = memo(function ConversationItem({
   }
 
   return (
-    <button
-      onClick={onClick}
+    <div
       className={cn(
-        "flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-colors",
+        "group flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-colors",
         isActive ? "bg-primary/18 text-white" : "text-gray-300 hover:bg-white/5 hover:text-white"
       )}
     >
-      <MessageSquare
-        className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-gray-500")}
-      />
-      <div className="min-w-0 flex-1 text-left">
-        <p className="truncate text-sm font-medium" title={conversation.title}>
-          {conversation.title}
-        </p>
-        <p className="text-xs text-gray-500">{formatRelativeTime(conversation.updatedAt)}</p>
-      </div>
-    </button>
+      <button onClick={onClick} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+        <MessageSquare
+          className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-gray-500")}
+        />
+        <div className="min-w-0 flex-1">
+          {isRenaming ? (
+            <input
+              ref={inputRef}
+              type="text"
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              onBlur={() => void handleRenameSubmit()}
+              onKeyDown={handleKeyDown}
+              className="ring-primary/50 focus:ring-primary w-full rounded bg-white/10 px-1 py-0.5 text-sm font-medium text-white ring-1 outline-none focus:ring-2"
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <>
+              <p className="truncate text-sm font-medium" title={conversation.title}>
+                {conversation.title}
+              </p>
+              <p className="text-xs text-gray-500">{formatRelativeTime(conversation.updatedAt)}</p>
+            </>
+          )}
+        </div>
+      </button>
+      {!isRenaming && (
+        <ConversationItemMenu conversation={conversation} onRename={handleRenameClick} />
+      )}
+    </div>
   );
 });
 

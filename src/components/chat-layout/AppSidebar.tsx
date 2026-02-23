@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useConversations } from "@/hooks/useConversations";
+import { useConversationActions } from "@/hooks/useConversationActions";
 import type { Conversation } from "@/types/index";
 import {
   ConversationItem,
@@ -67,6 +68,7 @@ interface ConversationSectionProps {
   currentConversationId?: string;
   onNewChat: () => void;
   onConversationClick: (id: string) => void;
+  onRename: (id: string, newTitle: string) => Promise<void>;
 }
 
 const CONVERSATION_LAYOUT_TRANSITION = {
@@ -83,6 +85,7 @@ function ConversationSection({
   currentConversationId,
   onNewChat,
   onConversationClick,
+  onRename,
 }: ConversationSectionProps) {
   return (
     <SidebarContent className="lokul-dark-scrollbar gap-4 px-2 py-4">
@@ -102,6 +105,7 @@ function ConversationSection({
                 isActive={conversation.id === currentConversationId}
                 onClick={() => onConversationClick(conversation.id)}
                 isCollapsed={isCollapsed}
+                onRename={onRename}
               />
             </motion.div>
           ))}
@@ -122,6 +126,7 @@ export function AppSidebar({
   const navigate = useNavigate();
   const { id: currentConversationId } = useParams<{ id: string }>();
   const { conversations, isLoading } = useConversations();
+  const { renameConversation } = useConversationActions();
 
   const handleNewChat = useCallback(() => {
     onNewChat?.();
@@ -165,6 +170,7 @@ export function AppSidebar({
           currentConversationId={currentConversationId}
           onNewChat={handleNewChat}
           onConversationClick={handleConversationClick}
+          onRename={renameConversation}
         />
 
         <SidebarFooter className="px-2">
