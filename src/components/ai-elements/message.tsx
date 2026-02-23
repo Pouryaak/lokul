@@ -36,8 +36,8 @@ export const MessageContent = ({ children, className, ...props }: MessageContent
   <div
     className={cn(
       "is-user:dark flex w-fit max-w-full min-w-0 flex-col gap-2 overflow-hidden text-sm",
-      "group-[.is-user]:ml-auto group-[.is-user]:rounded-2xl group-[.is-user]:border group-[.is-user]:border-[#ff8c5a]/30 group-[.is-user]:bg-[#2a1d17] group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-user]:text-[#ffe7db]",
-      "group-[.is-assistant]:rounded-2xl group-[.is-assistant]:border group-[.is-assistant]:border-white/10 group-[.is-assistant]:bg-[#1f1f1f] group-[.is-assistant]:px-4 group-[.is-assistant]:py-3 group-[.is-assistant]:text-[#ece7e2]",
+      "group-[.is-user]:ml-auto group-[.is-user]:rounded-2xl group-[.is-user]:border group-[.is-user]:border-[var(--chat-user-bubble-border)] group-[.is-user]:bg-[var(--chat-user-bubble-bg)] group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-user]:text-[var(--chat-user-bubble-text)]",
+      "group-[.is-assistant]:rounded-2xl group-[.is-assistant]:border group-[.is-assistant]:border-[var(--chat-assistant-bubble-border)] group-[.is-assistant]:bg-[var(--chat-assistant-bubble-bg)] group-[.is-assistant]:px-4 group-[.is-assistant]:py-3 group-[.is-assistant]:text-[var(--chat-assistant-bubble-text)]",
       className
     )}
     {...props}

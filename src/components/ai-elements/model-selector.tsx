@@ -11,19 +11,12 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils/index";
 
 export type ModelSelectorProps = ComponentProps<typeof Dialog>;
 
-export const ModelSelector = (props: ModelSelectorProps) => (
-  <Dialog {...props} />
-);
+export const ModelSelector = (props: ModelSelectorProps) => <Dialog {...props} />;
 
 export type ModelSelectorTriggerProps = ComponentProps<typeof DialogTrigger>;
 
@@ -44,13 +37,14 @@ export const ModelSelectorContent = ({
   <DialogContent
     aria-describedby={undefined}
     className={cn(
-      "outline! border-none! p-0 outline-border! outline-solid!",
+      "border border-[var(--chat-border-subtle)] bg-[var(--chat-input-bg)] p-0 text-[var(--chat-text-secondary)] shadow-2xl",
+      "outline outline-1 outline-[var(--chat-border-soft)]",
       className
     )}
     {...props}
   >
     <DialogTitle className="sr-only">{title}</DialogTitle>
-    <Command className="**:data-[slot=command-input-wrapper]:h-auto">
+    <Command className="bg-transparent text-[var(--chat-text-secondary)] **:data-[slot=command-input-wrapper]:h-auto [&_[data-slot=command-input-wrapper]]:border-[var(--chat-border-muted)]">
       {children}
     </Command>
   </DialogContent>
@@ -64,35 +58,47 @@ export const ModelSelectorDialog = (props: ModelSelectorDialogProps) => (
 
 export type ModelSelectorInputProps = ComponentProps<typeof CommandInput>;
 
-export const ModelSelectorInput = ({
-  className,
-  ...props
-}: ModelSelectorInputProps) => (
-  <CommandInput className={cn("h-auto py-3.5", className)} {...props} />
+export const ModelSelectorInput = ({ className, ...props }: ModelSelectorInputProps) => (
+  <CommandInput
+    className={cn(
+      "h-auto py-3.5 text-[var(--chat-text-primary)] placeholder:text-[var(--chat-text-muted)]",
+      className
+    )}
+    {...props}
+  />
 );
 
 export type ModelSelectorListProps = ComponentProps<typeof CommandList>;
 
-export const ModelSelectorList = (props: ModelSelectorListProps) => (
-  <CommandList {...props} />
+export const ModelSelectorList = ({ className, ...props }: ModelSelectorListProps) => (
+  <CommandList className={cn("lokul-dark-scrollbar", className)} {...props} />
 );
 
 export type ModelSelectorEmptyProps = ComponentProps<typeof CommandEmpty>;
 
-export const ModelSelectorEmpty = (props: ModelSelectorEmptyProps) => (
-  <CommandEmpty {...props} />
+export const ModelSelectorEmpty = ({ className, ...props }: ModelSelectorEmptyProps) => (
+  <CommandEmpty className={cn("text-[var(--chat-text-muted)]", className)} {...props} />
 );
 
 export type ModelSelectorGroupProps = ComponentProps<typeof CommandGroup>;
 
-export const ModelSelectorGroup = (props: ModelSelectorGroupProps) => (
-  <CommandGroup {...props} />
+export const ModelSelectorGroup = ({ className, ...props }: ModelSelectorGroupProps) => (
+  <CommandGroup
+    className={cn("[&_[cmdk-group-heading]]:text-[var(--chat-text-muted)]", className)}
+    {...props}
+  />
 );
 
 export type ModelSelectorItemProps = ComponentProps<typeof CommandItem>;
 
-export const ModelSelectorItem = (props: ModelSelectorItemProps) => (
-  <CommandItem {...props} />
+export const ModelSelectorItem = ({ className, ...props }: ModelSelectorItemProps) => (
+  <CommandItem
+    className={cn(
+      "rounded-lg px-2.5 py-2.5 text-[var(--chat-text-secondary)] data-[selected=true]:bg-white/8 data-[selected=true]:text-[var(--chat-text-primary)]",
+      className
+    )}
+    {...props}
+  />
 );
 
 export type ModelSelectorShortcutProps = ComponentProps<typeof CommandShortcut>;
@@ -101,18 +107,13 @@ export const ModelSelectorShortcut = (props: ModelSelectorShortcutProps) => (
   <CommandShortcut {...props} />
 );
 
-export type ModelSelectorSeparatorProps = ComponentProps<
-  typeof CommandSeparator
->;
+export type ModelSelectorSeparatorProps = ComponentProps<typeof CommandSeparator>;
 
 export const ModelSelectorSeparator = (props: ModelSelectorSeparatorProps) => (
   <CommandSeparator {...props} />
 );
 
-export type ModelSelectorLogoProps = Omit<
-  ComponentProps<"img">,
-  "src" | "alt"
-> & {
+export type ModelSelectorLogoProps = Omit<ComponentProps<"img">, "src" | "alt"> & {
   provider:
     | "moonshotai-cn"
     | "lucidquery"
@@ -174,11 +175,7 @@ export type ModelSelectorLogoProps = Omit<
     | (string & {});
 };
 
-export const ModelSelectorLogo = ({
-  provider,
-  className,
-  ...props
-}: ModelSelectorLogoProps) => (
+export const ModelSelectorLogo = ({ provider, className, ...props }: ModelSelectorLogoProps) => (
   <img
     {...props}
     alt={`${provider} logo`}
@@ -191,13 +188,10 @@ export const ModelSelectorLogo = ({
 
 export type ModelSelectorLogoGroupProps = ComponentProps<"div">;
 
-export const ModelSelectorLogoGroup = ({
-  className,
-  ...props
-}: ModelSelectorLogoGroupProps) => (
+export const ModelSelectorLogoGroup = ({ className, ...props }: ModelSelectorLogoGroupProps) => (
   <div
     className={cn(
-      "flex shrink-0 items-center -space-x-1 [&>img]:rounded-full [&>img]:bg-background [&>img]:p-px [&>img]:ring-1 dark:[&>img]:bg-foreground",
+      "[&>img]:bg-background dark:[&>img]:bg-foreground flex shrink-0 items-center -space-x-1 [&>img]:rounded-full [&>img]:p-px [&>img]:ring-1",
       className
     )}
     {...props}
@@ -206,9 +200,6 @@ export const ModelSelectorLogoGroup = ({
 
 export type ModelSelectorNameProps = ComponentProps<"span">;
 
-export const ModelSelectorName = ({
-  className,
-  ...props
-}: ModelSelectorNameProps) => (
+export const ModelSelectorName = ({ className, ...props }: ModelSelectorNameProps) => (
   <span className={cn("flex-1 truncate text-left", className)} {...props} />
 );

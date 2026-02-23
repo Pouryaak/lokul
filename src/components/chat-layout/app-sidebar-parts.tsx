@@ -8,7 +8,7 @@ export function SidebarLogo({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex items-center justify-center rounded-lg bg-gradient-to-br from-[#FF6B35] to-[#FF8C5A]",
+        "from-primary flex items-center justify-center rounded-lg bg-gradient-to-br to-orange-400",
         className
       )}
     >
@@ -74,7 +74,7 @@ export const ConversationItem = memo(function ConversationItem({
         className={cn(
           "flex w-full items-center justify-center rounded-lg p-2 transition-colors",
           isActive
-            ? "bg-[#FF6B35]/20 text-[#FF6B35]"
+            ? "bg-primary/20 text-primary"
             : "text-gray-400 hover:bg-white/5 hover:text-gray-200"
         )}
         title={conversation.title}
@@ -89,11 +89,11 @@ export const ConversationItem = memo(function ConversationItem({
       onClick={onClick}
       className={cn(
         "flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-colors",
-        isActive ? "bg-[#FF6B35]/18 text-white" : "text-gray-300 hover:bg-white/5 hover:text-white"
+        isActive ? "bg-primary/18 text-white" : "text-gray-300 hover:bg-white/5 hover:text-white"
       )}
     >
       <MessageSquare
-        className={cn("h-4 w-4 shrink-0", isActive ? "text-[#FF8C5A]" : "text-gray-500")}
+        className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-gray-500")}
       />
       <div className="min-w-0 flex-1 text-left">
         <p className="truncate text-sm font-medium" title={conversation.title}>

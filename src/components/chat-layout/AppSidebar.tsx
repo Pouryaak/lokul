@@ -152,7 +152,7 @@ export function AppSidebar({
       variant="inset"
       collapsible="icon"
       className={cn(
-        "[&_[data-sidebar=sidebar]]:!bg-[#141414] [&_[data-slot=sidebar-container]]:!bg-[#141414] [&_[data-slot=sidebar-inner]]:overflow-hidden [&_[data-slot=sidebar-inner]]:rounded-xl [&_[data-slot=sidebar-inner]]:border-white/8 [&_[data-slot=sidebar-inner]]:!bg-[#141414]",
+        "[&_[data-sidebar=sidebar]]:!bg-[var(--chat-sidebar-bg)] [&_[data-slot=sidebar-container]]:!bg-[var(--chat-sidebar-bg)] [&_[data-slot=sidebar-inner]]:overflow-hidden [&_[data-slot=sidebar-inner]]:rounded-xl [&_[data-slot=sidebar-inner]]:border-[var(--chat-border-soft)] [&_[data-slot=sidebar-inner]]:!bg-[var(--chat-sidebar-bg)]",
         className
       )}
     >

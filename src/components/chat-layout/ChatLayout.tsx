@@ -82,9 +82,9 @@ export function ChatLayout({
       defaultOpen={defaultOpen}
       open={open}
       onOpenChange={onOpenChange}
-      className="relative h-screen overflow-hidden bg-[#0f0f0f]"
+      className="relative h-screen overflow-hidden bg-[var(--chat-shell-bg)]"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[#0f0f0f]" />
+      <div className="pointer-events-none absolute inset-0 bg-[var(--chat-shell-bg)]" />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.14] mix-blend-screen"
         style={{
@@ -282,7 +282,11 @@ function ChatLayoutContent({
 
   return (
     <SidebarInset
-      className={cn("relative flex flex-col overflow-hidden", "bg-[#171717]", className)}
+      className={cn(
+        "relative flex flex-col overflow-hidden",
+        "bg-[var(--chat-surface-bg)]",
+        className
+      )}
     >
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-screen"

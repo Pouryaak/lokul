@@ -53,14 +53,14 @@ function PendingInputSection({
   return (
     <div className="pointer-events-none fixed right-0 bottom-0 left-0 px-4 pb-4 md:left-[calc(var(--sidebar-width,0px)+0px)]">
       <div className="pointer-events-auto mx-auto max-w-3xl">
-        <div className="rounded-2xl border border-white/12 bg-[#141414]/95 shadow-[0_14px_38px_rgba(0,0,0,0.38)] backdrop-blur">
+        <div className="rounded-2xl bg-[var(--chat-input-bg)] shadow-[0_14px_38px_rgba(0,0,0,0.38)]">
           <textarea
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Message Lokul..."
             rows={1}
-            className="max-h-[200px] min-h-[60px] w-full resize-none bg-transparent px-4 pt-3 pb-2 text-[15px] text-[#f2ede8] outline-none placeholder:text-gray-500"
+            className="max-h-[200px] min-h-[60px] w-full resize-none bg-transparent px-4 pt-3 pb-2 text-[15px] text-[var(--chat-text-primary)] outline-none placeholder:text-[var(--chat-text-muted)]"
             style={{ fontFamily: '"DM Sans", sans-serif' }}
           />
           <div className="flex items-center justify-between gap-2 px-3 pb-3">
@@ -87,7 +87,7 @@ function PendingInputSection({
           </div>
         </div>
         <p
-          className="mt-2 text-center text-xs text-gray-500"
+          className="mt-2 text-center text-xs text-[var(--chat-text-subtle)]"
           style={{ fontFamily: '"DM Sans", sans-serif' }}
         >
           Lokul runs entirely in your browser. Your data never leaves your device.
