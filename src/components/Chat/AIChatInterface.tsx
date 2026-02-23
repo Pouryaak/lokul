@@ -172,7 +172,7 @@ export function AIChatInterface({
   }, [conversationId, initialMessages?.length]);
 
   return (
-    <div className={cn("relative flex h-full flex-col overflow-hidden bg-[#FFF8F0]", className)}>
+    <div className={cn("relative flex h-full flex-col overflow-hidden bg-transparent", className)}>
       {activeError && (
         <ErrorBanner
           message={activeError}

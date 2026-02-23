@@ -85,12 +85,12 @@ export function NewChatWelcome({ onSuggestionClick }: NewChatWelcomeProps) {
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           <h1
-            className="mb-2 text-3xl leading-tight text-[#1a1a1a] md:text-4xl"
+            className="mb-2 text-3xl leading-tight text-[#f2ede8] md:text-4xl"
             style={{ fontFamily: '"Instrument Serif", serif', fontStyle: "italic" }}
           >
             {greeting}
           </h1>
-          <p className="text-[15px] text-gray-500" style={{ fontFamily: '"DM Sans", sans-serif' }}>
+          <p className="text-[15px] text-gray-400" style={{ fontFamily: '"DM Sans", sans-serif' }}>
             {subtext}
           </p>
         </motion.div>
@@ -106,20 +106,20 @@ export function NewChatWelcome({ onSuggestionClick }: NewChatWelcomeProps) {
             <button
               key={suggestion.title}
               onClick={() => onSuggestionClick?.(suggestion.prompt)}
-              className="group flex items-center gap-3 rounded-xl border border-gray-200/80 bg-white px-4 py-3 text-left transition-all hover:border-[#ff6b35]/30 hover:bg-[#fff8f0] hover:shadow-sm"
+              className="group flex items-center gap-3 rounded-xl border border-white/10 bg-[#1a1a1a] px-4 py-3 text-left transition-all hover:border-[#ff6b35]/35 hover:bg-[#1f1f1f] hover:shadow-sm"
               style={{
                 transitionDelay: `${index * 50}ms`,
                 fontFamily: '"DM Sans", sans-serif',
               }}
             >
-              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#fff4ed] text-[#ff6b35] transition-colors group-hover:bg-[#ff6b35] group-hover:text-white">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#2a1b14] text-[#ff8c5a] transition-colors group-hover:bg-[#ff6b35] group-hover:text-white">
                 <suggestion.icon className="h-4 w-4" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-[#1a1a1a]">{suggestion.title}</p>
-                <p className="truncate text-xs text-gray-400">{suggestion.prompt}</p>
+                <p className="text-sm font-medium text-[#f2ede8]">{suggestion.title}</p>
+                <p className="truncate text-xs text-gray-500">{suggestion.prompt}</p>
               </div>
-              <Sparkles className="h-4 w-4 flex-shrink-0 text-gray-200 opacity-0 transition-opacity group-hover:opacity-100" />
+              <Sparkles className="h-4 w-4 flex-shrink-0 text-gray-600 opacity-0 transition-opacity group-hover:opacity-100" />
             </button>
           ))}
         </motion.div>
@@ -129,7 +129,7 @@ export function NewChatWelcome({ onSuggestionClick }: NewChatWelcomeProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-8 text-xs text-gray-400"
+          className="mt-8 text-xs text-gray-500"
           style={{ fontFamily: '"DM Sans", sans-serif' }}
         >
           Your conversations are stored locally and never leave your device.

@@ -21,18 +21,18 @@ export function EmptyState({ isCollapsed }: { isCollapsed: boolean }) {
   if (isCollapsed) {
     return (
       <div className="flex justify-center py-4">
-        <MessageSquare className="h-5 w-5 text-gray-400" />
+        <MessageSquare className="h-5 w-5 text-gray-500" />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col items-center justify-center px-4 py-8 text-center">
-      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-        <MessageSquare className="h-6 w-6 text-gray-400" />
+      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
+        <MessageSquare className="h-6 w-6 text-gray-500" />
       </div>
-      <p className="text-sm text-gray-500">No conversations yet</p>
-      <p className="mt-1 text-xs text-gray-400">Start a new chat to begin</p>
+      <p className="text-sm text-gray-300">No conversations yet</p>
+      <p className="mt-1 text-xs text-gray-500">Start a new chat to begin</p>
     </div>
   );
 }
@@ -41,15 +41,15 @@ export function LoadingState({ isCollapsed }: { isCollapsed: boolean }) {
   if (isCollapsed) {
     return (
       <div className="flex justify-center py-4">
-        <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+        <Loader2 className="h-5 w-5 animate-spin text-gray-500" />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col items-center justify-center px-4 py-8">
-      <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-      <p className="mt-2 text-sm text-gray-500">Loading conversations...</p>
+      <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
+      <p className="mt-2 text-sm text-gray-400">Loading conversations...</p>
     </div>
   );
 }
@@ -73,7 +73,9 @@ export const ConversationItem = memo(function ConversationItem({
         onClick={onClick}
         className={cn(
           "flex w-full items-center justify-center rounded-lg p-2 transition-colors",
-          isActive ? "bg-[#FF6B35]/10 text-[#FF6B35]" : "text-gray-500 hover:bg-gray-100"
+          isActive
+            ? "bg-[#FF6B35]/20 text-[#FF6B35]"
+            : "text-gray-400 hover:bg-white/5 hover:text-gray-200"
         )}
         title={conversation.title}
       >
@@ -87,11 +89,11 @@ export const ConversationItem = memo(function ConversationItem({
       onClick={onClick}
       className={cn(
         "flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-colors",
-        isActive ? "bg-[#FF6B35]/10 text-gray-900" : "text-gray-700 hover:bg-gray-100"
+        isActive ? "bg-[#FF6B35]/18 text-white" : "text-gray-300 hover:bg-white/5 hover:text-white"
       )}
     >
       <MessageSquare
-        className={cn("h-4 w-4 shrink-0", isActive ? "text-[#FF6B35]" : "text-gray-500")}
+        className={cn("h-4 w-4 shrink-0", isActive ? "text-[#FF8C5A]" : "text-gray-500")}
       />
       <div className="min-w-0 flex-1 text-left">
         <p className="truncate text-sm font-medium" title={conversation.title}>
@@ -115,7 +117,7 @@ function SidebarButton({ isCollapsed, label, icon, onClick }: SidebarButtonProps
     return (
       <button
         onClick={onClick}
-        className="flex w-full items-center justify-center rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+        className="flex w-full items-center justify-center rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
         title={label}
       >
         {icon}
@@ -126,7 +128,7 @@ function SidebarButton({ isCollapsed, label, icon, onClick }: SidebarButtonProps
   return (
     <button
       onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
+      className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-white/5 hover:text-white"
     >
       {icon}
       <span>{label}</span>
@@ -146,7 +148,7 @@ export function NewChatItem({
       isCollapsed={isCollapsed}
       label="New chat"
       onClick={onClick}
-      icon={<Plus className="h-4 w-4 text-gray-500" />}
+      icon={<Plus className="h-4 w-4 text-gray-400" />}
     />
   );
 }

@@ -112,6 +112,30 @@
   .animate-hero-ember-breathe {
     animation: hero-ember-breathe 6s ease-in-out infinite alternate;
   }
+
+  .lokul-dark-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+
+  .lokul-dark-scrollbar::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .lokul-dark-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .lokul-dark-scrollbar::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    background-color: rgba(255, 255, 255, 0.18);
+    background-clip: content-box;
+  }
+
+  .lokul-dark-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 140, 90, 0.5);
+  }
 }
 
 @keyframes hero-ember-breathe {

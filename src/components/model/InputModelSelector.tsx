@@ -151,12 +151,12 @@ export function InputModelSelector({ conversationId }: InputModelSelectorProps) 
         <ModelSelectorTrigger asChild>
           <button
             type="button"
-            className="flex h-8 min-w-[200px] items-center gap-2 rounded-md border border-[#FFE2D5] bg-[#FFF4ED] px-3 text-xs font-medium text-[#3F342D]"
+            className="flex h-8 min-w-[200px] items-center gap-2 rounded-md border border-white/15 bg-[#1b1b1b] px-3 text-xs font-medium text-[#e9e4df]"
             aria-label="Choose model"
           >
-            <Cpu className="h-3.5 w-3.5 text-[#E06232]" />
+            <Cpu className="h-3.5 w-3.5 text-[#ff8c5a]" />
             <span className="truncate">{triggerModel?.name ?? "Choose model"}</span>
-            <ChevronDown className="ml-auto h-3.5 w-3.5 text-[#A7674D]" />
+            <ChevronDown className="ml-auto h-3.5 w-3.5 text-gray-400" />
           </button>
         </ModelSelectorTrigger>
 

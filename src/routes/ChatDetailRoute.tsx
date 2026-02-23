@@ -18,19 +18,19 @@ import type { Conversation } from "@/types/index";
 
 function LoadingState({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <div className="flex h-full flex-col items-center justify-center bg-[#FFF8F0]">
+    <div className="flex h-full flex-col items-center justify-center bg-transparent">
       <Loader2 className="h-8 w-8 animate-spin text-[#FF6B35]" />
-      <p className="mt-4 text-gray-600">{title}</p>
-      {subtitle ? <p className="mt-2 text-sm text-gray-500">{subtitle}</p> : null}
+      <p className="mt-4 text-gray-100">{title}</p>
+      {subtitle ? <p className="mt-2 text-sm text-gray-400">{subtitle}</p> : null}
     </div>
   );
 }
 
 function ErrorState({ title, description }: { title: string; description: string }) {
   return (
-    <div className="flex h-full flex-col items-center justify-center bg-[#FFF8F0]">
-      <p className="text-red-500">{title}</p>
-      <p className="mt-2 text-sm text-gray-600">{description}</p>
+    <div className="flex h-full flex-col items-center justify-center bg-transparent">
+      <p className="text-red-400">{title}</p>
+      <p className="mt-2 text-sm text-gray-300">{description}</p>
       <button
         onClick={() => window.location.reload()}
         className="mt-4 rounded-lg bg-[#FF6B35] px-4 py-2 text-white hover:bg-[#FF6B35]/90"

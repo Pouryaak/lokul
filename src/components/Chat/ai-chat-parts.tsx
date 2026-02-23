@@ -65,13 +65,13 @@ function MessageAvatar({ role }: { role: "user" | "assistant" | "system" }) {
     <div
       className={cn(
         "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-        role === "user" ? "bg-[#FF6B35]" : "bg-gray-200"
+        role === "user" ? "bg-[#FF6B35]" : "border border-white/15 bg-[#262626]"
       )}
     >
       {role === "user" ? (
         <User className="h-4 w-4 text-white" />
       ) : (
-        <Bot className="h-4 w-4 text-gray-600" />
+        <Bot className="h-4 w-4 text-gray-200" />
       )}
     </div>
   );
@@ -151,9 +151,12 @@ export function InputSection({
       <div className="pointer-events-auto mx-auto max-w-3xl">
         <PromptInput
           onSubmit={onSubmit}
-          className="rounded-2xl border border-gray-200 bg-white shadow-sm"
+          className="rounded-2xl border border-white/12 bg-[#141414]/95 text-[#f2ede8] shadow-[0_14px_38px_rgba(0,0,0,0.38)] backdrop-blur"
         >
-          <PromptInputTextarea placeholder="Message Lokul..." className="min-h-[60px]" />
+          <PromptInputTextarea
+            placeholder="Message Lokul..."
+            className="min-h-[60px] text-[15px] text-[#f2ede8] placeholder:text-gray-500"
+          />
           <PromptInputFooter>
             <PromptInputTools>
               <InputModelSelector conversationId={conversationId} />

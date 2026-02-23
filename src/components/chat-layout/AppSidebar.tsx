@@ -42,7 +42,7 @@ function SidebarHeaderContent({ isCollapsed }: { isCollapsed: boolean }) {
     >
       <a href="/" className="flex items-center gap-2">
         <SidebarLogo className="h-8 w-8" />
-        {!isCollapsed && <span className="font-semibold text-gray-900">Lokul</span>}
+        {!isCollapsed && <span className="font-semibold text-white">Lokul</span>}
       </a>
 
       <motion.div
@@ -86,9 +86,9 @@ function ConversationSection({
   onConversationClick,
 }: ConversationSectionProps) {
   return (
-    <SidebarContent className="gap-4 px-2 py-4">
+    <SidebarContent className="lokul-dark-scrollbar gap-4 px-2 py-4">
       <NewChatItem onClick={onNewChat} isCollapsed={isCollapsed} />
-      {!isCollapsed && <p className="px-3 text-xs font-medium text-gray-500">Conversations</p>}
+      {!isCollapsed && <p className="px-3 text-xs font-medium text-gray-400">Conversations</p>}
 
       {isLoading ? (
         <LoadingState isCollapsed={isCollapsed} />
@@ -148,21 +148,30 @@ export function AppSidebar({
   );
 
   return (
-    <Sidebar variant="inset" collapsible="icon" className={className}>
-      <SidebarHeaderContent isCollapsed={isCollapsed} />
+    <Sidebar
+      variant="inset"
+      collapsible="icon"
+      className={cn(
+        "[&_[data-sidebar=sidebar]]:!bg-[#141414] [&_[data-slot=sidebar-container]]:!bg-[#141414] [&_[data-slot=sidebar-inner]]:overflow-hidden [&_[data-slot=sidebar-inner]]:rounded-xl [&_[data-slot=sidebar-inner]]:border-white/8 [&_[data-slot=sidebar-inner]]:!bg-[#141414]",
+        className
+      )}
+    >
+      <div className="flex h-full w-full flex-col">
+        <SidebarHeaderContent isCollapsed={isCollapsed} />
 
-      <ConversationSection
-        conversations={conversations}
-        isCollapsed={isCollapsed}
-        isLoading={isLoading}
-        currentConversationId={currentConversationId}
-        onNewChat={handleNewChat}
-        onConversationClick={handleConversationClick}
-      />
+        <ConversationSection
+          conversations={conversations}
+          isCollapsed={isCollapsed}
+          isLoading={isLoading}
+          currentConversationId={currentConversationId}
+          onNewChat={handleNewChat}
+          onConversationClick={handleConversationClick}
+        />
 
-      <SidebarFooter className="px-2">
-        <SettingsButton onClick={onSettingsClick || (() => {})} isCollapsed={isCollapsed} />
-      </SidebarFooter>
+        <SidebarFooter className="px-2">
+          <SettingsButton onClick={onSettingsClick || (() => {})} isCollapsed={isCollapsed} />
+        </SidebarFooter>
+      </div>
     </Sidebar>
   );
 }

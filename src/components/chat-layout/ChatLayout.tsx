@@ -26,6 +26,9 @@ import { useMemory } from "@/hooks/useMemory";
 import { useConversationModelStore } from "@/store/conversationModelStore";
 import { useMemoryStore } from "@/store/memoryStore";
 
+const CHAT_NOISE_BACKGROUND_IMAGE =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.9'/%3E%3C/svg%3E\")";
+
 /**
  * Props for the ChatLayout component
  */
@@ -79,8 +82,18 @@ export function ChatLayout({
       defaultOpen={defaultOpen}
       open={open}
       onOpenChange={onOpenChange}
-      className="h-screen"
+      className="relative h-screen overflow-hidden bg-[#0f0f0f]"
     >
+      <div className="pointer-events-none absolute inset-0 bg-[#0f0f0f]" />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.14] mix-blend-screen"
+        style={{
+          backgroundImage: CHAT_NOISE_BACKGROUND_IMAGE,
+          backgroundRepeat: "repeat",
+          backgroundSize: "220px 220px",
+        }}
+      />
+
       {/* App Sidebar with conversation list */}
       <AppSidebar
         onNewChat={onNewChat}
@@ -269,13 +282,18 @@ function ChatLayoutContent({
 
   return (
     <SidebarInset
-      className={cn(
-        "relative flex flex-col overflow-hidden",
-        "bg-[#FFF8F0]", // Lokul warm cream background
-        className
-      )}
+      className={cn("relative flex flex-col overflow-hidden", "bg-[#171717]", className)}
     >
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-screen"
+        style={{
+          backgroundImage: CHAT_NOISE_BACKGROUND_IMAGE,
+          backgroundRepeat: "repeat",
+          backgroundSize: "220px 220px",
+        }}
+      />
       <CompactChatHeader
+        className="relative z-10"
         leftActions={
           <>
             <Button
@@ -310,7 +328,7 @@ function ChatLayoutContent({
         }
       />
 
-      <main className="flex-1 overflow-hidden">{children}</main>
+      <main className="relative z-10 flex-1 overflow-hidden">{children}</main>
 
       {showPerformancePanel && (
         <div className="absolute top-16 right-4 z-40">
