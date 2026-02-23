@@ -1,9 +1,27 @@
-import { Plus, Settings, MessageSquare, Loader2 } from "lucide-react";
+import { Plus, Settings, MessageSquare, Loader2, Search } from "lucide-react";
 import { memo, useState, useRef, useEffect, type ReactNode, type KeyboardEvent } from "react";
 import { cn } from "@/lib/utils";
 import type { Conversation } from "@/types/index";
 import { formatRelativeTime } from "./sidebar-time";
 import { ConversationItemMenu } from "./ConversationItemMenu";
+import { Kbd } from "@/components/ui/kbd";
+
+/**
+ * Detect if the user is on macOS
+ * Used to show ⌘ vs Ctrl for keyboard shortcuts
+ */
+function isMacOS(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+}
+
+/**
+ * Get the modifier key symbol for the current platform
+ * Returns ⌘ on macOS, Ctrl on other platforms
+ */
+function getModifierKey(): string {
+  return isMacOS() ? "⌘" : "Ctrl";
+}
 
 export function SidebarLogo({ className }: { className?: string }) {
   return (
@@ -171,9 +189,10 @@ interface SidebarButtonProps {
   label: string;
   icon: ReactNode;
   onClick: () => void;
+  shortcut?: string;
 }
 
-function SidebarButton({ isCollapsed, label, icon, onClick }: SidebarButtonProps) {
+function SidebarButton({ isCollapsed, label, icon, onClick, shortcut }: SidebarButtonProps) {
   if (isCollapsed) {
     return (
       <button
@@ -192,7 +211,8 @@ function SidebarButton({ isCollapsed, label, icon, onClick }: SidebarButtonProps
       className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-white/5 hover:text-white"
     >
       {icon}
-      <span>{label}</span>
+      <span className="flex-1 text-left">{label}</span>
+      {shortcut && <Kbd className="px-1.5 py-0.5 text-[9px]">{shortcut}</Kbd>}
     </button>
   );
 }
@@ -204,12 +224,35 @@ export function NewChatItem({
   onClick: () => void;
   isCollapsed: boolean;
 }) {
+  const shortcut = `${getModifierKey()}N`;
+
   return (
     <SidebarButton
       isCollapsed={isCollapsed}
       label="New chat"
       onClick={onClick}
       icon={<Plus className="h-4 w-4 text-gray-400" />}
+      shortcut={shortcut}
+    />
+  );
+}
+
+export function SearchButton({
+  onClick,
+  isCollapsed,
+}: {
+  onClick: () => void;
+  isCollapsed: boolean;
+}) {
+  const shortcut = `${getModifierKey()}K`;
+
+  return (
+    <SidebarButton
+      isCollapsed={isCollapsed}
+      label="Search"
+      onClick={onClick}
+      icon={<Search className="h-4 w-4 text-gray-400" />}
+      shortcut={shortcut}
     />
   );
 }
