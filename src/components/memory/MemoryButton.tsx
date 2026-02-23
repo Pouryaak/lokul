@@ -11,12 +11,21 @@ import {
   Briefcase,
   Check,
   MoreHorizontal,
+  SlidersHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useMemory } from "@/hooks/useMemory";
 import { useMemoryStore } from "@/store/memoryStore";
@@ -379,6 +388,7 @@ function MemorySheet({ open, onClose }: { open: boolean; onClose: () => void }) 
   const [editingFact, setEditingFact] = useState<MemoryFact | null>(null);
   const [editValue, setEditValue] = useState("");
   const [editCategory, setEditCategory] = useState<MemoryCategory>("preference");
+  const [newFactValue, setNewFactValue] = useState("");
 
   const filteredFacts = useMemo(() => {
     if (selectedCategory === "all") return facts;
@@ -403,9 +413,11 @@ function MemorySheet({ open, onClose }: { open: boolean; onClose: () => void }) 
     onClose();
   };
 
-  const handleAddFact = (factText: string) => {
+  const handleAddFact = () => {
+    const trimmed = newFactValue.trim();
+    if (!trimmed) return;
     addFact({
-      fact: factText,
+      fact: trimmed,
       category: "preference",
       confidence: 0.6,
       mentionCount: 1,
@@ -414,6 +426,7 @@ function MemorySheet({ open, onClose }: { open: boolean; onClose: () => void }) 
       lastSeenConversationId: "manual",
       pinned: false,
     });
+    setNewFactValue("");
   };
 
   const handleStartEdit = (fact: MemoryFact) => {
@@ -456,24 +469,25 @@ function MemorySheet({ open, onClose }: { open: boolean; onClose: () => void }) 
                 <Brain className="h-5 w-5 text-[#FF6B35]" />
               </div>
               <div>
-                <SheetTitle className="text-base font-semibold text-[var(--chat-text-primary)]">
-                  Memory
-                </SheetTitle>
+                <div className="flex items-center gap-2">
+                  <SheetTitle className="text-base font-semibold text-[var(--chat-text-primary)]">
+                    Memory
+                  </SheetTitle>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleManageMode}
+                    className={cn(
+                      "h-6 w-6 transition-colors",
+                      isManageMode && "bg-[#FF6B35]/10 text-[#FF6B35] hover:bg-[#FF6B35]/20"
+                    )}
+                    aria-label={isManageMode ? "Done managing" : "Manage memories"}
+                  >
+                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
                 <p className="text-[11px] text-muted-foreground">{count} facts remembered</p>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleManageMode}
-                className={cn(
-                  "h-8 text-xs transition-colors",
-                  isManageMode && "bg-[#FF6B35]/10 text-[#FF6B35] hover:bg-[#FF6B35]/20"
-                )}
-              >
-                {isManageMode ? "Done" : "Manage"}
-              </Button>
             </div>
           </div>
 
@@ -581,21 +595,21 @@ function MemorySheet({ open, onClose }: { open: boolean; onClose: () => void }) 
               <input
                 type="text"
                 placeholder="Add a new memory..."
+                value={newFactValue}
+                onChange={(e) => setNewFactValue(e.target.value)}
                 className="flex-1 rounded-xl bg-muted/50 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-[#FF6B35]/50"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    const target = e.target as HTMLInputElement;
-                    if (target.value.trim()) {
-                      handleAddFact(target.value.trim());
-                      target.value = "";
-                    }
+                    handleAddFact();
                   }
                 }}
               />
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground"
+                onClick={handleAddFact}
+                disabled={!newFactValue.trim()}
+                className="h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground disabled:opacity-50"
               >
                 <Plus className="h-4 w-4" />
               </Button>
@@ -686,74 +700,67 @@ function MemorySheet({ open, onClose }: { open: boolean; onClose: () => void }) 
         </div>
       </SheetContent>
 
-      {/* Edit Dialog */}
-      <AnimatePresence>
-        {editingFact && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-            onClick={() => setEditingFact(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl border border-[var(--chat-border-soft)] bg-[var(--chat-surface-bg)] p-5 shadow-2xl"
+      {/* Edit Dialog - Using shadcn Dialog for proper portal behavior */}
+      <Dialog open={editingFact !== null} onOpenChange={(open) => !open && setEditingFact(null)}>
+        <DialogContent className="border-[var(--chat-border-soft)] bg-[var(--chat-surface-bg)] p-0 sm:max-w-md">
+          <DialogHeader className="border-b border-[var(--chat-border-subtle)] px-5 py-4">
+            <DialogTitle className="text-sm font-semibold text-[var(--chat-text-primary)]">
+              Edit Memory
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Update the memory content and category
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 px-5 py-4">
+            <Textarea
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              rows={3}
+              className="resize-none border-[var(--chat-border-subtle)] bg-muted/30 text-sm"
+              placeholder="Memory content..."
+            />
+            <div className="flex gap-2">
+              {(["project", "preference", "identity"] as const).map((cat) => {
+                const Icon = categoryConfig[cat].icon;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setEditCategory(cat)}
+                    className={cn(
+                      "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-medium transition-all",
+                      editCategory === cat
+                        ? cn(categoryConfig[cat].bg, categoryConfig[cat].color, "ring-1 ring-current/30")
+                        : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                    )}
+                  >
+                    <Icon className="h-3 w-3" />
+                    {categoryConfig[cat].label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <DialogFooter className="border-t border-[var(--chat-border-subtle)] px-5 py-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setEditingFact(null)}
+              className="text-muted-foreground hover:text-foreground"
             >
-              <h3 className="text-sm font-semibold text-[var(--chat-text-primary)]">Edit Memory</h3>
-              <div className="mt-4 space-y-3">
-                <Textarea
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  rows={3}
-                  className="resize-none border-[var(--chat-border-subtle)] bg-muted/30 text-sm"
-                />
-                <div className="flex gap-2">
-                  {(["project", "preference", "identity"] as const).map((cat) => {
-                    const Icon = categoryConfig[cat].icon;
-                    return (
-                      <button
-                        key={cat}
-                        onClick={() => setEditCategory(cat)}
-                        className={cn(
-                          "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-medium transition-all",
-                          editCategory === cat
-                            ? cn(categoryConfig[cat].bg, categoryConfig[cat].color, "ring-1 ring-current/30")
-                            : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                        )}
-                      >
-                        <Icon className="h-3 w-3" />
-                        {categoryConfig[cat].label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-end gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setEditingFact(null)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleSaveEdit}
-                  className="bg-[#FF6B35] text-white hover:bg-[#FF6B35]/90"
-                >
-                  <Check className="mr-1 h-3.5 w-3.5" />
-                  Save
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleSaveEdit}
+              disabled={!editValue.trim()}
+              className="bg-[#FF6B35] text-white hover:bg-[#FF6B35]/90 disabled:opacity-50"
+            >
+              <Check className="mr-1 h-3.5 w-3.5" />
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Sheet>
   );
 }

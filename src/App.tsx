@@ -151,7 +151,18 @@ export function App() {
   return (
     <BrowserRouter>
       <AppContent />
-      <Toaster position="top-center" richColors />
+      <Toaster
+        position="top-center"
+        richColors
+        theme="dark"
+        toastOptions={{
+          style: {
+            background: 'var(--chat-surface-bg)',
+            border: '1px solid var(--chat-border-soft)',
+            color: 'var(--chat-text-primary)',
+          },
+        }}
+      />
     </BrowserRouter>
   );
 }
