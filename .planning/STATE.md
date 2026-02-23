@@ -79,7 +79,7 @@ Phase 7: UI/UX Polish [Not started]
 
 ## v1.1 Target Features
 
-- [ ] Full-text search across all conversations (MiniSearch 7.2.0)
+- [x] Full-text search across all conversations (MiniSearch 7.2.0)
 - [x] Chat deletion via 3-dot menu with confirmation (existing DropdownMenu + ConfirmDialog)
 - [ ] UI/UX polish (buttons, panels, colors, consistency)
 - [x] Keyboard shortcuts (react-hotkeys-hook 5.2.4)
@@ -102,6 +102,11 @@ Phase 7: UI/UX Polish [Not started]
 | 2026-02-23 | Override browser Cmd+K/Cmd+N defaults | Consistent app experience, preventDefault on shortcuts |
 | 2026-02-23 | Platform-aware keyboard hints | Show ⌘ on macOS, Ctrl on other platforms for better UX |
 | 2026-02-23 | Priority-based overlay closing | Escape closes search > memory > performance panels in order |
+| 2026-02-23 | MiniSearch fuzzy=0.2 with prefix matching | Flexible matching that catches typos while maintaining relevance |
+| 2026-02-23 | Title boost 2x in search | Matches in conversation title ranked higher than content matches |
+| 2026-02-23 | Lazy search index initialization | Build index on first search, not app load, for faster startup |
+| 2026-02-23 | 300ms search debounce | Reduce unnecessary queries while maintaining responsive feel |
+| 2026-02-23 | Extended CommandPalette for controlled query | Enable external MiniSearch integration while keeping UI consistent |
 
 ### Decisions Made (v1.0)
 
@@ -134,17 +139,17 @@ All critical technical debt from v1.0 was addressed in Phase 2.2:
 
 ## Session Continuity
 
-**Last Action:** Completed Plan 06-03 (Global Keyboard Shortcuts)
+**Last Action:** Completed Plan 06-01 (Search Index & Command Palette)
 **Next Action:** Phase 6 complete! Run `/gsd-plan-phase 7` to plan UI/UX Polish
 
 **Key Files:**
 - `.planning/PROJECT.md` - Project definition (v1.1 active)
 - `.planning/REQUIREMENTS.md` - v1.1 requirements (16 mapped)
 - `.planning/ROADMAP.md` - Phase structure (updated with Phase 6, 7)
-- `.planning/phases/06-search-delete-shortcuts-v1-1/06-03-SUMMARY.md` - Plan 03 summary
+- `.planning/phases/06-search-delete-shortcuts-v1-1/06-01-SUMMARY.md` - Plan 01 summary (Search)
 
 ---
 
 *Milestone v1.1 started: 2026-02-23*
 *Roadmap created: 2026-02-23*
-*Plan 06-03 completed: 2026-02-23*
+*Phase 6 completed: 2026-02-23*
