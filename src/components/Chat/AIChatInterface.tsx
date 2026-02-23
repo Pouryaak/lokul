@@ -1,5 +1,8 @@
 /**
  * AIChatInterface Component - Main chat container using AI SDK UI
+ *
+ * Handles conversation display, message input, and AI responses.
+ * Supports pendingMessage to send a first message once after navigation.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -19,12 +22,15 @@ import { cn } from "@/lib/utils";
 import { ConversationMessages, EmptyChatState, ErrorBanner, InputSection } from "./ai-chat-parts";
 import { useConversationHistoryWindow } from "./conversation-history-window";
 
+const consumedPendingMessageKeys = new Set<string>();
+
 interface AIChatInterfaceProps {
   conversationId: string;
   modelId: string;
   initialMessages?: UIMessage[];
   className?: string;
   startAtBottom?: boolean;
+  pendingMessage?: string | null;
 }
 
 function isExtractableRole(role: string): role is MessageRole {
@@ -38,11 +44,7 @@ function getMessageText(message: UIMessage): string {
     .join("\n")
     .trim();
 
-  if (textFromParts.length > 0) {
-    return textFromParts;
-  }
-
-  return "";
+  return textFromParts.length > 0 ? textFromParts : "";
 }
 
 function useErrorToasts(error: Error | undefined, onResetDismissed: () => void): void {
@@ -57,9 +59,7 @@ function useErrorToasts(error: Error | undefined, onResetDismissed: () => void):
 function useSubmitHandler(sendMessage: (message: { text: string }) => Promise<void>) {
   return useCallback(
     async (message: { text: string }) => {
-      if (!message.text.trim()) {
-        return;
-      }
+      if (!message.text.trim()) return;
 
       try {
         await sendMessage({ text: message.text });
@@ -74,12 +74,48 @@ function useSubmitHandler(sendMessage: (message: { text: string }) => Promise<vo
   );
 }
 
+/**
+ * Sends a pending message exactly once after chat is ready.
+ * Uses content-based deduplication to prevent re-sending on React Strict Mode remounts.
+ */
+function usePendingMessage(
+  conversationId: string,
+  pendingMessage: string | null | undefined,
+  sendMessage: (message: { text: string }) => Promise<void>,
+  status: string
+) {
+  useEffect(() => {
+    const trimmedMessage = pendingMessage?.trim();
+    if (!trimmedMessage) return;
+    if (status !== "ready") return;
+
+    const pendingKey = `${conversationId}:${trimmedMessage}`;
+    if (consumedPendingMessageKeys.has(pendingKey)) return;
+    consumedPendingMessageKeys.add(pendingKey);
+
+    const send = async () => {
+      try {
+        await sendMessage({ text: trimmedMessage });
+      } catch (err) {
+        consumedPendingMessageKeys.delete(pendingKey);
+        toast.error("Failed to send message");
+        if (import.meta.env.DEV) {
+          console.error("Pending message send error:", err);
+        }
+      }
+    };
+
+    void send();
+  }, [conversationId, pendingMessage, sendMessage, status]);
+}
+
 export function AIChatInterface({
   conversationId,
   modelId,
   initialMessages,
   className,
   startAtBottom = true,
+  pendingMessage,
 }: AIChatInterfaceProps) {
   const {
     messages,
@@ -95,7 +131,9 @@ export function AIChatInterface({
     modelId,
     initialMessages,
   });
+
   const [dismissedError, setDismissedError] = useState<string | null>(null);
+
   const extractionMessages = useMemo<Message[]>(() => {
     return messages
       .filter((message) => isExtractableRole(message.role))
@@ -110,6 +148,7 @@ export function AIChatInterface({
   }, [conversationId, messages]);
 
   useMemoryExtraction(conversationId, extractionMessages, status);
+  usePendingMessage(conversationId, pendingMessage, sendMessage, status);
 
   const hasMessages = messages.length > 0;
   const chatErrorMessage =
@@ -118,7 +157,7 @@ export function AIChatInterface({
     persistenceRecovery?.message && dismissedError !== persistenceRecovery.message
       ? persistenceRecovery.message
       : null;
-  const activeError = chatErrorMessage ?? persistenceErrorMessage;
+  const activeError = chatErrorMessage || persistenceErrorMessage;
 
   const handleSubmit = useSubmitHandler(sendMessage);
 
@@ -129,7 +168,7 @@ export function AIChatInterface({
   useErrorToasts(error, resetDismissedError);
 
   const historyResetKey = useMemo(() => {
-    return `${conversationId}:${initialMessages?.length ?? 0}`;
+    return `${conversationId}:${initialMessages?.length || 0}`;
   }, [conversationId, initialMessages?.length]);
 
   return (
@@ -138,7 +177,7 @@ export function AIChatInterface({
         <ErrorBanner
           message={activeError}
           fallbackMessage={persistenceRecovery?.fallbackMessage}
-          onRetry={persistenceRecovery?.canRetry ? () => void retryPersistence() : undefined}
+          onRetry={persistenceRecovery?.canRetry ? () => retryPersistence() : undefined}
           onDismiss={() => {
             setDismissedError(activeError);
             if (persistenceRecovery?.canDismiss) {
@@ -211,9 +250,7 @@ function ConversationHistoryContent({
       return;
     }
 
-    if (hasAttemptedTopLoadRef.current) {
-      return;
-    }
+    if (hasAttemptedTopLoadRef.current) return;
 
     const loaded = maybeLoadOlder({
       scrollTop,

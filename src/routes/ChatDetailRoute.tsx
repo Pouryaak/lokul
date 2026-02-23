@@ -1,14 +1,14 @@
 /**
- * ChatDetailRoute Component - Handles /chat/:id.
+ * ChatDetailRoute Component - Handles /chat/:id
  *
- * Loads an existing conversation and waits for model readiness before
- * rendering the AI chat interface.
+ * Loads an existing conversation and renders the AI chat interface.
+ * Supports a pending first message passed via navigation state.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import type { UIMessage } from "@ai-sdk/react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { AIChatInterface } from "@/components/Chat/AIChatInterface";
 import { createConversation, getConversation } from "@/lib/storage/conversations";
 import { SMART_MODEL } from "@/lib/ai/models";
@@ -52,11 +52,21 @@ function toInitialMessages(conversation: Conversation): UIMessage[] {
     }));
 }
 
+interface ChatDetailLocationState {
+  pendingMessage?: string;
+}
+
 export function ChatDetailRoute() {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [isLoadingConversation, setIsLoadingConversation] = useState(true);
   const [conversationError, setConversationError] = useState<string | null>(null);
+  const locationState = location.state as ChatDetailLocationState | null;
+  const pendingMessage = useMemo(() => {
+    const text = locationState?.pendingMessage?.trim();
+    return text && text.length > 0 ? text : null;
+  }, [locationState?.pendingMessage]);
 
   const currentModel = useModelStore((state) => state.currentModel);
   const isModelLoading = useModelStore((state) => state.isLoading);
@@ -106,9 +116,8 @@ export function ChatDetailRoute() {
   }
 
   if (conversationError || !conversation) {
-    return (
-      <ErrorState title="Conversation unavailable" description={conversationError ?? "Not found"} />
-    );
+    const errorDesc = conversationError || "Not found";
+    return <ErrorState title="Conversation unavailable" description={errorDesc} />;
   }
 
   if (isModelLoading && !currentModel) {
@@ -138,6 +147,7 @@ export function ChatDetailRoute() {
       conversationId={conversation.id}
       modelId={runtimeModelId}
       initialMessages={toInitialMessages(conversation)}
+      pendingMessage={pendingMessage}
       startAtBottom
     />
   );

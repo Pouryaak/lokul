@@ -111,9 +111,6 @@ function ChatLayoutWrapper() {
 }
 
 function AppContent() {
-  const navigate = useNavigate();
-  const hasCompletedSetup = useSettingsStore(selectHasCompletedSetup);
-  const isSettingsLoading = useSettingsStore((state) => state.isLoading);
   const loadSettings = useSettingsStore((state) => state.loadSettings);
   const defaultModelId = useSettingsStore(selectDefaultModel);
   const currentModel = useModelStore((state) => state.currentModel);
@@ -124,17 +121,6 @@ function AppContent() {
   useEffect(() => {
     loadSettings();
   }, [loadSettings]);
-
-  useEffect(() => {
-    if (
-      !isSettingsLoading &&
-      hasCompletedSetup &&
-      currentModel &&
-      window.location.pathname === "/"
-    ) {
-      navigate("/chat");
-    }
-  }, [hasCompletedSetup, currentModel, isSettingsLoading, navigate]);
 
   useEffect(() => {
     const isChatRoute = window.location.pathname.startsWith("/chat");
