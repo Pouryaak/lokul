@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import {
   ChevronRight,
   Clock,
@@ -12,7 +13,6 @@ import {
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
 
 export interface CommandItem {
   id: string;
@@ -521,9 +521,6 @@ export function CommandPalette({
                       back
                     </span>
                   )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="opacity-50">JolyUI Command</span>
                 </div>
               </div>
             </motion.div>

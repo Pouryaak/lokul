@@ -1,6 +1,5 @@
-import { useRef, type ChangeEvent } from "react";
-import { FileDown, FileUp, MoreHorizontal } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from "react";
+import { MoreVertical, Pencil, FileDown, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import {
   DropdownMenu,
@@ -9,44 +8,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  exportConversationJson,
-  exportConversationMarkdown,
-  exportConversationText,
-  importConversationJson,
-} from "@/lib/storage/conversation-transfer";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { EditTitleModal } from "@/components/Sidebar/EditTitleModal";
+import { useConversationActions } from "@/hooks/useConversationActions";
 import { getConversation } from "@/lib/storage/conversations";
 import type { Conversation } from "@/types/index";
 
 interface ChatTopbarMenuProps {
   conversationId: string;
-}
-
-function sanitizeFilenameSegment(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .slice(0, 48);
-}
-
-function buildFilename(conversation: Conversation, extension: string): string {
-  const title = sanitizeFilenameSegment(conversation.title);
-  const fallback = conversation.id.slice(0, 12).toLowerCase();
-  const base = title.length > 0 ? title : fallback;
-  return `${base}.${extension}`;
-}
-
-function downloadString(content: string, filename: string, mimeType: string): void {
-  const blob = new Blob([content], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(url);
 }
 
 async function getConversationOrThrow(conversationId: string): Promise<Conversation> {
@@ -58,115 +27,111 @@ async function getConversationOrThrow(conversationId: string): Promise<Conversat
 }
 
 export function ChatTopbarMenu({ conversationId }: ChatTopbarMenuProps) {
-  const importInputRef = useRef<HTMLInputElement | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showRenameModal, setShowRenameModal] = useState(false);
+  const [conversation, setConversation] = useState<Conversation | null>(null);
+  const {
+    deleteConversation,
+    renameConversation,
+    exportAsMarkdown,
+    exportAsJson,
+    exportAsText,
+    isDeleting,
+  } = useConversationActions();
 
-  const handleExport = async (
-    extension: "md" | "json" | "txt",
-    serializer: (conversation: Conversation) => string,
-    mimeType: string
-  ) => {
-    try {
-      const conversation = await getConversationOrThrow(conversationId);
-      const content = serializer(conversation);
-      downloadString(content, buildFilename(conversation, extension), mimeType);
-      toast.success(`Exported ${extension.toUpperCase()} backup`);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Export failed";
-      toast.error(message);
+  const loadConversation = async () => {
+    const conv = await getConversation(conversationId);
+    if (conv) {
+      setConversation(conv);
     }
   };
 
-  const handleImportClick = () => {
-    importInputRef.current?.click();
+  const handleRenameClick = async () => {
+    await loadConversation();
+    setShowRenameModal(true);
   };
 
-  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const [file] = Array.from(event.target.files ?? []);
-    event.target.value = "";
+  const handleRenameSave = async (newTitle: string) => {
+    await renameConversation(conversationId, newTitle);
+    setShowRenameModal(false);
+  };
 
-    if (!file) {
-      return;
-    }
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
 
-    try {
-      const fileText = await file.text();
-      const result = await importConversationJson(fileText, {
-        resolveConflict: () => {
-          const shouldReplace = window.confirm(
-            "A conversation with this ID already exists.\n\nPress OK to replace it, or Cancel to import as duplicate."
-          );
+  const handleConfirmDelete = () => {
+    void deleteConversation(conversationId);
+  };
 
-          return shouldReplace ? "replace" : "duplicate";
-        },
-      });
+  const handleExportMarkdown = () => {
+    void exportAsMarkdown(conversationId);
+  };
 
-      if (!result.ok) {
-        toast.error(result.message);
-        return;
-      }
+  const handleExportJson = () => {
+    void exportAsJson(conversationId);
+  };
 
-      if (result.resolution === "replaced") {
-        toast.success("Conversation replaced from backup");
-        return;
-      }
-
-      if (result.resolution === "duplicated") {
-        toast.success("Conversation imported as duplicate");
-        return;
-      }
-
-      toast.success("Conversation imported from backup");
-    } catch {
-      toast.error("Import failed. Please try again.");
-    }
+  const handleExportText = () => {
+    void exportAsText(conversationId);
   };
 
   return (
     <>
-      <input
-        ref={importInputRef}
-        type="file"
-        accept="application/json,.json"
-        className="hidden"
-        onChange={handleFileChange}
-      />
-
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" aria-label="Conversation transfer actions">
-            <MoreHorizontal className="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
+            aria-label="Conversation actions"
+          >
+            <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuItem
-            onClick={() =>
-              void handleExport("md", exportConversationMarkdown, "text/markdown;charset=utf-8")
-            }
-          >
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem onClick={handleRenameClick}>
+            <Pencil className="h-4 w-4" />
+            Rename
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleExportMarkdown}>
             <FileDown className="h-4 w-4" />
             Export as Markdown
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => void handleExport("json", exportConversationJson, "application/json")}
-          >
+          <DropdownMenuItem onClick={handleExportJson}>
             <FileDown className="h-4 w-4" />
             Export as JSON
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() =>
-              void handleExport("txt", exportConversationText, "text/plain;charset=utf-8")
-            }
-          >
+          <DropdownMenuItem onClick={handleExportText}>
             <FileDown className="h-4 w-4" />
             Export as Text
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleImportClick}>
-            <FileUp className="h-4 w-4" />
-            Import JSON backup
+          <DropdownMenuItem variant="destructive" onClick={handleDeleteClick}>
+            <Trash2 className="h-4 w-4" />
+            Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        title="Delete Conversation"
+        description="This conversation will be permanently removed. This action cannot be undone."
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={handleConfirmDelete}
+        loading={isDeleting}
+      />
+
+      <EditTitleModal
+        isOpen={showRenameModal}
+        onClose={() => setShowRenameModal(false)}
+        onSave={handleRenameSave}
+        currentTitle={conversation?.title ?? ""}
+      />
     </>
   );
 }

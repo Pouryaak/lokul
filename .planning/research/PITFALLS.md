@@ -327,5 +327,335 @@ Phase 1 (Core Infrastructure) — Architecture decision with significant impact.
 
 ---
 
+# Search Implementation Pitfalls (Subsequent Milestone)
+
+**Domain:** Browser-based full-text search for local-first AI chat
+**Researched:** February 23, 2026
+**Context:** Adding search to existing Dexie/IndexedDB-backed Lokul app
+**Confidence:** HIGH (official docs: MDN, web.dev, MiniSearch, Dexie; NN/G UX research)
+
+---
+
+## Critical Search Pitfalls
+
+### Pitfall S1: Search Blocking the Main Thread
+
+**What goes wrong:**
+Search runs synchronously on main thread, causing UI freezing. A simple `.filter()` with `.toLowerCase().includes()` over 10,000+ messages blocks for 100ms+, causing perceivable jank.
+
+**Why it happens:**
+Developers underestimate string operation costs across large datasets. Lokul may have years of conversation history.
+
+**Consequences:**
+- UI becomes unresponsive during search
+- Input feels laggy (typing delay)
+- "Page unresponsive" dialogs
+- Users abandon search thinking it's broken
+
+**Prevention:**
+- Use Web Worker for search indexing and querying (separate from AI worker)
+- For simpler cases, use `requestIdleCallback` to chunk work
+- MiniSearch is synchronous by default — wrap in Worker for large datasets
+- Profile with Chrome DevTools Performance tab during search
+
+**Warning signs:**
+- Main thread tasks > 50ms in DevTools
+- User reports of "laggy" search
+- Input latency > 16ms
+
+**Phase to address:** Search Core Implementation
+
+---
+
+### Pitfall S2: Loading Entire Dataset Into Memory
+
+**What goes wrong:**
+All conversations loaded into memory to build search index. Tab crashes on devices with large chat histories.
+
+**Why it happens:**
+In-memory search libraries (MiniSearch, Lunr) require all documents loaded. Developers load everything without pagination.
+
+**Consequences:**
+- Tab crashes with large histories
+- Out-of-memory on mobile
+- Slow app startup while building index
+- Browser memory pressure affects other tabs
+
+**Prevention:**
+- Lazy/partial indexing: index on demand or in chunks
+- Store pre-built index in IndexedDB, don't rebuild on every load
+- Use `navigator.deviceMemory` for low-memory device adaptation
+- Index only titles + recent messages for quick search; full search on demand
+
+**Warning signs:**
+- Heap > 500MB in Chrome DevTools Memory tab
+- "Aw, Snap!" crashes on mobile
+- `Performance.memory.usedJSHeapSize` approaching limits
+
+**Phase to address:** Search Core Implementation
+
+---
+
+### Pitfall S3: Search Index Out of Sync with Data
+
+**What goes wrong:**
+Search returns stale results after conversations are updated, deleted, or added. Users see deleted conversations or can't find new ones.
+
+**Why it happens:**
+IndexedDB and search index are separate. Updates happen to one but not the other, or race conditions cause inconsistent state.
+
+**Consequences:**
+- Users lose trust in search
+- "I know I typed that but search can't find it"
+- Confusing UX when clicking results leads to missing content
+
+**Prevention:**
+- Single source of truth: derive search index from IndexedDB
+- Event-driven sync: emit events on data changes, subscribe in search module
+- Periodic reconciliation: rebuild index to catch missed updates
+- Transactional: update storage and index together
+
+**Warning signs:**
+- Integration tests fail after data modification
+- New conversations not searchable immediately
+- Deleted items still appear in search
+
+**Phase to address:** Search Data Sync
+
+---
+
+### Pitfall S4: Not Debouncing Search Input
+
+**What goes wrong:**
+Search triggers on every keystroke. User types "hello" and 5 searches execute: "h", "he", "hel", "hell", "hello".
+
+**Why it happens:**
+`onChange` wired directly to search without debouncing, or debounce too short for expensive operations.
+
+**Consequences:**
+- Wasted CPU on intermediate queries
+- Race conditions: earlier query returns after later one
+- UI thrashing as results flicker
+- Poor mobile battery life
+
+**Prevention:**
+- Debounce search input (300ms is reasonable)
+- Cancel pending search when new input arrives
+- Use AbortController for in-flight searches
+- Consider "search on Enter" for complex queries
+
+**Warning signs:**
+- DevTools shows overlapping searches
+- Results flicker while typing
+- Performance degradation on slow devices
+
+**Phase to address:** Search UX Polish
+
+---
+
+### Pitfall S5: IndexedDB Quota Exceeded
+
+**What goes wrong:**
+Search index grows until quota exceeded. Writes fail silently. Users can't save new conversations.
+
+**Why it happens:**
+Search index size not monitored. Browser quotas vary unpredictably.
+
+**Consequences:**
+- Silent data loss
+- App becomes read-only
+- `QuotaExceededError` crashes
+- User frustration
+
+**Prevention:**
+- Monitor with `navigator.storage.estimate()`
+- Implement index size limits (prune old content)
+- Provide storage management UI
+- Fall back to simpler search when constrained
+- Test with large datasets
+
+**Warning signs:**
+- `QuotaExceededError` in console
+- Storage estimate > 80% used
+- Failed saves in production
+
+**Phase to address:** Search Core (storage strategy)
+
+---
+
+## Moderate Search Pitfalls
+
+### Pitfall S6: Poor Empty State Handling
+
+**What goes wrong:**
+No results shows blank screen or confusing error. No guidance on refining search.
+
+**Prevention:**
+- Clear "No results for '[query]'" message
+- Suggest alternatives: different keywords, check spelling
+- Typo tolerance: "Did you mean...?"
+- Link to clear search
+
+**Phase to address:** Search UX Polish
+
+---
+
+### Pitfall S7: Search Results Missing Context
+
+**What goes wrong:**
+Results show matched message but not conversation context. User sees "the thing is..." without knowing which conversation.
+
+**Prevention:**
+- Include conversation title, date in results
+- Highlight matched text
+- Show message position context
+- Consider surrounding messages for context
+
+**Phase to address:** Search Results UI
+
+---
+
+### Pitfall S8: No Search Result Ranking
+
+**What goes wrong:**
+Matches in arbitrary order. Old barely-relevant results appear before recent relevant ones.
+
+**Prevention:**
+- Use MiniSearch with built-in ranking
+- Boost recent conversations
+- Boost title over content matches
+- Consider frequently-accessed conversations
+
+**Phase to address:** Search Core (MiniSearch integration)
+
+---
+
+### Pitfall S9: Rebuilding Index on Every Load
+
+**What goes wrong:**
+Index rebuilt from scratch every app load. Startup increases linearly with conversation count.
+
+**Prevention:**
+- Persist index to IndexedDB
+- Incremental indexing for changes
+- Lazy load index on first search, not startup
+- Background indexing with progress
+
+**Phase to address:** Search Core (performance)
+
+---
+
+### Pitfall S10: Mobile Memory Not Considered
+
+**What goes wrong:**
+Works on desktop, crashes mobile. Mobile has stricter limits and may kill background tabs.
+
+**Prevention:**
+- Test on real devices with large datasets
+- Use `navigator.deviceMemory` for constraints
+- Graceful degradation on low memory
+- Limit index based on available memory
+
+**Phase to address:** Search Testing
+
+---
+
+## Search Technical Debt Patterns
+
+| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
+|----------|-------------------|----------------|-----------------|
+| `.filter()` search | Quick, no deps | Blocks thread, doesn't scale | < 100 messages, MVP only |
+| Rebuild index on load | No sync logic | Slow startup, wasted resources | Never for production |
+| Skip index persistence | Simpler arch | Can't scale, slow every launch | Prototype only |
+| No fuzzy matching | Simpler | Users miss typo results | Acceptable for exact-match |
+| Global search only | Simpler UI | Too many results | MVP OK, add scoping later |
+
+---
+
+## Search Integration Gotchas
+
+| Integration | Common Mistake | Correct Approach |
+|-------------|----------------|------------------|
+| Dexie conversations | Load all into memory | Stream/iterate, build incrementally |
+| Zustand stores | Search on every state change | Debounce, explicit user action |
+| WebLLM worker | Run search in same worker | Separate worker or chunked main thread |
+| React components | Search in render body | Search in effect/handler, state for results |
+| Conversation updates | Forget index update | Subscribe to changes, update index |
+| Delete operations | Remove DB not index | Transactional: delete from both |
+
+---
+
+## Search Performance Traps
+
+| Trap | Symptoms | Prevention | When It Breaks |
+|------|----------|------------|----------------|
+| Linear `.filter().includes()` | Slower as history grows | Use MiniSearch/inverted index | ~500+ messages |
+| Load all conversations | Memory warnings, crashes | Lazy load, pagination | ~1000+ messages |
+| Index in memory only | Slow cold start | Persist to IndexedDB | Always in production |
+| No result limiting | UI freezes on many results | Limit to 50-100, paginate | Any dataset with many matches |
+| No search cancellation | Old results overwrite new | AbortController | With debouncing/async |
+
+---
+
+## Search UX Pitfalls
+
+| Pitfall | User Impact | Better Approach |
+|---------|-------------|-----------------|
+| Hidden search box | Users don't know search exists | Prominent search, always accessible |
+| No keyboard shortcut | Power users frustrated | Cmd/Ctrl+K shortcut |
+| Results wrong order | Can't find relevant | Sort by relevance + recency |
+| No match highlighting | Hard to see why matched | Bold/highlight matched terms |
+| Clear loses query | Can't refine search | Keep query in input |
+| No scoped search | Too many results | "Search within conversation" |
+| Instant search with lag | Results after typing stops | Loading indicator, or Enter |
+| Long queries break | No results for pasted text | Truncate internally |
+
+---
+
+## Search "Looks Done But Isn't" Checklist
+
+- [ ] **Index Sync:** New conversations appear in search immediately
+- [ ] **Delete Sync:** Deleted conversations removed from search
+- [ ] **Edit Sync:** Edited messages show updated content
+- [ ] **Mobile Memory:** No crashes on low-memory devices
+- [ ] **Large Datasets:** Works with 1000+ conversations
+- [ ] **No Results:** Helpful message when nothing found
+- [ ] **Error Handling:** Graceful degradation on failure
+- [ ] **Keyboard Nav:** Arrow keys work in results
+- [ ] **Accessibility:** Screen reader announces results
+- [ ] **Offline:** Search works without network
+
+---
+
+## Search Pitfall-to-Phase Mapping
+
+| Pitfall | Prevention Phase | Verification |
+|---------|------------------|--------------|
+| Main thread blocking | Search Core | DevTools < 50ms tasks |
+| Memory exhaustion | Search Core | 1000+ conversations, no crash |
+| Index out of sync | Search Data Sync | Add/delete/update reflected |
+| No debouncing | Search UX Polish | Single search after typing |
+| Storage quota | Search Core | Graceful handling at limits |
+| Poor empty state | Search UX Polish | UX review passes |
+| Missing context | Search Results UI | Result relevance clear |
+| No ranking | Search Core (MiniSearch) | Recent/relevant first |
+| Rebuild on load | Search Core (persist) | Fast startup with large dataset |
+| Mobile memory | Search Testing | Real device, no crash |
+
+---
+
+## Search Sources
+
+- MDN Web Workers Guide (off-main-thread patterns)
+- web.dev IndexedDB Best Practices (storage, quota)
+- Dexie.js Documentation (Table.filter, performance)
+- MiniSearch Documentation (in-memory search, memory)
+- NN/G "Search: Visible and Simple" (UX principles)
+- MiniSearch README (memory-efficient browser search)
+
+---
+
 *Pitfalls research for: Lokul — Browser-based AI chat with WebLLM*
 *Researched: February 17, 2026*
+
+*Search pitfalls added: February 23, 2026 (subsequent milestone)*

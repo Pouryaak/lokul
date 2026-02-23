@@ -151,8 +151,8 @@ export function ConversationItem({
           "group flex w-full items-center gap-3 rounded-xl p-3 text-left transition-all duration-200",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35] focus-visible:ring-offset-2",
           isActive
-            ? "border-l-4 border-[#FF6B35] bg-orange-50"
-            : "border-l-4 border-transparent hover:bg-gray-100"
+            ? "border-l-4 border-[#FF6B35] bg-accent"
+            : "border-l-4 border-transparent hover:bg-muted"
         )}
         aria-current={isActive ? "true" : undefined}
       >
@@ -160,7 +160,7 @@ export function ConversationItem({
         <MessageSquare
           className={cn(
             "h-4 w-4 shrink-0",
-            isActive ? "text-[#FF6B35]" : "text-gray-500"
+            isActive ? "text-[#FF6B35]" : "text-muted-foreground"
           )}
         />
 
@@ -170,7 +170,7 @@ export function ConversationItem({
           <p
             className={cn(
               "truncate text-sm font-medium",
-              isActive ? "text-gray-900" : "text-gray-700"
+              isActive ? "text-foreground" : "text-foreground/80"
             )}
             title={conversation.title}
           >
@@ -178,7 +178,7 @@ export function ConversationItem({
           </p>
 
           {/* Relative timestamp */}
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             {formatRelativeTime(conversation.updatedAt)}
           </p>
         </div>
@@ -195,8 +195,8 @@ export function ConversationItem({
             onClick={handleEditClick}
             className={cn(
               "flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
-              "hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35]",
-              isActive ? "text-gray-600" : "text-gray-400"
+              "hover:bg-muted-foreground/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35]",
+              isActive ? "text-muted-foreground" : "text-muted-foreground/60"
             )}
             aria-label={`Edit title for "${conversation.title}"`}
             title="Edit title"
@@ -209,8 +209,8 @@ export function ConversationItem({
             onClick={handleDeleteClick}
             className={cn(
               "flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
-              "hover:bg-red-100 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400",
-              isActive ? "text-gray-600" : "text-gray-400"
+              "hover:bg-destructive/20 hover:text-destructive focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive",
+              isActive ? "text-muted-foreground" : "text-muted-foreground/60"
             )}
             aria-label={`Delete "${conversation.title}"`}
             title="Delete conversation"

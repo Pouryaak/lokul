@@ -33,18 +33,18 @@ export function EmptyState({ isCollapsed }: { isCollapsed: boolean }) {
   if (isCollapsed) {
     return (
       <div className="flex justify-center py-4">
-        <MessageSquare className="h-5 w-5 text-gray-500" />
+        <MessageSquare className="h-5 w-5 text-muted-foreground/60" />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col items-center justify-center px-4 py-8 text-center">
-      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
-        <MessageSquare className="h-6 w-6 text-gray-500" />
+      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+        <MessageSquare className="h-6 w-6 text-muted-foreground/60" />
       </div>
-      <p className="text-sm text-gray-300">No conversations yet</p>
-      <p className="mt-1 text-xs text-gray-500">Start a new chat to begin</p>
+      <p className="text-sm text-[var(--chat-text-secondary)]">No conversations yet</p>
+      <p className="mt-1 text-xs text-muted-foreground">Start a new chat to begin</p>
     </div>
   );
 }
@@ -53,15 +53,15 @@ export function LoadingState({ isCollapsed }: { isCollapsed: boolean }) {
   if (isCollapsed) {
     return (
       <div className="flex justify-center py-4">
-        <Loader2 className="h-5 w-5 animate-spin text-gray-500" />
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground/60" />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col items-center justify-center px-4 py-8">
-      <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
-      <p className="mt-2 text-sm text-gray-400">Loading conversations...</p>
+      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground/60" />
+      <p className="mt-2 text-sm text-muted-foreground">Loading conversations...</p>
     </div>
   );
 }
@@ -83,6 +83,7 @@ export const ConversationItem = memo(function ConversationItem({
 }: ConversationItemProps) {
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState(conversation.title);
+  const [isHovered, setIsHovered] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus input when entering rename mode
@@ -135,7 +136,7 @@ export const ConversationItem = memo(function ConversationItem({
           "flex w-full items-center justify-center rounded-lg p-2 transition-colors",
           isActive
             ? "bg-primary/20 text-primary"
-            : "text-gray-400 hover:bg-white/5 hover:text-gray-200"
+            : "text-muted-foreground hover:bg-accent hover:text-foreground"
         )}
         title={conversation.title}
       >
@@ -148,12 +149,14 @@ export const ConversationItem = memo(function ConversationItem({
     <div
       className={cn(
         "group flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-colors",
-        isActive ? "bg-primary/18 text-white" : "text-gray-300 hover:bg-white/5 hover:text-white"
+        isActive ? "bg-primary/18 text-foreground" : "text-[var(--chat-text-secondary)] hover:bg-accent hover:text-foreground"
       )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <button onClick={onClick} className="flex min-w-0 flex-1 items-center gap-3 text-left">
         <MessageSquare
-          className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-gray-500")}
+          className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-muted-foreground/60")}
         />
         <div className="min-w-0 flex-1">
           {isRenaming ? (
@@ -164,7 +167,7 @@ export const ConversationItem = memo(function ConversationItem({
               onChange={(e) => setRenameValue(e.target.value)}
               onBlur={() => void handleRenameSubmit()}
               onKeyDown={handleKeyDown}
-              className="ring-primary/50 focus:ring-primary w-full rounded bg-white/10 px-1 py-0.5 text-sm font-medium text-white ring-1 outline-none focus:ring-2"
+              className="ring-primary/50 focus:ring-primary w-full rounded bg-muted px-1 py-0.5 text-sm font-medium text-foreground ring-1 outline-none focus:ring-2"
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
@@ -172,13 +175,17 @@ export const ConversationItem = memo(function ConversationItem({
               <p className="truncate text-sm font-medium" title={conversation.title}>
                 {conversation.title}
               </p>
-              <p className="text-xs text-gray-500">{formatRelativeTime(conversation.updatedAt)}</p>
+              <p className="text-xs text-muted-foreground">{formatRelativeTime(conversation.updatedAt)}</p>
             </>
           )}
         </div>
       </button>
       {!isRenaming && (
-        <ConversationItemMenu conversation={conversation} onRename={handleRenameClick} />
+        <ConversationItemMenu
+          conversation={conversation}
+          onRename={handleRenameClick}
+          isVisible={isHovered || isActive}
+        />
       )}
     </div>
   );
@@ -197,7 +204,7 @@ function SidebarButton({ isCollapsed, label, icon, onClick, shortcut }: SidebarB
     return (
       <button
         onClick={onClick}
-        className="flex w-full items-center justify-center rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
+        className="flex w-full items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         title={label}
       >
         {icon}
@@ -208,7 +215,7 @@ function SidebarButton({ isCollapsed, label, icon, onClick, shortcut }: SidebarB
   return (
     <button
       onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-white/5 hover:text-white"
+      className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[var(--chat-text-secondary)] transition-colors hover:bg-accent hover:text-foreground"
     >
       {icon}
       <span className="flex-1 text-left">{label}</span>
@@ -231,7 +238,7 @@ export function NewChatItem({
       isCollapsed={isCollapsed}
       label="New chat"
       onClick={onClick}
-      icon={<Plus className="h-4 w-4 text-gray-400" />}
+      icon={<Plus className="h-4 w-4 text-muted-foreground/70" />}
       shortcut={shortcut}
     />
   );
@@ -251,7 +258,7 @@ export function SearchButton({
       isCollapsed={isCollapsed}
       label="Search"
       onClick={onClick}
-      icon={<Search className="h-4 w-4 text-gray-400" />}
+      icon={<Search className="h-4 w-4 text-muted-foreground/70" />}
       shortcut={shortcut}
     />
   );

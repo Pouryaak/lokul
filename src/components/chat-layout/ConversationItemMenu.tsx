@@ -7,6 +7,7 @@
 
 import { useState } from "react";
 import { MoreHorizontal, Pencil, FileDown, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import {
   DropdownMenu,
@@ -24,6 +25,8 @@ export interface ConversationItemMenuProps {
   conversation: Conversation;
   /** Callback when rename action is triggered */
   onRename: () => void;
+  /** Whether the menu button should be visible */
+  isVisible?: boolean;
 }
 
 /**
@@ -37,7 +40,7 @@ export interface ConversationItemMenuProps {
  * />
  * ```
  */
-export function ConversationItemMenu({ conversation, onRename }: ConversationItemMenuProps) {
+export function ConversationItemMenu({ conversation, onRename, isVisible = false }: ConversationItemMenuProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { deleteConversation, exportAsMarkdown, exportAsJson, exportAsText, isDeleting } =
     useConversationActions();
@@ -73,7 +76,10 @@ export function ConversationItemMenu({ conversation, onRename }: ConversationIte
           <Button
             variant="ghost"
             size="icon-xs"
-            className="h-6 w-6 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-white focus:opacity-100"
+            className={cn(
+              "h-6 w-6 text-muted-foreground transition-opacity hover:bg-muted hover:text-foreground",
+              isVisible ? "opacity-100" : "opacity-0"
+            )}
             aria-label={`Actions for ${conversation.title}`}
             onClick={(e) => e.stopPropagation()}
           >

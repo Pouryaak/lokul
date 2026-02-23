@@ -1,12 +1,174 @@
 # Stack Research: Lokul Browser-Based AI Chat
 
 **Domain:** Privacy-first, browser-based AI chat with WebGPU
-**Researched:** February 17, 2025
+**Researched:** February 17, 2025 (Original), February 23, 2026 (Milestone Update)
 **Confidence:** HIGH
 
 ---
 
-## Recommended Stack
+## Milestone: Full-Text Search + Delete Menu (February 2026)
+
+### New Dependencies Required
+
+| Library | Version | Purpose | Why Recommended |
+|---------|---------|---------|-----------------|
+| **minisearch** | 7.2.0 | Full-text search engine | Actively maintained (5.8k stars), zero dependencies, browser-native, TypeScript support. Supports fuzzy/prefix search, auto-suggestions, memory-efficient. Better than Lunr.js (abandoned since ~2019) and Fuse.js (fuzzy-only, not full-text). |
+| **react-hotkeys-hook** | 5.2.4 | Keyboard shortcuts | React-specific, actively maintained (modified 2026-02-02), excellent DX with `useHotkeys` hook. Better than tinykeys (lower-level, manual React integration). |
+
+### Existing Components (No Changes Needed)
+
+| Component | Location | Use For |
+|-----------|----------|---------|
+| **DropdownMenu** | `src/components/ui/dropdown-menu.tsx` | 3-dot menu per chat item (uses `radix-ui` package v1.4.3) |
+| **Dialog** | `src/components/ui/dialog.tsx` | Confirmation modal wrapper |
+| **ConfirmDialog** | `src/components/ui/ConfirmDialog.tsx` | Delete confirmation with `variant="danger"` |
+| **cmdk** | v1.1.1 (installed) | Command palette — can reuse UI for search |
+| **sonner** | v2.0.7 (installed) | Toast notifications |
+| **Lucide React** | v0.475.0 (installed) | Icons (`MoreVertical`, `Trash2`, `Search`) |
+
+### Installation
+
+```bash
+# Full-text search
+npm install minisearch
+
+# Keyboard shortcuts
+npm install react-hotkeys-hook
+```
+
+**Total new dependencies:** 2 (both browser-compatible, no Node.js required)
+
+### MiniSearch Integration
+
+**Data Source:** Conversations in IndexedDB via Dexie (`db.conversations`)
+
+**Searchable Structure:**
+```typescript
+// Flatten messages for indexing
+interface SearchableDocument {
+  id: string;                    // `${conversationId}:${messageId}`
+  title: string;                 // Conversation title
+  content: string;               // Message content
+  conversationId: string;
+  role: "user" | "assistant";
+  updatedAt: number;
+}
+```
+
+**Recommended Configuration:**
+```typescript
+import MiniSearch from "minisearch";
+
+const searchIndex = new MiniSearch<SearchableDocument>({
+  fields: ["title", "content"],
+  storeFields: ["id", "title", "conversationId", "updatedAt"],
+  searchOptions: {
+    fuzzy: 0.2,      // Typo tolerance
+    prefix: true,    // Match "react" when user types "rea"
+    boost: { title: 2 }, // Title matches rank higher
+  },
+});
+```
+
+**Index Strategy:**
+1. Load all conversations from Dexie on startup
+2. Flatten `messages[]` into searchable documents
+3. Re-index when conversations change (Dexie's `useLiveQuery`)
+
+### Delete Menu Implementation
+
+```tsx
+// Use existing components — no new dependencies
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { deleteConversation } from "@/lib/storage/conversations";
+
+// In ConversationItem component:
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="ghost" size="icon">
+      <MoreVertical className="h-4 w-4" />
+    </Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+    <DropdownMenuItem variant="destructive" onClick={() => setShowDelete(true)}>
+      <Trash2 className="mr-2 h-4 w-4" />
+      Delete conversation
+    </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+<ConfirmDialog
+  isOpen={showDelete}
+  onClose={() => setShowDelete(false)}
+  onConfirm={async () => {
+    await deleteConversation(conversation.id);
+    toast.success("Conversation deleted");
+  }}
+  title="Delete Conversation"
+  description="This will permanently delete this conversation and all its messages. This action cannot be undone."
+  variant="danger"
+  confirmText="Delete"
+/>
+```
+
+### Keyboard Shortcuts
+
+| Shortcut | Action | Scope |
+|----------|--------|-------|
+| `Ctrl/Cmd + K` | Open search | Global |
+| `Ctrl/Cmd + N` | New conversation | Global |
+| `Ctrl/Cmd + Shift + D` | Delete current | When chat selected |
+| `Escape` | Close search/modal | Global |
+
+```typescript
+import { useHotkeys } from "react-hotkeys-hook";
+
+useHotkeys("mod+k", () => openSearch(), []);
+useHotkeys("mod+n", () => createNewConversation(), []);
+useHotkeys("escape", () => closeModal(), []);
+```
+
+### Alternatives Considered (Milestone)
+
+| Recommended | Alternative | Why Not |
+|-------------|-------------|---------|
+| **MiniSearch** | Lunr.js (2.3.9) | Abandoned — last release ~2019, no TypeScript |
+| **MiniSearch** | Fuse.js (7.1.0) | Fuzzy-only, no TF-IDF ranking |
+| **MiniSearch** | Orama (@orama/orama) | Overkill, more complex API |
+| **MiniSearch** | dexie-fts | Package doesn't exist / unmaintained |
+| **react-hotkeys-hook** | tinykeys (3.0.0) | Lower-level, manual React integration |
+| **react-hotkeys-hook** | hotkeys-js | Not React-aware, requires manual cleanup |
+
+### What NOT to Add (Milestone)
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| `@radix-ui/react-dropdown-menu` | Project uses `radix-ui` umbrella package | Existing `dropdown-menu.tsx` |
+| New shadcn components | All required components exist | DropdownMenu + ConfirmDialog |
+| Algolia/Meilisearch | Requires server, violates privacy-first | MiniSearch (client-side) |
+| Elasticlunr | Fork of Lunr, also unmaintained | MiniSearch |
+
+### Bundle Size Impact
+
+| Package | Minzipped | Tree-shakeable |
+|---------|-----------|----------------|
+| minisearch | ~10KB | Yes (ESM) |
+| react-hotkeys-hook | ~3KB | Yes |
+
+**Total addition:** ~13KB gzipped
+
+### Milestone Sources
+
+- **MiniSearch** — GitHub: https://github.com/lucaong/minisearch (5.8k stars, actively maintained)
+- **MiniSearch npm** — v7.2.0 verified 2026-02-23
+- **react-hotkeys-hook** — GitHub: https://github.com/JohannesKlauss/react-keymap-hook (v5.2.4, modified 2026-02-02)
+- **Existing components** — Verified via `src/components/ui/*.tsx` file reads
+- **Lunr.js status** — GitHub shows inactive (last commit ~2019)
+
+---
+
+## Core Stack (Original — February 2025)
 
 ### Core Technologies
 
@@ -106,6 +268,9 @@ npm install -D vite-plugin-pwa@^0.21.0
 
 # Dev tools
 npm install -D eslint@^9.0.0 prettier@^3.0.0 prettier-plugin-tailwindcss@^0.6.0 vitest@^3.0.0
+
+# === MILESTONE: Search + Delete Menu ===
+npm install minisearch react-hotkeys-hook
 ```
 
 ---
@@ -120,6 +285,9 @@ npm install -D eslint@^9.0.0 prettier@^3.0.0 prettier-plugin-tailwindcss@^0.6.0 
 | Virtualization | Virtuoso Message List | react-window / react-virtuoso | Generic virtuoso for non-chat lists. Message-list is purpose-built for chat with streaming support. |
 | Markdown | react-markdown | Streamdown (Vercel) | Streamdown optimized for AI streaming. react-markdown more mature, plugin ecosystem. Consider Streamdown if streaming UX is critical. |
 | Styling | Tailwind 4 | Panda CSS / UnoCSS | Panda for CSS-in-JS with type safety. UnoCSS for on-demand atomic CSS. Tailwind 4 is most mature, best ecosystem. |
+| **Search** | **MiniSearch** | **Lunr.js** | Lunr.js if you need stemmers for non-English languages (MiniSearch has limited i18n) |
+| **Search** | **MiniSearch** | **Fuse.js** | Fuse.js if you only need fuzzy search without relevance ranking |
+| **Shortcuts** | **react-hotkeys-hook** | **tinykeys** | tinykeys if you need framework-agnostic hotkeys or smaller bundle |
 
 ---
 
@@ -135,6 +303,8 @@ npm install -D eslint@^9.0.0 prettier@^3.0.0 prettier-plugin-tailwindcss@^0.6.0 
 | Custom service worker (manual) | Error-prone, complex caching strategies | vite-plugin-pwa with Workbox for proven patterns |
 | React Query / SWR | Designed for server data fetching. No server = no benefit. | Zustand for client state, Dexie for persistence |
 | Material UI / Ant Design | Heavy bundle, opinionated styling hard to override. | shadcn/ui + Tailwind for lightweight, customizable components |
+| **Lunr.js / Elasticlunr** | **Abandoned, no TypeScript, larger bundle** | **MiniSearch** |
+| **Server-side search (Algolia)** | **Requires network, violates privacy-first** | **MiniSearch (client-side)** |
 
 ---
 
@@ -155,6 +325,7 @@ npm install -D eslint@^9.0.0 prettier@^3.0.0 prettier-plugin-tailwindcss@^0.6.0 
 - Use `clsx/lite` (140b vs 400b)
 - Tree-shake Lucide icons (import individually)
 - Lazy load markdown renderer (code splitting)
+- Use tinykeys (~650B) instead of react-hotkeys-hook (~3KB) for shortcuts
 
 ---
 
@@ -169,6 +340,8 @@ npm install -D eslint@^9.0.0 prettier@^3.0.0 prettier-plugin-tailwindcss@^0.6.0 
 | WebLLM 0.2.x | Chrome/Edge 113+ | WebGPU requirement |
 | Dexie 4.3.x | React 19 | Use dexie-react-hooks for integration |
 | vite-plugin-pwa 0.21.x | Vite 5.x / 6.x | Check compatibility matrix |
+| **minisearch 7.x** | **React 19, Vite 6/7** | **ESM/CJS dual, works in Vite** |
+| **react-hotkeys-hook 5.x** | **React 18+, React 19** | **No conflicts with Radix** |
 
 ---
 
@@ -190,10 +363,15 @@ npm install -D eslint@^9.0.0 prettier@^3.0.0 prettier-plugin-tailwindcss@^0.6.0 
 **Decision:** Auto-update service worker
 **Rationale:** Users expect chat apps to work offline after first load. Auto-update ensures latest version without prompting.
 
+### Search Index Strategy (Milestone)
+**Decision:** In-memory MiniSearch index, rebuilt on conversation changes
+**Rationale:** Conversations fit in memory for typical users. Re-indexing is fast (<100ms for 1000 conversations). No need for persistent index storage.
+
 ---
 
 ## Sources
 
+### Original Sources (February 2025)
 - **Context7: /mlc-ai/web-llm** — WebLLM API, streaming, model initialization
 - **Context7: /websites/react_dev** — React 19 features, React Compiler
 - **Context7: /tailwindlabs/tailwindcss.com** — Tailwind v4 installation, Vite plugin
@@ -208,8 +386,17 @@ npm install -D eslint@^9.0.0 prettier@^3.0.0 prettier-plugin-tailwindcss@^0.6.0 
 - **GitHub: dexie/Dexie.js/releases** — Dexie 4.3.0 verified latest
 - **GitHub: mlc-ai/web-llm/releases** — WebLLM 0.2.0 verified latest
 
+### Milestone Sources (February 2026)
+- **MiniSearch GitHub** — https://github.com/lucaong/minisearch (5.8k stars, actively maintained)
+- **MiniSearch npm** — v7.2.0 verified 2026-02-23
+- **react-hotkeys-hook GitHub** — https://github.com/JohannesKlauss/react-keymap-hook
+- **react-hotkeys-hook npm** — v5.2.4, modified 2026-02-02
+- **Lunr.js GitHub** — https://github.com/olivernn/lunr.js (inactive since ~2019)
+- **Existing UI components** — Verified via file reads in `src/components/ui/`
+
 ---
 
 *Stack research for: Lokul — Privacy-first browser-based AI chat*
-*Researched: February 17, 2025*
-*Confidence: HIGH — All versions verified from official releases, Context7 documentation authoritative*
+*Original: February 17, 2025*
+*Milestone update: February 23, 2026*
+*Confidence: HIGH — All versions verified from official sources*

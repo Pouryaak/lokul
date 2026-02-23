@@ -11,29 +11,10 @@
   --color-primary: #ff6b35;
   --color-primary-foreground: #ffffff;
 
-  /* Background colors */
-  --color-background: #fff8f0;
-  --color-foreground: #1a1a1a;
-
-  /* Card and secondary backgrounds */
-  --color-card: #ffffff;
-  --color-card-foreground: #1a1a1a;
-  --color-muted: #f5f0eb;
-  --color-muted-foreground: #6b6b6b;
-
-  /* Accent colors */
-  --color-accent: #fff0e6;
-  --color-accent-foreground: #1a1a1a;
-
   /* Status colors */
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-destructive: #ef4444;
-
-  /* Border and input */
-  --color-border: #e5e0db;
-  --color-input: #e5e0db;
-  --color-ring: #ff6b35;
 
   /* Border radius */
   --radius-sm: 0.375rem;

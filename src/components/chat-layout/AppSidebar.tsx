@@ -95,7 +95,7 @@ function ConversationSection({
     <SidebarContent className="lokul-dark-scrollbar gap-4 px-2 py-4">
       <SearchButton onClick={onSearch} isCollapsed={isCollapsed} />
       <NewChatItem onClick={onNewChat} isCollapsed={isCollapsed} />
-      {!isCollapsed && <p className="px-3 text-xs font-medium text-gray-400">Conversations</p>}
+      {!isCollapsed && <p className="px-3 text-xs font-medium text-muted-foreground">Conversations</p>}
 
       {isLoading ? (
         <LoadingState isCollapsed={isCollapsed} />
