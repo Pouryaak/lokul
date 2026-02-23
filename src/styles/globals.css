@@ -156,6 +156,15 @@
     background-repeat: repeat;
     background-size: 220px 220px;
   }
+
+  .chat-surface button:not(:disabled),
+  .chat-surface [role="button"]:not([aria-disabled="true"]),
+  .chat-surface [data-slot="dialog-trigger"]:not([disabled]),
+  .chat-surface [data-slot="select-trigger"]:not([disabled]),
+  .chat-surface [cmdk-item]:not([data-disabled="true"]),
+  .chat-surface a {
+    cursor: pointer;
+  }
 }
 
 @keyframes hero-ember-breathe {

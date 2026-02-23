@@ -283,7 +283,7 @@ function ChatLayoutContent({
   return (
     <SidebarInset
       className={cn(
-        "relative flex flex-col overflow-hidden",
+        "chat-surface relative flex flex-col overflow-hidden",
         "bg-[var(--chat-surface-bg)]",
         className
       )}
