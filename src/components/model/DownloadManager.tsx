@@ -1,26 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Download, RefreshCw, Square, XCircle } from "lucide-react";
+import { Download, RefreshCw, Square, Check, X, Loader2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Button } from "@/components/ui/Button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
 import { MODELS } from "@/lib/ai/models";
 import { useConversationModelStore, type DownloadLifecycle } from "@/store/conversationModelStore";
 import { useModelStore } from "@/store/modelStore";
+import { cn } from "@/lib/utils";
 
-function getStatusClass(status: DownloadLifecycle): string {
-  if (status === "Ready") {
-    return "bg-emerald-100 text-emerald-700";
-  }
-
-  if (status === "Failed") {
-    return "bg-red-100 text-red-700";
-  }
-
-  if (status === "Canceled") {
-    return "bg-slate-100 text-slate-700";
-  }
-
-  return "bg-amber-100 text-amber-700";
+interface ModelRow {
+  id: string;
+  name: string;
+  sizeMB: number;
+  status: DownloadLifecycle;
+  displayStatus: DownloadLifecycle | "Not downloaded";
+  progress: number | null;
+  etaSeconds: number | null;
 }
 
 function getDisplayStatus(
@@ -30,11 +26,9 @@ function getDisplayStatus(
   if (lifecycle) {
     return lifecycle;
   }
-
   if (isLoadedModel) {
     return "Ready";
   }
-
   return "Not downloaded";
 }
 
@@ -42,9 +36,116 @@ function estimateRemainingSeconds(percentage: number, elapsedSeconds: number): n
   if (percentage <= 0 || elapsedSeconds <= 0) {
     return null;
   }
-
   const remainingRatio = Math.max(0, (100 - percentage) / percentage);
   return Math.round(elapsedSeconds * remainingRatio);
+}
+
+function formatTime(seconds: number): string {
+  if (seconds < 60) {
+    return `${seconds}s`;
+  }
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}m ${remainingSeconds}s`;
+}
+
+function StatusBadge({ status }: { status: DownloadLifecycle | "Not downloaded" }) {
+  const isReady = status === "Ready";
+  const isFailed = status === "Failed";
+  const isDownloading = status === "Downloading" || status === "Compiling";
+  const isQueued = status === "Queued";
+
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide",
+        isReady && "bg-emerald-500/10 text-emerald-400",
+        isFailed && "bg-red-500/10 text-red-400",
+        isDownloading && "bg-[#FF6B35]/10 text-[#FF6B35]",
+        isQueued && "bg-amber-500/10 text-amber-400",
+        status === "Not downloaded" && "bg-muted text-muted-foreground"
+      )}
+    >
+      {isDownloading && <Loader2 className="h-3 w-3 animate-spin" />}
+      {isReady && <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />}
+      {isFailed && <div className="h-1.5 w-1.5 rounded-full bg-red-400" />}
+      {isQueued && <div className="h-1.5 w-1.5 rounded-full bg-amber-400" />}
+      {status === "Not downloaded" && <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />}
+      {status}
+    </div>
+  );
+}
+
+function CircularStatusIndicator({
+  progress,
+  status,
+}: {
+  progress: number | null;
+  status: DownloadLifecycle | "Not downloaded";
+}) {
+  const isReady = status === "Ready";
+  const isDownloading = status === "Downloading" || status === "Compiling";
+  const effectiveProgress = progress ?? 0;
+
+  // Ready state: elegant green circle with checkmark
+  if (isReady) {
+    return (
+      <div className="relative flex h-14 w-14 items-center justify-center">
+        <div className="absolute inset-0 rounded-full bg-emerald-500/10" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/20">
+          <Check className="h-5 w-5 text-emerald-400" strokeWidth={2.5} />
+        </div>
+      </div>
+    );
+  }
+
+  // Downloading/Compiling: animated circular progress
+  if (isDownloading && progress !== null) {
+    return (
+      <div className="relative h-14 w-14">
+        <AnimatedCircularProgressBar
+          max={100}
+          min={0}
+          value={effectiveProgress}
+          gaugePrimaryColor="#FF6B35"
+          gaugeSecondaryColor="rgba(255, 107, 53, 0.15)"
+          className="size-14 text-xs font-medium text-[#FF6B35]"
+        />
+      </div>
+    );
+  }
+
+  // Queued: subtle pulsing ring
+  if (status === "Queued") {
+    return (
+      <div className="relative flex h-14 w-14 items-center justify-center">
+        <div className="absolute inset-0 animate-pulse rounded-full bg-amber-500/10" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/20">
+          <span className="text-xs font-medium text-amber-400">--</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Failed: subtle red indicator
+  if (status === "Failed") {
+    return (
+      <div className="relative flex h-14 w-14 items-center justify-center">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20">
+          <span className="text-xs font-medium text-red-400">!</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Not downloaded: empty state
+  return (
+    <div className="relative flex h-14 w-14 items-center justify-center">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+        <span className="text-xs font-medium text-muted-foreground">--</span>
+      </div>
+    </div>
+  );
 }
 
 export function DownloadManager() {
@@ -61,16 +162,12 @@ export function DownloadManager() {
   const cancelModelDownload = useConversationModelStore((state) => state.cancelModelDownload);
   const downloadProgress = useModelStore((state) => state.downloadProgress);
 
-  const rows = useMemo(() => {
+  const rows = useMemo<ModelRow[]>(() => {
     return MODELS.map((model) => {
       const status = lifecycleByModel[model.id] ?? "Ready";
-      const displayStatus = getDisplayStatus(
-        lifecycleByModel[model.id],
-        engineLoadedModelId === model.id
-      );
+      const displayStatus = getDisplayStatus(lifecycleByModel[model.id], engineLoadedModelId === model.id);
       const isActiveDownload =
-        status === "Downloading" ||
-        (status === "Compiling" && downloadProgress?.step === "compiling");
+        status === "Downloading" || (status === "Compiling" && downloadProgress?.step === "compiling");
 
       return {
         id: model.id,
@@ -78,11 +175,7 @@ export function DownloadManager() {
         sizeMB: model.sizeMB,
         status,
         displayStatus,
-        progress: isActiveDownload
-          ? (downloadProgress?.percentage ?? 0)
-          : displayStatus === "Ready"
-            ? 100
-            : null,
+        progress: isActiveDownload ? (downloadProgress?.percentage ?? 0) : displayStatus === "Ready" ? 100 : null,
         etaSeconds:
           isActiveDownload && downloadProgress
             ? estimateRemainingSeconds(downloadProgress.percentage, downloadProgress.timeElapsed)
@@ -94,6 +187,9 @@ export function DownloadManager() {
   const hasActivity = rows.some(
     (row) => row.status === "Queued" || row.status === "Downloading" || row.status === "Compiling"
   );
+
+  const activeDownloads = rows.filter((row) => row.status === "Downloading" || row.status === "Compiling");
+  const completedDownloads = rows.filter((row) => row.status === "Ready");
 
   useEffect(() => {
     const hadActivityBefore = previousHasActivityRef.current;
@@ -113,107 +209,119 @@ export function DownloadManager() {
       >
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
-            size="sm"
+            variant="ghost"
+            size="icon"
             aria-expanded={isOpen}
             aria-label="Toggle download manager"
-            className="gap-2"
+            className="relative h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             <Download className="h-4 w-4" />
-            <span className="hidden sm:inline">Downloads</span>
-            {hasActivity ? <span className="h-2 w-2 rounded-full bg-[#FF6B35]" /> : null}
+            {hasActivity && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FF6B35] opacity-75" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#FF6B35]" />
+              </span>
+            )}
           </Button>
         </PopoverTrigger>
 
         <PopoverContent
           align="end"
-          sideOffset={10}
-          className="w-[320px] rounded-xl border-gray-200 p-3 sm:w-[380px]"
+          sideOffset={8}
+          className="w-[360px] border-[var(--chat-border-soft)] bg-[var(--chat-surface-bg)] p-0 shadow-2xl"
         >
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm font-semibold text-gray-900">Download Manager</p>
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-[var(--chat-border-subtle)] px-4 py-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FF6B35]/10">
+                <Download className="h-4 w-4 text-[#FF6B35]" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-[var(--chat-text-primary)]">Models</h3>
+                <p className="text-[10px] text-muted-foreground">
+                  {completedDownloads.length} ready · {activeDownloads.length} downloading
+                </p>
+              </div>
+            </div>
             <button
               onClick={closeDownloadManager}
-              className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               aria-label="Close download manager"
             >
-              <XCircle className="h-4 w-4" />
+              <X className="h-4 w-4" />
             </button>
           </div>
 
-          <div className="space-y-2">
-            {rows.map((row) => {
-              const canRetry = row.status === "Failed";
-              const canCancel =
-                row.status === "Queued" ||
-                row.status === "Downloading" ||
-                row.status === "Compiling";
+          {/* Model List */}
+          <div className="max-h-[320px] overflow-y-auto p-2">
+            <div className="space-y-1">
+              {rows.map((row) => {
+                const canRetry = row.status === "Failed";
+                const canCancel =
+                  row.status === "Queued" || row.status === "Downloading" || row.status === "Compiling";
+                const isActive = row.status === "Downloading" || row.status === "Compiling";
 
-              return (
-                <div key={row.id} className="rounded-lg border border-gray-100 px-3 py-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-gray-900">{row.name}</p>
-                      <p className="text-xs text-gray-500">{row.sizeMB}MB</p>
+                return (
+                  <div
+                    key={row.id}
+                    className={cn(
+                      "group relative flex items-center gap-3 rounded-xl p-2 transition-colors",
+                      isActive && "bg-[#FF6B35]/5",
+                      !isActive && "hover:bg-muted/50"
+                    )}
+                  >
+                    {/* Circular Progress / Status */}
+                    <CircularStatusIndicator progress={row.progress} status={row.displayStatus} />
+
+                    {/* Info */}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="truncate text-sm font-medium text-[var(--chat-text-primary)]">
+                          {row.name}
+                        </p>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">{row.sizeMB} MB</p>
+
+                      {/* Progress details for active downloads */}
+                      {isActive && row.progress !== null && (
+                        <p className="mt-0.5 text-[10px] text-[#FF6B35]">
+                          {Math.round(row.progress)}% · {row.etaSeconds !== null ? formatTime(row.etaSeconds) : "calculating..."}
+                        </p>
+                      )}
+
+                      {/* Action buttons */}
+                      {(canRetry || canCancel) && (
+                        <div className="mt-1.5 flex items-center gap-2">
+                          {canRetry && (
+                            <button
+                              onClick={() => void retryModelDownload(row.id)}
+                              className="inline-flex items-center gap-1 text-[11px] font-medium text-[#FF6B35] transition-colors hover:text-[#FF6B35]/80"
+                            >
+                              <RefreshCw className="h-3 w-3" />
+                              Retry
+                            </button>
+                          )}
+                          {canCancel && (
+                            <button
+                              onClick={() => setConfirmModelId(row.id)}
+                              className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                            >
+                              <Square className="h-3 w-3 fill-current" />
+                              Cancel
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                        row.displayStatus === "Not downloaded"
-                          ? "bg-gray-100 text-gray-600"
-                          : getStatusClass(row.status)
-                      }`}
-                    >
-                      {row.displayStatus}
-                    </span>
+
+                    {/* Status badge */}
+                    <div className="shrink-0">
+                      <StatusBadge status={row.displayStatus} />
+                    </div>
                   </div>
-
-                  <div className="mt-2 space-y-1">
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-                      <div
-                        className="h-full rounded-full bg-[#FF6B35] transition-all"
-                        style={{ width: `${row.progress ?? 0}%` }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between text-[11px] text-gray-500">
-                      <span>
-                        {row.progress === null
-                          ? "Progress: --"
-                          : `Progress: ${Math.round(row.progress)}%`}
-                      </span>
-                      <span>
-                        ETA:{" "}
-                        {row.etaSeconds === null
-                          ? "--"
-                          : `${Math.max(0, Math.round(row.etaSeconds))}s`}
-                      </span>
-                    </div>
-                  </div>
-
-                  {(canRetry || canCancel) && (
-                    <div className="mt-2 flex items-center gap-2">
-                      {canRetry ? (
-                        <button
-                          onClick={() => void retryModelDownload(row.id)}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-[#FF6B35] hover:text-[#FF6B35]/80"
-                        >
-                          <RefreshCw className="h-3 w-3" />
-                          Retry
-                        </button>
-                      ) : null}
-                      {canCancel ? (
-                        <button
-                          onClick={() => setConfirmModelId(row.id)}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-800"
-                        >
-                          <Square className="h-3 w-3" />
-                          Cancel
-                        </button>
-                      ) : null}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </PopoverContent>
       </Popover>
@@ -235,7 +343,7 @@ export function DownloadManager() {
         }
         confirmText="Cancel download"
         cancelText="Keep downloading"
-        variant="warning"
+        variant="destructive"
       />
     </>
   );

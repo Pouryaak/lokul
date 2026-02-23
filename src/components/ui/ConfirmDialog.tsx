@@ -90,7 +90,7 @@ export function ConfirmDialog({
       case "danger":
         return "destructive";
       case "warning":
-        return "primary";
+        return "default";
       case "info":
       default:
         return "default";
@@ -105,8 +105,8 @@ export function ConfirmDialog({
         </div>
 
         <DialogHeader className="text-center sm:text-center">
-          <DialogTitle className="text-lg text-gray-900">{title}</DialogTitle>
-          <DialogDescription className="text-gray-600">{description}</DialogDescription>
+          <DialogTitle className="text-lg text-foreground">{title}</DialogTitle>
+          <DialogDescription className="text-muted-foreground">{description}</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-2">
