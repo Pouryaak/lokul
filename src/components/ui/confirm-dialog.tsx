@@ -14,7 +14,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
 
 export interface ConfirmDialogProps {
   /** Whether the dialog is open */

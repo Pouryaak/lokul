@@ -19,12 +19,10 @@ import { CompactChatHeader } from "./compact-chat-header";
 import { createMobilePanelController, type MobilePanel } from "./mobile-panel-focus";
 import { PerformanceButton } from "@/components/performance/PerformanceButton";
 import { DownloadManager } from "@/components/model/DownloadManager";
-import { MemoryHeaderPill } from "@/components/memory/MemoryHeaderPill";
-import { MemoryPanel } from "@/components/memory/MemoryPanel";
+import { MemoryButton } from "@/components/memory/MemoryButton";
 import { useMemory } from "@/hooks/useMemory";
 import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts";
 import { useConversationModelStore } from "@/store/conversationModelStore";
-import { useMemoryStore } from "@/store/memoryStore";
 
 const CHAT_NOISE_BACKGROUND_IMAGE =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.9'/%3E%3C/svg%3E\")";
@@ -117,14 +115,9 @@ function ChatLayoutContent({
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("none");
   const mobileController = useMemo(() => createMobilePanelController(setMobilePanel), []);
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
-  const isMemoryPanelOpen = useMemoryStore((state) => state.isPanelOpen);
-  const openMemoryPanel = useMemoryStore((state) => state.openPanel);
-  const closeMemoryPanel = useMemoryStore((state) => state.closePanel);
-  const toggleMemoryPanel = useMemoryStore((state) => state.togglePanel);
   const isDownloadPanelOpen = useConversationModelStore((state) => state.isDownloadManagerOpen);
   const closeDownloadPanel = useConversationModelStore((state) => state.closeDownloadManager);
   const previousOpenMobileRef = useRef(openMobile);
-  const previousMemoryOpenRef = useRef(isMemoryPanelOpen);
   const previousDownloadOpenRef = useRef(isDownloadPanelOpen);
 
   // Global keyboard shortcuts
@@ -132,15 +125,12 @@ function ChatLayoutContent({
     onSearch: () => setSearchOpen(true),
     onNewChat: () => navigate("/chat"),
     onEscape: () => {
-      // Close overlays in priority order: search > memory panel > downloads
       if (searchOpen) {
         setSearchOpen(false);
-      } else if (isMemoryPanelOpen) {
-        closeMemoryPanel();
       }
     },
     searchOpen,
-    dialogOpen: isMemoryPanelOpen,
+    dialogOpen: false,
     sheetOpen: isDownloadPanelOpen,
   });
 
@@ -156,24 +146,6 @@ function ChatLayoutContent({
   );
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === "m") {
-        event.preventDefault();
-        if (isMobile) {
-          mobileController.togglePanel("memory");
-          return;
-        }
-        toggleMemoryPanel();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isMobile, mobileController, toggleMemoryPanel]);
-
-  useEffect(() => {
     if (!isMobile) {
       setMobilePanel("none");
       setMobileSidebarOpen(false);
@@ -182,33 +154,21 @@ function ChatLayoutContent({
 
     if (mobilePanel === "sidebar") {
       setMobileSidebarOpen(true);
-      closeMemoryPanel();
-      closeDownloadPanel();
-      return;
-    }
-
-    if (mobilePanel === "memory") {
-      setMobileSidebarOpen(false);
-      openMemoryPanel();
       closeDownloadPanel();
       return;
     }
 
     if (mobilePanel === "downloads") {
       setMobileSidebarOpen(false);
-      closeMemoryPanel();
       return;
     }
 
     setMobileSidebarOpen(false);
-    closeMemoryPanel();
     closeDownloadPanel();
   }, [
     closeDownloadPanel,
-    closeMemoryPanel,
     isMobile,
     mobilePanel,
-    openMemoryPanel,
     setMobileSidebarOpen,
   ]);
 
@@ -229,19 +189,6 @@ function ChatLayoutContent({
   useEffect(() => {
     if (
       isMobile &&
-      previousMemoryOpenRef.current &&
-      !isMemoryPanelOpen &&
-      mobilePanel === "memory"
-    ) {
-      mobileController.closePanel("memory");
-    }
-
-    previousMemoryOpenRef.current = isMemoryPanelOpen;
-  }, [isMemoryPanelOpen, isMobile, mobileController, mobilePanel]);
-
-  useEffect(() => {
-    if (
-      isMobile &&
       previousDownloadOpenRef.current &&
       !isDownloadPanelOpen &&
       mobilePanel === "downloads"
@@ -251,14 +198,6 @@ function ChatLayoutContent({
 
     previousDownloadOpenRef.current = isDownloadPanelOpen;
   }, [isDownloadPanelOpen, isMobile, mobileController, mobilePanel]);
-
-  const handleMemoryClick = () => {
-    if (isMobile) {
-      mobileController.togglePanel("memory");
-      return;
-    }
-    toggleMemoryPanel();
-  };
 
   const handleSidebarClick = () => {
     mobileController.togglePanel("sidebar");
@@ -293,7 +232,7 @@ function ChatLayoutContent({
             >
               <PanelLeft className="h-4 w-4" />
             </Button>
-            <MemoryHeaderPill count={count} onClick={handleMemoryClick} />
+            <MemoryButton count={count} />
           </>
         }
         rightActions={
@@ -306,8 +245,6 @@ function ChatLayoutContent({
       />
 
       <main className="relative z-10 flex-1 overflow-hidden">{children}</main>
-
-      <MemoryPanel open={isMemoryPanelOpen} onClose={closeMemoryPanel} />
     </SidebarInset>
   );
 }

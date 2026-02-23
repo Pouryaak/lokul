@@ -343,7 +343,7 @@ export function DownloadManager() {
         }
         confirmText="Cancel download"
         cancelText="Keep downloading"
-        variant="destructive"
+        variant="danger"
       />
     </>
   );

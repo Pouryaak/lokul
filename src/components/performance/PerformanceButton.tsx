@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Activity, Cpu, HardDrive, Zap, X, Wifi, WifiOff, CheckCircle2, Download } from "lucide-react";
+import { Activity, Cpu, HardDrive, Zap, X, Wifi, WifiOff, Download } from "lucide-react";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { Button } from "@/components/ui/Button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -14,7 +14,6 @@ import {
   type GPUStatus,
   getGPUStatusLabel,
   getHealthLabel,
-  getHealthColorClasses,
 } from "@/lib/performance/metrics";
 import type { GPUInfo } from "@/types/index";
 
@@ -42,31 +41,6 @@ function getHealthBadgeColor(health: SystemHealth): string {
   }
 }
 
-function getGPUStatusColor(status: GPUStatus): string {
-  switch (status) {
-    case "active":
-      return "text-emerald-400";
-    case "inactive":
-      return "text-amber-400";
-    case "unsupported":
-      return "text-red-400";
-    default:
-      return "text-muted-foreground";
-  }
-}
-
-function getConnectionBadgeColor(status: ConnectionStatus): string {
-  switch (status) {
-    case "offline":
-      return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-    case "online":
-    case "offline-ready":
-    case "installed":
-      return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-    default:
-      return "bg-muted text-muted-foreground border-border";
-  }
-}
 
 function CircularHealthIndicator({ health, percentage }: { health: SystemHealth; percentage?: number }) {
   const circumference = 2 * Math.PI * 18;
@@ -252,7 +226,6 @@ export function PerformanceButton() {
     }
   }, [isInstalled]);
 
-  const healthColors = getHealthColorClasses(data.health);
   const healthPercentage = data.memoryTotalMB
     ? Math.min(100, Math.round((data.memoryUsedMB / data.memoryTotalMB) * 100))
     : undefined;
