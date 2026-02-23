@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
 export interface ConfirmDialogProps {
   /** Whether the dialog is open */
@@ -83,15 +84,23 @@ export function ConfirmDialog({
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" onClick={handleCancel} disabled={loading}>
+        <DialogFooter className="gap-3 sm:justify-end">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCancel}
+            disabled={loading}
+            className="px-4"
+          >
             {cancelLabel}
           </Button>
           <Button
             variant={variant === "destructive" ? "destructive" : "default"}
+            size="sm"
             onClick={handleConfirm}
             disabled={loading}
             loading={loading}
+            className="px-6"
           >
             {confirmLabel}
           </Button>

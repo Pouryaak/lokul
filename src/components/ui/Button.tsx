@@ -19,18 +19,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
         primary:
           "bg-gradient-to-r from-[#FF6B35] to-[#FFB84D] text-white shadow-[0_0_30px_rgba(255,107,53,0.4)] hover:shadow-[0_0_40px_rgba(255,107,53,0.6)] hover:-translate-y-0.5",
         cta: "group relative overflow-hidden bg-gradient-to-r from-[#FF6B35] via-[#FF8C42] to-[#FFB84D] text-white shadow-[0_8px_32px_rgba(255,107,53,0.5),inset_0_1px_0_rgba(255,255,255,0.3)] hover:shadow-[0_12px_48px_rgba(255,107,53,0.7),inset_0_1px_0_rgba(255,255,255,0.4)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700",
         secondary:
-          "bg-secondary text-primary border-2 border-primary hover:bg-accent hover:-translate-y-0.5",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:-translate-y-0.5",
         outline:
-          "border-2 border-primary bg-transparent text-primary hover:bg-accent hover:-translate-y-0.5",
-        ghost: "bg-transparent text-primary hover:bg-accent hover:-translate-y-0.5",
+          "border border-border bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground hover:-translate-y-0.5",
+        ghost: "bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground hover:-translate-y-0.5",
         white:
           "bg-card text-primary shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:-translate-y-1",
-        destructive: "bg-destructive text-white hover:bg-destructive/90",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
@@ -97,7 +97,6 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(buttonVariants({ variant, size }), className)}
         ref={ref}
         disabled={disabled || loading}
-        style={{ fontFamily: '"Instrument Serif", "Iowan Old Style", serif' }}
         {...props}
       >
         {loading ? (
