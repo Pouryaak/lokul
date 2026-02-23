@@ -23,16 +23,16 @@
 
 **Milestone:** v1.1 UI Polish + Search + Delete
 **Phase:** Phase 6 (Search, Delete & Shortcuts)
-**Current Plan:** 02 of 3
-**Status:** Plan 02 complete - Conversation Delete & Menu
-**Last Activity:** 2026-02-23 — Completed Plan 06-02 (Conversation Delete & Menu)
+**Current Plan:** 03 of 3
+**Status:** Plan 03 complete - Global Keyboard Shortcuts
+**Last Activity:** 2026-02-23 — Completed Plan 06-03 (Global Keyboard Shortcuts)
 
 **Progress:**
 
 ```
-v1.1 Progress: [██░░░░░░░░░░░░░░░░░░] 33%
+v1.1 Progress: [████░░░░░░░░░░░░░░░░] 50%
 
-Phase 6: Search, Delete & Shortcuts [2/3 plans complete]
+Phase 6: Search, Delete & Shortcuts [3/3 plans complete]
 Phase 7: UI/UX Polish [Not started]
 ```
 
@@ -82,7 +82,7 @@ Phase 7: UI/UX Polish [Not started]
 - [ ] Full-text search across all conversations (MiniSearch 7.2.0)
 - [x] Chat deletion via 3-dot menu with confirmation (existing DropdownMenu + ConfirmDialog)
 - [ ] UI/UX polish (buttons, panels, colors, consistency)
-- [ ] Keyboard shortcuts (react-hotkeys-hook 5.2.4)
+- [x] Keyboard shortcuts (react-hotkeys-hook 5.2.4)
 
 ---
 
@@ -99,6 +99,9 @@ Phase 7: UI/UX Polish [Not started]
 | 2026-02-23 | No undo for delete | Simpler UX, delete is permanent with confirmation dialog protection |
 | 2026-02-23 | Inline rename in sidebar | Simpler UX than modal, Enter/Escape keyboard support |
 | 2026-02-23 | Hover-only menu in sidebar | Cleaner UI, menu only visible on hover in expanded state |
+| 2026-02-23 | Override browser Cmd+K/Cmd+N defaults | Consistent app experience, preventDefault on shortcuts |
+| 2026-02-23 | Platform-aware keyboard hints | Show ⌘ on macOS, Ctrl on other platforms for better UX |
+| 2026-02-23 | Priority-based overlay closing | Escape closes search > memory > performance panels in order |
 
 ### Decisions Made (v1.0)
 
@@ -131,17 +134,17 @@ All critical technical debt from v1.0 was addressed in Phase 2.2:
 
 ## Session Continuity
 
-**Last Action:** Completed Plan 06-02 (Conversation Delete & Menu)
-**Next Action:** Execute Plan 06-03 (Keyboard Shortcuts) or Plan 06-01 (Search) if not yet complete
+**Last Action:** Completed Plan 06-03 (Global Keyboard Shortcuts)
+**Next Action:** Phase 6 complete! Run `/gsd-plan-phase 7` to plan UI/UX Polish
 
 **Key Files:**
 - `.planning/PROJECT.md` - Project definition (v1.1 active)
 - `.planning/REQUIREMENTS.md` - v1.1 requirements (16 mapped)
 - `.planning/ROADMAP.md` - Phase structure (updated with Phase 6, 7)
-- `.planning/phases/06-search-delete-shortcuts-v1-1/06-02-SUMMARY.md` - Plan 02 summary
+- `.planning/phases/06-search-delete-shortcuts-v1-1/06-03-SUMMARY.md` - Plan 03 summary
 
 ---
 
 *Milestone v1.1 started: 2026-02-23*
 *Roadmap created: 2026-02-23*
-*Plan 06-02 completed: 2026-02-23*
+*Plan 06-03 completed: 2026-02-23*
