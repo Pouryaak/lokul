@@ -15,7 +15,7 @@ import { Nav } from "./components/landing/Nav";
 import { ProblemSolutionSection } from "./components/landing/ProblemSolutionSection";
 import { RoomSection } from "./components/landing/RoomSection";
 import { TechnicalTrustSection } from "./components/landing/TechnicalTrustSection";
-import { LoadingScreen } from "./components/onboarding/LoadingScreen";
+import { OnboardingFlow } from "./components/onboarding/OnboardingFlow";
 import { SMART_MODEL, getModelById } from "./lib/ai/models";
 import { ChatDetailRoute } from "./routes/ChatDetailRoute";
 import { ChatRoute } from "./routes/ChatRoute";
@@ -29,7 +29,15 @@ import {
 
 function LandingPage() {
   const navigate = useNavigate();
-  const handleStart = useCallback(() => navigate("/loading"), [navigate]);
+  const hasCompletedSetup = useSettingsStore(selectHasCompletedSetup);
+
+  const handleStart = useCallback(() => {
+    if (hasCompletedSetup) {
+      navigate("/chat");
+    } else {
+      navigate("/setup");
+    }
+  }, [hasCompletedSetup, navigate]);
 
   return (
     <div className="relative min-h-screen bg-[#050505]">
@@ -58,48 +66,36 @@ function LandingPage() {
   );
 }
 
-function LoadingPage() {
+function OnboardingPage() {
   const navigate = useNavigate();
-  const cancelDownload = useModelStore((state) => state.cancelDownload);
-  const resetModel = useModelStore((state) => state.resetModel);
-  const loadModel = useModelStore((state) => state.loadModel);
-  const downloadProgress = useModelStore((state) => state.downloadProgress);
-  const loadingStep = useModelStore((state) => state.loadingStep);
-  const modelError = useModelStore((state) => state.error);
-  const currentModel = useModelStore((state) => state.currentModel);
+  const hasCompletedSetup = useSettingsStore(selectHasCompletedSetup);
+  const isSettingsLoading = useSettingsStore((state) => state.isLoading);
   const completeSetup = useSettingsStore((state) => state.completeSetup);
-  const defaultModelId = useSettingsStore(selectDefaultModel);
-  const bootstrapModel = getModelById(defaultModelId) ?? SMART_MODEL;
 
   useEffect(() => {
-    if (!currentModel && loadingStep === "idle") {
-      loadModel(bootstrapModel.id);
+    if (!isSettingsLoading && hasCompletedSetup) {
+      navigate("/chat", { replace: true });
     }
-  }, [bootstrapModel.id, currentModel, loadingStep, loadModel]);
+  }, [hasCompletedSetup, isSettingsLoading, navigate]);
 
-  useEffect(() => {
-    if (loadingStep === "ready" && currentModel) {
-      completeSetup().then(() => navigate("/chat"));
-    }
-  }, [loadingStep, currentModel, completeSetup, navigate]);
+  const handleComplete = useCallback(async () => {
+    await completeSetup();
+    navigate("/chat", { replace: true });
+  }, [completeSetup, navigate]);
 
-  const handleCancel = useCallback(() => {
-    cancelDownload();
-    resetModel();
+  const handleBack = useCallback(() => {
     navigate("/");
-  }, [cancelDownload, resetModel, navigate]);
+  }, [navigate]);
 
-  return (
-    <LoadingScreen
-      onCancel={handleCancel}
-      onReady={() => navigate("/chat")}
-      modelName={bootstrapModel.name}
-      modelSizeMB={bootstrapModel.sizeMB}
-      progress={downloadProgress}
-      loadingStep={loadingStep}
-      error={modelError}
-    />
-  );
+  if (isSettingsLoading || hasCompletedSetup) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#050505]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-[#ff6b35]" />
+      </div>
+    );
+  }
+
+  return <OnboardingFlow onComplete={handleComplete} onBack={handleBack} />;
 }
 
 function ChatLayoutWrapper() {
@@ -123,7 +119,7 @@ function AppContent() {
   const currentModel = useModelStore((state) => state.currentModel);
   const loadModel = useModelStore((state) => state.loadModel);
   const loadingStep = useModelStore((state) => state.loadingStep);
-  const bootstrapModelId = getModelById(defaultModelId)?.id ?? SMART_MODEL.id;
+  const bootstrapModelId = getModelById(defaultModelId ?? "")?.id ?? SMART_MODEL.id;
 
   useEffect(() => {
     loadSettings();
@@ -153,7 +149,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<LandingPage />} />
-          <Route path="loading" element={<LoadingPage />} />
+          <Route path="setup" element={<OnboardingPage />} />
         </Route>
         <Route path="chat" element={<ChatLayoutWrapper />}>
           <Route index element={<ChatRoute />} />
