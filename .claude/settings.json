@@ -1,9 +1,8 @@
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "https://api.kimi.com/coding/",
-    "ANTHROPIC_AUTH_TOKEN": "sk-kimi-AVcpGUJhD17PU49oPDSwUxnJzWq7WgBmcAWSpkrJPwUfrIPtdi1ObfR3eAIlVBOw",
-    "ANTHROPIC_MODEL": "kimi-for-coding",
-    "ANTHROPIC_SMALL_FAST_MODEL": "kimi-for-coding",
+    "ANTHROPIC_AUTH_TOKEN": "f3bd63e2f54c4222ac02e4fbce283c1f.8n39lYJrVm5HNY4L",
+    "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5",
     "API_TIMEOUT_MS": "3000000"
   },
   "enabledPlugins": {

@@ -29,3 +29,5 @@ pnpm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+.claude/settings.json

@@ -78,7 +78,7 @@ function CategoryBadge({
       <button
         onClick={onClick}
         className={cn(
-          "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+          "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
           isActive
             ? "bg-[#FF6B35]/20 text-[#FF6B35] ring-1 ring-[#FF6B35]/30"
             : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -98,7 +98,7 @@ function CategoryBadge({
     <button
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+        "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
         isActive
           ? cn(config.bg, config.color, "ring-1 ring-current/30")
           : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -128,7 +128,7 @@ function QuickMemoryItem({
     <div
       onClick={onClick}
       className={cn(
-        "group relative rounded-xl border border-[var(--chat-border-subtle)] bg-muted/30 p-3 transition-all",
+        "group relative rounded-xl border border-[var(--chat-border-subtle)] bg-muted/30 p-3 transition-all cursor-pointer",
         "hover:border-[var(--chat-border-soft)] hover:bg-muted/50"
       )}
     >
@@ -147,7 +147,7 @@ function QuickMemoryItem({
               onPin();
             }}
             className={cn(
-              "rounded p-1 transition-colors",
+              "rounded p-1 transition-colors cursor-pointer",
               fact.pinned ? "text-[#FF6B35]" : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -158,7 +158,7 @@ function QuickMemoryItem({
               e.stopPropagation();
               onDelete();
             }}
-            className="rounded p-1 text-muted-foreground transition-colors hover:text-red-400"
+            className="rounded p-1 text-muted-foreground transition-colors hover:text-red-400 cursor-pointer"
           >
             <Trash2 className="h-3 w-3" />
           </button>
@@ -202,7 +202,7 @@ function QuickMemoryComposer({
           {value && (
             <button
               onClick={handleSubmit}
-              className="rounded-lg bg-[#FF6B35]/10 px-2.5 py-1 text-xs font-medium text-[#FF6B35] transition-colors hover:bg-[#FF6B35]/20"
+              className="rounded-lg bg-[#FF6B35]/10 px-2.5 py-1 text-xs font-medium text-[#FF6B35] transition-colors hover:bg-[#FF6B35]/20 cursor-pointer"
             >
               Add
             </button>
@@ -211,7 +211,7 @@ function QuickMemoryComposer({
       </div>
       <button
         onClick={onExpand}
-        className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-xs text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+        className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-xs text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground cursor-pointer"
       >
         <Sparkles className="h-3 w-3" />
         Open full memory panel
@@ -498,7 +498,7 @@ function MemorySheet({ open, onClose }: { open: boolean; onClose: () => void }) 
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 className={cn(
-                  "flex-1 rounded-lg py-2 text-xs font-medium transition-all",
+                  "flex-1 rounded-lg py-2 text-xs font-medium transition-all cursor-pointer",
                   selectedCategory === cat
                     ? "bg-muted text-foreground"
                     : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -690,7 +690,7 @@ function MemorySheet({ open, onClose }: { open: boolean; onClose: () => void }) 
             {!isManageMode && (
               <button
                 onClick={() => setShowClearConfirm(true)}
-                className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-xs text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+                className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-xs text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground cursor-pointer"
               >
                 <Trash2 className="h-3 w-3" />
                 Clear all memory
@@ -727,7 +727,7 @@ function MemorySheet({ open, onClose }: { open: boolean; onClose: () => void }) 
                     key={cat}
                     onClick={() => setEditCategory(cat)}
                     className={cn(
-                      "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-medium transition-all",
+                      "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-medium transition-all cursor-pointer",
                       editCategory === cat
                         ? cn(categoryConfig[cat].bg, categoryConfig[cat].color, "ring-1 ring-current/30")
                         : "bg-muted/50 text-muted-foreground hover:bg-muted"
@@ -833,7 +833,7 @@ function PremiumMemoryCard({
               onPin();
             }}
             className={cn(
-              "rounded-lg p-1.5 transition-colors",
+              "rounded-lg p-1.5 transition-colors cursor-pointer",
               fact.pinned
                 ? "bg-[#FF6B35]/10 text-[#FF6B35]"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -846,7 +846,7 @@ function PremiumMemoryCard({
               e.stopPropagation();
               onUpdate();
             }}
-            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
           >
             <MoreHorizontal className="h-3.5 w-3.5" />
           </button>
@@ -855,7 +855,7 @@ function PremiumMemoryCard({
               e.stopPropagation();
               onDelete();
             }}
-            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-400"
+            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-400 cursor-pointer"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
