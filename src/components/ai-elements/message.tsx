@@ -8,7 +8,7 @@ import { ButtonGroup, ButtonGroupText } from "@/components/ui/Button-group";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { cjk } from "@streamdown/cjk";
-import { code } from "@streamdown/code";
+import { createCodePlugin } from "@streamdown/code";
 import { math } from "@streamdown/math";
 import { mermaid } from "@streamdown/mermaid";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
@@ -36,8 +36,8 @@ export const MessageContent = ({ children, className, ...props }: MessageContent
   <div
     className={cn(
       "is-user:dark flex w-fit max-w-full min-w-0 flex-col gap-2 overflow-hidden text-sm",
-      "group-[.is-user]:ml-auto group-[.is-user]:rounded-2xl group-[.is-user]:border group-[.is-user]:border-[var(--chat-user-bubble-border)] group-[.is-user]:bg-[var(--chat-user-bubble-bg)] group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-user]:text-[var(--chat-user-bubble-text)]",
-      "group-[.is-assistant]:rounded-2xl group-[.is-assistant]:border group-[.is-assistant]:border-[var(--chat-assistant-bubble-border)] group-[.is-assistant]:bg-[var(--chat-assistant-bubble-bg)] group-[.is-assistant]:px-4 group-[.is-assistant]:py-3 group-[.is-assistant]:text-[var(--chat-assistant-bubble-text)]",
+      "group-[.is-user]:chat-message-surface group-[.is-user]:ml-auto group-[.is-user]:rounded-2xl group-[.is-user]:bg-[var(--chat-user-bubble-bg)] group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-user]:text-[var(--chat-user-bubble-text)]",
+      "group-[.is-assistant]:chat-message-surface group-[.is-assistant]:rounded-2xl group-[.is-assistant]:bg-[var(--chat-assistant-bubble-bg)] group-[.is-assistant]:px-4 group-[.is-assistant]:py-3 group-[.is-assistant]:text-[var(--chat-assistant-bubble-text)]",
       className
     )}
     {...props}
@@ -271,12 +271,21 @@ export const MessageBranchPage = ({ className, ...props }: MessageBranchPageProp
 
 export type MessageResponseProps = ComponentProps<typeof Streamdown>;
 
-const streamdownPlugins = { cjk, code, math, mermaid };
+const streamdownCodePlugin = createCodePlugin({
+  themes: ["github-dark", "github-dark"],
+});
+
+const streamdownPlugins = { cjk, code: streamdownCodePlugin, math, mermaid };
 
 export const MessageResponse = memo(
   ({ className, ...props }: MessageResponseProps) => (
     <Streamdown
-      className={cn("size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0", className)}
+      className={cn(
+        "dark size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+        "[&_:not(pre)>code]:rounded-md [&_:not(pre)>code]:bg-white/10 [&_:not(pre)>code]:px-1.5 [&_:not(pre)>code]:py-0.5 [&_:not(pre)>code]:text-[var(--chat-text-primary)]",
+        "[&_pre]:rounded-xl [&_pre]:border [&_pre]:border-[var(--chat-code-border)]",
+        className
+      )}
       plugins={streamdownPlugins}
       {...props}
     />

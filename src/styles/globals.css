@@ -2,6 +2,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@source "../../node_modules/streamdown/dist/*.js";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -135,6 +137,24 @@
 
   .lokul-dark-scrollbar::-webkit-scrollbar-thumb:hover {
     background-color: var(--chat-scrollbar-thumb-hover);
+  }
+
+  .chat-message-surface {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+  }
+
+  .chat-message-surface::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    opacity: 0.09;
+    mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.9'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 220px 220px;
   }
 }
 
@@ -314,16 +334,20 @@
   --chat-text-secondary: #ece7e2;
   --chat-text-muted: #9b958f;
   --chat-text-subtle: #6f6a64;
-  --chat-user-bubble-bg: #2a1d17;
+  --chat-user-bubble-bg: #322019;
   --chat-user-bubble-border: rgba(255, 140, 90, 0.3);
   --chat-user-bubble-text: #ffe7db;
-  --chat-assistant-bubble-bg: #1f1f1f;
+  --chat-assistant-bubble-bg: #262626;
   --chat-assistant-bubble-border: rgba(255, 255, 255, 0.1);
   --chat-assistant-bubble-text: #ece7e2;
   --chat-assistant-avatar-bg: #262626;
   --chat-assistant-avatar-border: rgba(255, 255, 255, 0.15);
   --chat-scrollbar-thumb: rgba(255, 255, 255, 0.2);
   --chat-scrollbar-thumb-hover: rgba(255, 140, 90, 0.5);
+  --chat-code-bg: #131417;
+  --chat-code-header-bg: #1b1c20;
+  --chat-code-border: rgba(255, 255, 255, 0.12);
+  --chat-code-fg: #e6eaf2;
 }
 
 .dark {
@@ -372,16 +396,20 @@
   --chat-text-secondary: #ece7e2;
   --chat-text-muted: #9b958f;
   --chat-text-subtle: #6f6a64;
-  --chat-user-bubble-bg: #2a1d17;
+  --chat-user-bubble-bg: #322019;
   --chat-user-bubble-border: rgba(255, 140, 90, 0.3);
   --chat-user-bubble-text: #ffe7db;
-  --chat-assistant-bubble-bg: #1f1f1f;
+  --chat-assistant-bubble-bg: #262626;
   --chat-assistant-bubble-border: rgba(255, 255, 255, 0.1);
   --chat-assistant-bubble-text: #ece7e2;
   --chat-assistant-avatar-bg: #262626;
   --chat-assistant-avatar-border: rgba(255, 255, 255, 0.15);
   --chat-scrollbar-thumb: rgba(255, 255, 255, 0.2);
   --chat-scrollbar-thumb-hover: rgba(255, 140, 90, 0.5);
+  --chat-code-bg: #131417;
+  --chat-code-header-bg: #1b1c20;
+  --chat-code-border: rgba(255, 255, 255, 0.12);
+  --chat-code-fg: #e6eaf2;
 }
 
 /* Perspective Grid Tile Hover Effects - Primary Orange Color */

@@ -9,7 +9,7 @@ import {
 import { InputModelSelector } from "@/components/model/InputModelSelector";
 import { cn } from "@/lib/utils";
 import type { UIMessage } from "@ai-sdk/react";
-import { AlertCircle, Bot, MessageSquare, RefreshCw, User, X } from "lucide-react";
+import { AlertCircle, MessageSquare, RefreshCw, X } from "lucide-react";
 import { Shimmer } from "../ai-elements/shimmer";
 
 interface ErrorBannerProps {
@@ -60,25 +60,6 @@ export function ErrorBanner({ message, fallbackMessage, onRetry, onDismiss }: Er
   );
 }
 
-function MessageAvatar({ role }: { role: "user" | "assistant" | "system" }) {
-  return (
-    <div
-      className={cn(
-        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-        role === "user"
-          ? "bg-primary"
-          : "border border-[var(--chat-assistant-avatar-border)] bg-[var(--chat-assistant-avatar-bg)]"
-      )}
-    >
-      {role === "user" ? (
-        <User className="h-4 w-4 text-white" />
-      ) : (
-        <Bot className="h-4 w-4 text-[var(--chat-text-secondary)]" />
-      )}
-    </div>
-  );
-}
-
 function MessageBody({ message }: { message: UIMessage }) {
   return (
     <div className="flex max-w-[80%] flex-col gap-1">
@@ -102,8 +83,7 @@ interface ConversationMessagesProps {
 
 function PendingAssistantMessage() {
   return (
-    <div className="group flex gap-4 py-6">
-      <MessageAvatar role="assistant" />
+    <div className="group flex py-6">
       <div className="flex items-center">
         <Shimmer>Thinking...</Shimmer>
       </div>
@@ -120,11 +100,10 @@ export function ConversationMessages({ messages, status }: ConversationMessagesP
         <div
           key={message.id}
           className={cn(
-            "group flex gap-4 py-6",
+            "group flex py-6",
             message.role === "user" ? "flex-row-reverse" : "flex-row"
           )}
         >
-          <MessageAvatar role={message.role} />
           <MessageBody message={message} />
         </div>
       ))}
