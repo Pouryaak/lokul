@@ -1,265 +1,162 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-02-17
-
-## Critical Issues
-
-### Empty Project Scaffold
-- **Issue:** Project is entirely scaffold/planned with zero implementation
-- **Files:** All files in `/Users/poak/Documents/personal-project/Lokul/src/` are empty or minimal
-  - `App.tsx`: 5 lines (returns null)
-  - `main.tsx`: 1 line (comment only)
-  - `workers/inference.worker.ts`: 1 line (comment only)
-  - All component directories: contain only `.gitkeep` files
-  - All lib directories: contain only `.gitkeep` files
-  - All hooks: empty
-  - All stores: empty
-  - All styles: empty
-- **Impact:** Complete implementation needed from scratch
-- **Fix approach:** Begin systematic implementation following CLAUDE.md architecture
-
-### No TypeScript Configuration
-- **Issue:** `tsconfig.json` is missing
-- **Impact:** TypeScript compilation will fail; no type checking enabled
-- **Fix approach:** Create `tsconfig.json` with strict settings per CLAUDE.md guidelines
-
-### No Build Configuration
-- **Issue:** `vite.config.ts` is empty scaffold (exports empty object)
-- **Files:** `/Users/poak/Documents/personal-project/Lokul/vite.config.ts`
-- **Impact:** Cannot build, run, or develop the application
-- **Fix approach:** Implement Vite config with React plugin, PWA support, worker configuration
-
-### No Styling Configuration
-- **Issue:** `tailwind.config.ts` is empty scaffold
-- **Files:** `/Users/poak/Documents/personal-project/Lokul/tailwind.config.ts`
-- **Impact:** No styling system available; UI cannot be built
-- **Fix approach:** Configure Tailwind with CSS variables per CLAUDE.md design system
+**Analysis Date:** 2026-02-23
 
 ## Tech Debt
 
-### Missing Package Dependencies
-- **Issue:** `package.json` contains no dependencies
-- **Files:** `/Users/poak/Documents/personal-project/Lokul/package.json`
-- **Impact:** No libraries installed; cannot import React, WebLLM, or any dependencies
-- **Required packages per PRD:**
-  - React 18+ with TypeScript
-  - @mlc-ai/web-llm (WebLLM for AI inference)
-  - Zustand (state management)
-  - Dexie.js (IndexedDB wrapper)
-  - Tailwind CSS
-  - Vite with PWA plugin
-  - react-markdown + remark-gfm
-  - Comlink (Web Worker communication)
-  - web-vitals
-- **Fix approach:** Install all dependencies with npm/yarn
+**Oversized multi-responsibility modules:**
+- Issue: Several core files combine many concerns (state, UI orchestration, side effects, and persistence) and exceed maintainable size.
+- Files: `src/components/ai-elements/prompt-input.tsx`, `src/lib/ai/webllm-transport.ts`, `src/store/conversationModelStore.ts`, `src/components/ui/sidebar.tsx`, `src/components/landing/DocumentVaultAnimation.tsx`
+- Impact: Slower onboarding, higher regression risk, and difficult targeted testing for small changes.
+- Fix approach: Split each file by responsibility (state hooks, rendering, adapters, utilities), keep public facade files thin, and add file-level unit tests per extracted unit.
 
-### Missing Core Infrastructure
+**Inconsistent coding style and typing strictness in imported-style components:**
+- Issue: Some components use looser typing (`any`, broad casts) and different style conventions than the rest of the TypeScript codebase.
+- Files: `src/components/GradualBlur.tsx`, `src/components/ai-elements/prompt-input.tsx`, `src/components/ai-elements/schema-display.tsx`
+- Impact: Reduced static safety and harder lint/type-driven refactoring.
+- Fix approach: Replace `any` with explicit types, remove cast-heavy patterns, and align formatting/import/type conventions with project-wide rules.
 
-**Web Worker Infrastructure:**
-- **Issue:** AI inference worker is not implemented
-- **Files:** `/Users/poak/Documents/personal-project/Lokul/src/workers/inference.worker.ts` (empty)
-- **Impact:** Cannot run AI models; core feature blocked
-- **Requirements per CLAUDE.md:**
-  - WebLLM engine initialization
-  - Message handling (INIT, GENERATE, ABORT)
-  - Progress callbacks
-  - Streaming response handling
-  - Error handling
+**Global mutable module state for runtime behavior:**
+- Issue: Cross-instance state is stored in module-level singletons instead of scoped stores/hooks.
+- Files: `src/components/Chat/AIChatInterface.tsx`, `src/store/conversationModelStore.ts`, `src/lib/memory/compaction.ts`, `src/hooks/useMemory.ts`
+- Impact: Hidden coupling across route changes and test runs; behavior depends on prior app history in the same session.
+- Fix approach: Move state to scoped Zustand slices or hook-local state with explicit lifecycle reset points.
 
-**Storage Layer:**
-- **Issue:** No IndexedDB/Dexie implementation
-- **Files:** All files in `/Users/poak/Documents/personal-project/Lokul/src/lib/storage/` are empty
-- **Impact:** Cannot persist conversations, memory, or settings
-- **Requirements:**
-  - Database schema (conversations, memory, settings)
-  - CRUD operations
-  - Migration strategy
+## Known Bugs
 
-**State Management:**
-- **Issue:** No Zustand stores implemented
-- **Files:** All files in `/Users/poak/Documents/personal-project/Lokul/src/store/` are empty
-- **Impact:** No application state management
-- **Requirements:**
-  - Chat store (messages, streaming state)
-  - Model store (current model, download progress)
-  - Settings store (user preferences)
-  - UI store (sidebar, panels)
+**`refresh` API does not trigger memory reload:**
+- Symptoms: Calling `refresh()` from memory hook does not fetch new memory data.
+- Files: `src/hooks/useMemory.ts`
+- Trigger: `refresh()` increments `setRefreshTick`, but that state is not consumed by `useLiveQuery` dependencies.
+- Workaround: Rely on Dexie live updates only; manual refresh is currently ineffective.
 
-**AI Integration:**
-- **Issue:** No WebLLM integration
-- **Files:** All files in `/Users/poak/Documents/personal-project/Lokul/src/lib/ai/` are empty
-- **Impact:** Cannot load or run AI models
-- **Requirements:**
-  - Model configurations (Quick/Smart/Genius modes)
-  - Inference orchestration
-  - Context window management
+**`refreshConversations` API is a no-op:**
+- Symptoms: Calling conversation refresh does not re-query conversation data.
+- Files: `src/hooks/useConversations.ts`
+- Trigger: `refreshConversations()` only clears local error state and does not invalidate/re-run query.
+- Workaround: Data updates only when Dexie change notifications fire naturally.
+
+**`syncHiddenInput` prop is exposed but intentionally non-functional:**
+- Symptoms: Consumers can pass `syncHiddenInput`, but file input synchronization behavior is not actually supported.
+- Files: `src/components/ai-elements/prompt-input.tsx`
+- Trigger: Code comment marks it as no longer functional; logic only clears input value when files are empty.
+- Workaround: Avoid relying on native hidden file input sync; use component callback outputs instead.
 
 ## Security Considerations
 
-### No Input Validation
-- **Issue:** No validation utilities implemented
-- **Files:** `/Users/poak/Documents/personal-project/Lokul/src/lib/utils/validators.ts` (doesn't exist)
-- **Impact:** XSS vulnerabilities when rendering user content
-- **Requirements per CLAUDE.md:**
-  - Message length validation (max 10,000 chars)
-  - Content sanitization
-  - Markdown rendering security (DOMPurify or react-markdown)
+**Potential XSS surface via unsanitized `dangerouslySetInnerHTML`:**
+- Risk: If untrusted `children` is passed to path display, HTML can be injected into the DOM.
+- Files: `src/components/ai-elements/schema-display.tsx`
+- Current mitigation: Regex-based highlighting for path placeholders; no explicit sanitizer in this component.
+- Recommendations: Sanitize string inputs before injection or render highlighted tokens via React element composition without raw HTML.
 
-### No Error Boundaries
-- **Issue:** React error boundaries not implemented
-- **Impact:** Application crashes will unmount entire UI
-- **Fix approach:** Implement ErrorBoundary component per CLAUDE.md pattern
+**Permissive embedded preview iframe policy:**
+- Risk: Previewed pages run with `allow-same-origin` and `allow-scripts`, increasing exposure when loading untrusted URLs.
+- Files: `src/components/ai-elements/web-preview.tsx`
+- Current mitigation: `sandbox` is present.
+- Recommendations: Remove `allow-same-origin` by default, gate risky capabilities behind explicit opt-in, and enforce URL allowlists when used in production-facing surfaces.
+
+**Sensitive data exports are unencrypted:**
+- Risk: Exported conversation files are plain JSON/markdown/text and can leak private data if shared or stored insecurely.
+- Files: `src/lib/storage/conversation-transfer.ts`
+- Current mitigation: Schema validation on import path.
+- Recommendations: Add optional passphrase-based encryption for export/import and clear user warnings before export.
 
 ## Performance Bottlenecks
 
-### No WebGPU Detection
-- **Issue:** GPU detection not implemented
-- **Files:** `/Users/poak/Documents/personal-project/Lokul/src/lib/performance/gpu-detection.ts` (empty)
-- **Impact:** Cannot detect browser capabilities or provide fallbacks
-- **Requirements:**
-  - WebGPU support detection
-  - Memory capacity estimation
-  - Performance tier classification
+**Repeated GPU adapter probing on interval:**
+- Problem: Performance panel requests detailed GPU info on each refresh interval.
+- Files: `src/components/performance/PerformancePanel.tsx`, `src/lib/performance/gpu-detection.ts`
+- Cause: `refreshData()` calls `getGPUInfo()` every 5 seconds and `getGPUInfo()` calls `navigator.gpu.requestAdapter(...)`.
+- Improvement path: Cache adapter/device metadata for session duration and only refresh on explicit user action.
 
-### No Memory Monitoring
-- **Issue:** Memory tracking not implemented
-- **Files:** `/Users/poak/Documents/personal-project/Lokul/src/lib/performance/memory-monitor.ts` (empty)
-- **Impact:** Cannot prevent out-of-memory crashes
-- **Risk:** Browser crashes when loading large models (6.4GB Genius mode)
+**High-frequency persistence of full conversation snapshots during chat:**
+- Problem: Large conversation payloads can be repeatedly written while messages stream.
+- Files: `src/hooks/use-ai-chat-persistence.ts`, `src/lib/storage/conversations.ts`
+- Cause: Debounced persistence writes full conversation snapshots with message arrays rather than append/delta updates.
+- Improvement path: Persist incremental message deltas, batch token-stream updates, and commit final assistant message once per response.
 
-### No Performance Metrics
-- **Issue:** Performance tracking not implemented
-- **Files:** `/Users/poak/Documents/personal-project/Lokul/src/lib/performance/metrics.ts` (empty)
-- **Impact:** Cannot measure response times or optimize
-- **Requirements per PRD:**
-  - < 30 seconds first load (Quick Mode)
-  - < 3 seconds average response time
-  - < 100ms UI lag during streaming
+**Heavy animation state churn in landing demo components:**
+- Problem: Animation scenes perform many sequential state updates and timeout-driven loops.
+- Files: `src/components/landing/DocumentVaultAnimation.tsx`, `src/components/landing/PrivacyAnimation.tsx`
+- Cause: Long scripted sequences with frequent `setState` calls and multiple async timeout chains.
+- Improvement path: Move sequences to timeline abstractions, reduce state writes, and pause animations when offscreen.
 
 ## Fragile Areas
 
-### Missing PWA Configuration
-- **Issue:** Service worker and manifest not configured
-- **Files:**
-  - `/Users/poak/Documents/personal-project/Lokul/public/manifest.json` (exists but needs verification)
-  - `/Users/poak/Documents/personal-project/Lokul/src/lib/pwa/` (empty)
-- **Impact:** Offline mode (core feature) will not work
-- **Requirements:**
-  - vite-plugin-pwa configuration
-  - Service worker for offline caching
-  - Model asset caching strategy
+**Model loading queue and cancellation orchestration:**
+- Files: `src/store/conversationModelStore.ts`, `src/lib/ai/model-engine.ts`, `src/store/modelStore.ts`
+- Why fragile: Queue, cancellation, lifecycle transitions, and cross-store synchronization are distributed across multiple module-level states and async flows.
+- Safe modification: Add integration tests before changes; preserve ordering guarantees for `queue`, `loadingModelId`, and `engineLoadedModelId`; modify one transition path at a time.
+- Test coverage: Partial (`src/store/modelStore.test.ts`) with no E2E route/model switching coverage.
 
-### No Memory Management
-- **Issue:** Memory fact extraction and compaction not implemented
-- **Files:** `/Users/poak/Documents/personal-project/Lokul/src/lib/memory/` (doesn't exist)
-- **Impact:** Cannot persist user preferences/context across sessions
-- **Requirements per PRD:**
-  - Fact extraction from conversations
-  - Context window management
-  - Auto-compaction logic
+**Streaming transport stall recovery and fallback trimming:**
+- Files: `src/lib/ai/webllm-transport.ts`, `src/lib/memory/compaction.ts`, `src/lib/memory/context-builder.ts`
+- Why fragile: Stall detection, iterator draining, model re-initialization, and context truncation interact in one path.
+- Safe modification: Keep behavior-driven tests for abort/stall/retry scenarios; verify token-stream lifecycle (`text-start`, `text-delta`, `text-end`) on each change.
+- Test coverage: No direct tests for transport stall recovery or truncation fallback behavior.
 
-## Test Coverage Gaps
-
-### No Testing Framework
-- **Issue:** No test files or configuration
-- **Impact:** Cannot verify functionality or prevent regressions
-- **Requirements per CLAUDE.md:**
-  - Vitest for unit testing
-  - React Testing Library for components
-  - Test coverage for:
-    - Token calculation
-    - Context building
-    - Storage operations
-    - Component rendering
+**Prompt input attachment lifecycle and form behavior:**
+- Files: `src/components/ai-elements/prompt-input.tsx`
+- Why fragile: Combines provider/local modes, drag-drop, paste uploads, object URL lifecycle, and async conversion in one component.
+- Safe modification: Extract file lifecycle utilities and test attachment add/remove/cleanup paths independently.
+- Test coverage: Not detected for this component.
 
 ## Scaling Limits
 
-### Model Download Strategy
-- **Issue:** No download management implemented
-- **Impact:** Users cannot download models; core feature blocked
-- **Requirements per PRD:**
-  - Quick Mode: Phi-2 2.7B (~80MB) - auto-load
-  - Smart Mode: Llama 3.2 3B (~2.8GB) - optional
-  - Genius Mode: Mistral 7B (~6.4GB) - optional
-  - Background download with progress
-  - Storage quota handling
+**Context window ceilings are fixed by model map/fallback:**
+- Current capacity: Hardcoded context windows (e.g., `2048` and `8192`) and compaction threshold ratio `0.8`.
+- Limit: Large conversations trigger increasingly aggressive trimming/truncation, reducing response quality.
+- Scaling path: Introduce model-aware dynamic context policies, summarize archived turns, and persist compacted summaries separately.
 
-### Browser Compatibility
-- **Issue:** No browser detection or fallbacks
-- **Impact:** Will fail silently on unsupported browsers
-- **Requirements:**
-  - Chrome 120+ and Edge 120+ support
-  - WebGPU fallback handling
-  - Clear error messages for unsupported browsers
+**Conversation storage writes entire message arrays:**
+- Current capacity: Each save writes full `Conversation.messages` payload.
+- Limit: Large threads increase write latency and conflict probability in IndexedDB transactions.
+- Scaling path: Use append-only message table with conversation metadata table and periodic compaction.
 
-## Dependency Risks
+## Dependencies at Risk
 
-### Core Dependencies Not Installed
-- **Risk:** All dependencies need installation
-- **High-risk packages:**
-  - @mlc-ai/web-llm: Core AI functionality (complex integration)
-  - WebLLM model downloads: Large assets (up to 6.4GB)
-  - Web Workers: Complex threading model
-  - IndexedDB: Storage limitations vary by browser
-
-### Missing Development Tools
-- **Issue:** No linting, formatting, or type-checking configured
-- **Impact:** Code quality cannot be maintained
-- **Requirements per CLAUDE.md:**
-  - ESLint configuration
-  - Prettier configuration
-  - TypeScript strict mode
+**Potential duplicate motion dependency footprint:**
+- Risk: `package.json` includes both `framer-motion` and `motion`, while source imports consistently use `framer-motion`.
+- Impact: Larger dependency surface and possible version drift/confusion over animation API source.
+- Migration plan: Audit imports and remove unused package(s) after lockfile validation and bundle-size check.
 
 ## Missing Critical Features
 
-### Chat Interface (Core Feature)
-- **Status:** Not implemented
-- **Components needed:**
-  - `ChatInterface.tsx` (main container)
-  - `MessageList.tsx` (virtualized list)
-  - `Message.tsx` (individual message)
-  - `MessageInput.tsx` (auto-resize input)
-  - `StreamingMessage.tsx` (streaming indicator)
+**No encrypted backup/export flow for privacy-sensitive conversations:**
+- Problem: Privacy-first positioning is weakened when exported backups are plaintext.
+- Blocks: Safe user-managed backup/transfer for sensitive chats on shared devices or cloud drives.
 
-### Model Selector (Core Feature)
-- **Status:** Not implemented
-- **Components needed:**
-  - `ModelSelector.tsx` (dropdown)
-  - `ModelCard.tsx` (model info)
-  - `DownloadProgress.tsx` (progress UI)
+**No robust manual data refresh hooks despite exposed APIs:**
+- Problem: Public refresh methods exist but do not trigger reload in memory/conversation hooks.
+- Blocks: Reliable "refresh now" UX for settings panels, admin/debug tooling, and deterministic recovery flows.
 
-### First-Run Experience (Core Feature)
-- **Status:** Not implemented
-- **Components needed:**
-  - `FirstRunSetup.tsx` (initial setup flow)
-  - `LoadingScreen.tsx` (model loading UI)
+## Test Coverage Gaps
 
-## Implementation Priority
+**Chat transport and persistence failure paths:**
+- What's not tested: Streaming stall recovery, abort races, idempotency replay handling, and persistence recovery UI behavior.
+- Files: `src/lib/ai/webllm-transport.ts`, `src/hooks/use-ai-chat-persistence.ts`, `src/components/Chat/AIChatInterface.tsx`
+- Risk: Regressions can silently corrupt chat state or lose generated responses.
+- Priority: High
 
-**Phase 1 (Critical):**
-1. Install dependencies
-2. Configure TypeScript, Vite, Tailwind
-3. Implement basic React app structure
-4. Set up Web Worker scaffold
+**Prompt input file lifecycle and attachment conversion:**
+- What's not tested: Blob URL cleanup, conversion failure handling, provider/local mode parity, and drag-drop edge cases.
+- Files: `src/components/ai-elements/prompt-input.tsx`
+- Risk: Memory leaks, broken uploads, and inconsistent submit behavior.
+- Priority: High
 
-**Phase 2 (Core):**
-1. Implement WebLLM integration
-2. Build chat interface components
-3. Add storage layer (Dexie.js)
-4. Set up state management (Zustand)
+**Performance and browser capability flows:**
+- What's not tested: GPU detection fallbacks, interval update behavior, and unsupported browser messaging.
+- Files: `src/lib/performance/gpu-detection.ts`, `src/components/performance/PerformancePanel.tsx`, `src/lib/performance/memory-monitor.ts`
+- Risk: False capability reporting and degraded UX on unsupported devices.
+- Priority: Medium
 
-**Phase 3 (Essential):**
-1. Add PWA configuration
-2. Implement error boundaries
-3. Add input validation
-4. Set up testing framework
-
-**Phase 4 (Polish):**
-1. Add performance monitoring
-2. Implement memory management
-3. Add GPU detection
-4. Complete test coverage
+**Coverage breadth across core modules remains limited:**
+- What's not tested: Most routes/hooks/stores/components beyond four current tests.
+- Files: `src/components/chat-layout/ChatLayout.mobile-sidebar-regression.test.tsx`, `src/lib/storage/conversation-transfer.test.ts`, `src/lib/memory/extraction.test.ts`, `src/store/modelStore.test.ts`
+- Risk: Critical behavior changes can ship without automated detection.
+- Priority: High
 
 ---
 
-*Concerns audit: 2026-02-17*
+*Concerns audit: 2026-02-23*

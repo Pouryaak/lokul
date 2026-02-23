@@ -1,128 +1,82 @@
 # Technology Stack
 
-**Analysis Date:** 2026-02-17
+**Analysis Date:** 2026-02-23
 
 ## Languages
 
 **Primary:**
-- TypeScript - All application code, type safety across entire codebase
-- TSX - React component files
+- TypeScript 5.9.x - Application and domain logic in `src/**/*.ts` and React UI in `src/**/*.tsx`; compiler config in `tsconfig.json`.
 
 **Secondary:**
-- HTML5 - PWA manifest and base template
-- CSS3 - Tailwind CSS processing
-- SVG - Logo and icon assets (`/Users/poak/Documents/personal-project/Lokul/public/lokul-logo.png`)
+- CSS (Tailwind CSS v4 syntax) - Global theming and utility layers in `src/styles/globals.css`.
+- HTML - Single-page shell in `index.html`.
 
 ## Runtime
 
 **Environment:**
-- Browser-based application (Chrome 113+ or Edge 113+)
-- WebGPU-capable modern browsers
-- No Node.js runtime in production (100% client-side)
+- Browser runtime (WebGPU required for inference) enforced by checks in `src/lib/performance/gpu-detection.ts` and worker-based inference in `src/lib/ai/inference.ts`.
+- Node.js 18+ for local development and build/test tooling documented in `README.md`.
 
 **Package Manager:**
-- npm (inferred from standard Node.js project structure)
-- Lockfile: Not present (scaffolded project state)
+- npm (scripts in `package.json`).
+- Lockfile: present (`package-lock.json`, lockfileVersion 3).
 
 ## Frameworks
 
 **Core:**
-- React 18 - UI framework, component-based architecture
-- Vite - Build tool and development server (`/Users/poak/Documents/personal-project/Lokul/vite.config.ts`)
-- Tailwind CSS - Utility-first CSS framework (`/Users/poak/Documents/personal-project/Lokul/tailwind.config.ts`)
+- React 19.2.4 - UI layer entry in `src/main.tsx`, routed app composition in `src/App.tsx`.
+- React Router 7.13.0 - Client routing in `src/App.tsx` and route modules under `src/routes/`.
+- Vite 6.4.1 - Dev server and build pipeline configured in `vite.config.ts`.
 
-**AI/ML Infrastructure:**
-- WebLLM - Browser-based LLM inference engine (from README tech stack)
-- WebGPU - GPU acceleration API for model inference
+**Testing:**
+- Vitest 3.2.4 - Test runner via `npm run test` in `package.json` with tests in files like `src/lib/memory/extraction.test.ts` and `src/store/modelStore.test.ts`.
+- Testing Library (React + user-event) - Component testing dependencies declared in `package.json`.
 
-**Storage:**
-- IndexedDB - Client-side database for conversations and data persistence
-- Service Workers - Offline support and PWA functionality
-
-**State Management (Planned - per CLAUDE.md):**
-- Zustand - Lightweight state management with persistence middleware
-
-**Database (Planned - per CLAUDE.md):**
-- Dexie.js - IndexedDB wrapper for easier database operations
+**Build/Dev:**
+- TypeScript compiler 5.9.3 - Type-check/build gate via `tsconfig.json` and `npm run type-check` in `package.json`.
+- ESLint 9 + typescript-eslint - Lint and architecture checks in `eslint.config.js` and scripts in `package.json`.
+- Prettier 3 + `prettier-plugin-tailwindcss` - Formatting rules in `.prettierrc`.
+- Tailwind CSS 4 + `@tailwindcss/vite` - Styling system in `src/styles/globals.css` and plugin setup in `vite.config.ts`.
+- `vite-plugin-pwa` - PWA/service worker build integration in `vite.config.ts`, manifest served from `public/manifest.json`.
 
 ## Key Dependencies
 
-**Critical (Inferred from CLAUDE.md and README):**
-- `@mlc-ai/web-llm` - WebLLM library for running LLMs in browser
-- `react` / `react-dom` - Core React libraries
-- `zustand` - State management
-- `dexie` - IndexedDB abstraction
-- `tailwindcss` - Styling framework
+**Critical:**
+- `@mlc-ai/web-llm` (^0.2.80) - Local LLM inference engine used in `src/lib/ai/inference.ts` and worker bridge in `src/workers/inference.worker.ts`.
+- `ai` (^6.0.90) + `@ai-sdk/react` (^3.0.92) - Chat UI transport and streaming contracts in `src/lib/ai/webllm-transport.ts` and `src/hooks/useAIChat.ts`.
+- `dexie` (^4.3.0) + `dexie-react-hooks` (^1.1.7) - IndexedDB persistence layer in `src/lib/storage/db.ts` and data hooks like `src/hooks/useConversations.ts`.
+- `zustand` (^5.0.11) - Client state management in `src/store/modelStore.ts`, `src/store/settingsStore.ts`, `src/store/memoryStore.ts`, and `src/store/conversationModelStore.ts`.
 
-**UI Components (Planned - per CLAUDE.md):**
-- shadcn/ui - Headless UI component library
-- `class-variance-authority` - Component variant management
-- `clsx` / `tailwind-merge` - Class name utilities
+**Infrastructure:**
+- `vite-plugin-pwa` (^0.21.2) - Offline/runtime caching integration in `vite.config.ts` with SW registration usage in `src/components/performance/StatusIndicator.tsx`.
+- `react-router-dom` (^7.13.0) - Route-driven shell and chat pages in `src/App.tsx` and `src/routes/*.tsx`.
+- `@rive-app/react-webgl2` (^4.27.0) - WebGL-based animated persona rendering in `src/components/ai-elements/persona.tsx`.
+- `streamdown` + related packages - Markdown/chat rendering styles imported in `src/main.tsx` and sourced in `src/styles/globals.css`.
 
-**Performance & Experience:**
-- Web Workers - For AI inference offloading (`/Users/poak/Documents/personal-project/Lokul/src/workers/inference.worker.ts`)
-- Service Workers - PWA and offline support
-
-## Development Tooling
-
-**Linting & Formatting:**
-- ESLint 9 - JavaScript/TypeScript linting with flat config (`eslint.config.js`)
-  - TypeScript ESLint plugin for type-aware rules
-  - React Hooks plugin (rules-of-hooks, exhaustive-deps)
-  - React Refresh plugin for Fast Refresh validation
-- Prettier 3 - Code formatting with Tailwind CSS plugin
-- VS Code workspace settings (`.vscode/settings.json`)
-  - Auto-format on save
-  - ESLint auto-fix on save
-  - Import organization on save
-
-**Build Configuration:**
-- `/Users/poak/Documents/personal-project/Lokul/vite.config.ts` - Vite build configuration
-- `/Users/poak/Documents/personal-project/Lokul/tsconfig.json` - TypeScript configuration
-- `/Users/poak/Documents/personal-project/Lokul/eslint.config.js` - ESLint flat config
-- `/Users/poak/Documents/personal-project/Lokul/.prettierrc` - Prettier configuration
+## Configuration
 
 **Environment:**
-- `/Users/poak/Documents/personal-project/Lokul/.env.example` - Environment variables template (scaffolded, empty)
-- No environment variables required for core functionality (privacy-first, no API keys needed)
+- Runtime env access uses Vite env surface (`import.meta.env`) in files such as `src/lib/ai/inference.ts` and `src/lib/storage/db.ts`.
+- Required custom env vars for core runtime: Not detected in source (`VITE_*` keys not referenced in `src/`).
+- Environment template exists: `.env.example` (present; contents intentionally not inspected).
 
-**PWA Configuration:**
-- `/Users/poak/Documents/personal-project/Lokul/public/manifest.json` - PWA manifest with basic configuration
-  - Name: "Lokul"
-  - Short name: "Lokul"
-  - Display mode: standalone
-  - Start URL: /
+**Build:**
+- `vite.config.ts` - React plugin, Tailwind plugin, PWA plugin, path alias, worker format.
+- `tsconfig.json` and `tsconfig.node.json` - TypeScript and path alias configuration.
+- `eslint.config.js` - Flat ESLint configuration and architecture constraints.
+- `.prettierrc` - Formatting policy.
+- `public/manifest.json` and `index.html` - PWA manifest wiring and app shell metadata.
 
 ## Platform Requirements
 
 **Development:**
-- Node.js 18+ (LTS recommended)
-- npm or pnpm
-- Modern code editor (VS Code recommended)
+- Node.js 18+ and npm documented in `README.md`.
+- Modern browser for local verification (WebGPU checks and browser guidance in `src/lib/performance/gpu-detection.ts`).
 
-**Production (Client Requirements):**
-- Chrome 113+ or Edge 113+ (WebGPU support required)
-- 4GB+ available RAM (minimum for Quick mode)
-- Modern graphics card (integrated or discrete) with WebGPU support
-- Storage: Varies by model (80MB - 6.4GB per model)
-
-**Deployment:**
-- Static hosting (no server-side processing required)
-- HTTPS required for Service Worker and PWA functionality
-- CDN recommended for fast model downloads
-
-## Model Specifications
-
-**Supported Models:**
-- Quick Mode: ~80MB (lightweight, fast responses)
-- Smart Mode: ~2.8GB (comparable to ChatGPT 3.5)
-- Genius Mode: ~6.4GB (approaching ChatGPT 4 quality)
-
-**Model Sources:**
-- Phi (Microsoft) - MIT License
-- Llama (Meta) - Llama License
-- Mistral (Mistral AI) - Apache 2.0
+**Production:**
+- Static SPA deployment target (Vite-built assets) with browser-side inference and storage; entry shell in `index.html` and client bootstrap in `src/main.tsx`.
+- Browser must support WebGPU (hard requirement in `src/lib/performance/gpu-detection.ts`).
 
 ---
 
-*Stack analysis: 2026-02-17*
+*Stack analysis: 2026-02-23*
