@@ -1,7 +1,7 @@
 # State: Lokul
 
 **Project:** Privacy-first AI chat that runs 100% in the browser using WebGPU
-**Status:** Defining requirements for v1.1
+**Status:** Roadmap created, ready for Phase 6 planning
 **Updated:** 2026-02-23
 
 ---
@@ -22,15 +22,30 @@
 ## Current Position
 
 **Milestone:** v1.1 UI Polish + Search + Delete
-**Phase:** Not started (defining requirements)
-**Plan:** —
-**Status:** Defining requirements
-**Last Activity:** 2026-02-23 — Milestone v1.1 started
+**Phase:** Phase 6 (Search, Delete & Shortcuts)
+**Plan:** Not started
+**Status:** Roadmap created, awaiting planning
+**Last Activity:** 2026-02-23 — Roadmap created with 2 phases (Phase 6, Phase 7)
 
 **Progress:**
 
-[░░░░░░░░░░] 0%
-[--------------------] 0% (Milestone v1.1 not started)
+```
+v1.1 Progress: [░░░░░░░░░░] 0%
+
+Phase 6: Search, Delete & Shortcuts [Not started]
+Phase 7: UI/UX Polish [Not started]
+```
+
+---
+
+## v1.1 Roadmap Summary
+
+| Phase | Goal | Requirements | Plans |
+|-------|------|--------------|-------|
+| 6. Search, Delete & Shortcuts | Search, delete, keyboard navigation | SRCH-01 to SRCH-05, DEL-01 to DEL-04, KEY-01 to KEY-03 | 3 plans |
+| 7. UI/UX Polish | Visual consistency | UX-01 to UX-04 | 2 plans |
+
+**Total v1.1 Requirements:** 16 (100% mapped)
 
 ---
 
@@ -64,14 +79,23 @@
 
 ## v1.1 Target Features
 
-- [ ] Full-text search across all conversations
-- [ ] Chat deletion via 3-dot menu with confirmation
+- [ ] Full-text search across all conversations (MiniSearch 7.2.0)
+- [ ] Chat deletion via 3-dot menu with confirmation (existing DropdownMenu + ConfirmDialog)
 - [ ] UI/UX polish (buttons, panels, colors, consistency)
-- [ ] Keyboard shortcuts
+- [ ] Keyboard shortcuts (react-hotkeys-hook 5.2.4)
 
 ---
 
 ## Accumulated Context
+
+### Decisions Made (v1.1)
+
+| Date | Decision | Rationale |
+|------|----------|-----------|
+| 2026-02-23 | 2-phase structure for v1.1 | Core features (search, delete, shortcuts) cluster naturally; UI polish is separate cleanup pass |
+| 2026-02-23 | MiniSearch for full-text search | Actively maintained, zero dependencies, browser-native, better than abandoned Lunr.js |
+| 2026-02-23 | react-hotkeys-hook for shortcuts | React-specific, actively maintained, excellent DX with useHotkeys hook |
+| 2026-02-23 | Use existing DropdownMenu + ConfirmDialog | No new shadcn components needed, reuse existing patterns |
 
 ### Decisions Made (v1.0)
 
@@ -104,14 +128,15 @@ All critical technical debt from v1.0 was addressed in Phase 2.2:
 
 ## Session Continuity
 
-**Last Action:** Milestone v1.1 kickoff — requirements definition
-**Next Action:** Define requirements → Create roadmap → Execute Phase 6
+**Last Action:** Roadmap created for v1.1 (Phase 6, Phase 7)
+**Next Action:** Run `/gsd-plan-phase 6` to create implementation plans
 
 **Key Files:**
-- `.planning/PROJECT.md` - Project definition (updated for v1.1)
-- `.planning/REQUIREMENTS.md` - v1.1 requirements (to be defined)
-- `.planning/ROADMAP.md` - Phase structure (to be updated)
+- `.planning/PROJECT.md` - Project definition (v1.1 active)
+- `.planning/REQUIREMENTS.md` - v1.1 requirements (16 mapped)
+- `.planning/ROADMAP.md` - Phase structure (updated with Phase 6, 7)
 
 ---
 
 *Milestone v1.1 started: 2026-02-23*
+*Roadmap created: 2026-02-23*

@@ -9,6 +9,7 @@
 
 ## Phases
 
+### v1.0 (COMPLETE)
 - [x] **Phase 1: Core Infrastructure** - Foundation for local AI inference with Web Workers, GPU detection, and offline capability
 - [x] **Phase 2: Chat Interface** - Streaming chat with markdown, conversation storage, and basic performance monitoring
 - [x] **Phase 2.1: AI SDK UI Migration with Routing** - Add routing (/chat, /chat/[id]), integrate AI SDK UI with WebLLM, use ai-elements components
@@ -17,9 +18,15 @@
 - [x] **Phase 4: Memory System** - Three-tier memory (Core Facts + Daily Context + Recent Messages) with auto-compaction (completed 2026-02-19)
 - [ ] **Phase 5: Polish & PWA** - Performance panel, responsive design, export/import, and PWA features
 
+### v1.1 (Current Milestone)
+- [ ] **Phase 6: Search, Delete & Shortcuts** - Full-text search across conversations, delete flow with confirmation, global keyboard shortcuts
+- [ ] **Phase 7: UI/UX Polish** - Consistent button styling, panel spacing, design system colors, responsive refinement
+
 ---
 
 ## Progress
+
+### v1.0 Phases
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -30,6 +37,13 @@
 | 3. Model Management | 3/3 | Complete | 2026-02-19 |
 | 4. Memory System | 3/6 | Complete    | 2026-02-19 |
 | 5. Polish & PWA | 0/3 | Not started | - |
+
+### v1.1 Phases
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 6. Search, Delete & Shortcuts | 0/3 | Not started | - |
+| 7. UI/UX Polish | 0/2 | Not started | - |
 
 ---
 
@@ -267,7 +281,87 @@ Plans:
 
 ---
 
+### Phase 6: Search, Delete & Shortcuts (v1.1)
+
+**Goal:** Users can search across all conversations with command palette UX, delete chats via intuitive 3-dot menu, and navigate efficiently with global keyboard shortcuts
+
+**Depends on:** Phase 5 (builds on polished UI foundation)
+
+**Requirements:** SRCH-01, SRCH-02, SRCH-03, SRCH-04, SRCH-05, DEL-01, DEL-02, DEL-03, DEL-04, KEY-01, KEY-02, KEY-03
+
+**Success Criteria** (what must be TRUE):
+
+1. User can press Cmd/Ctrl+K from anywhere to open search overlay
+2. User can type a query and see matching messages with conversation titles and context
+3. User can click a search result to navigate directly to that conversation
+4. User can access search from sidebar (button above New Chat)
+5. User can click 3-dot menu on any conversation item in sidebar
+6. User sees "Delete" option in 3-dot menu and confirmation dialog before deletion
+7. Confirmed deletion removes conversation from IndexedDB and sidebar immediately
+8. User can press Cmd/Ctrl+N to create a new conversation from anywhere
+9. User can press Escape to close search, modals, or open panels
+
+**Plans:** 3 plans in 2 waves
+
+**Wave 1** (parallel):
+- [ ] 06-01-PLAN.md — Full-text search with MiniSearch (index building, search UI, result navigation)
+- [ ] 06-02-PLAN.md — Delete flow (3-dot DropdownMenu, ConfirmDialog, IndexedDB removal)
+
+**Wave 2** (depends on Wave 1):
+- [ ] 06-03-PLAN.md — Global keyboard shortcuts with react-hotkeys-hook (Cmd+K, Cmd+N, Escape)
+
+---
+
+### Phase 7: UI/UX Polish (v1.1)
+
+**Goal:** Users experience visual consistency across the entire application with polished buttons, panels, colors, and responsive behavior
+
+**Depends on:** Phase 6 (search and delete features complete)
+
+**Requirements:** UX-01, UX-02, UX-03, UX-04
+
+**Success Criteria** (what must be TRUE):
+
+1. All buttons throughout the app use consistent variants (primary, secondary, ghost, destructive) from the design system
+2. All panels (sidebar, settings, memory panel, search overlay) have consistent spacing (p-4, gap-3) and visual hierarchy
+3. Colors across the app match the design system (no hardcoded colors, only Tailwind semantic tokens)
+4. App layout renders correctly on desktop (1200px+) and mobile viewports (375px+) without overflow or broken interactions
+
+**Plans:** 2 plans (parallel)
+
+- [ ] 07-01-PLAN.md — Button and panel consistency audit (identify inconsistencies, apply design system)
+- [ ] 07-02-PLAN.md — Responsive design refinement (mobile sidebar drawer, touch targets, viewport testing)
+
+---
+
 ## Coverage Validation
+
+### v1.0 Requirements
+
+| Category | Count | Phases |
+|----------|-------|--------|
+| CHAT | 10 | Phase 2 (8), Phase 5 (2) |
+| MODEL | 8 | Phase 1 (2), Phase 3 (6) |
+| PERF | 7 | Phase 1 (3), Phase 2 (4) |
+| STOR | 9 | Phase 1 (1), Phase 2 (4), Phase 5 (4) |
+| OFFL | 5 | Phase 1 (5) |
+| FIRST | 6 | Phase 1 (5), Phase 3 (1) |
+| MEM | 7 | Phase 4 (7) |
+| **Total** | **56** | **100% mapped** |
+
+**Coverage Status:** All 56 v1 requirements mapped to exactly one phase. No orphans. No duplicates.
+
+### v1.1 Requirements
+
+| Category | Count | Phases |
+|----------|-------|--------|
+| SRCH | 5 | Phase 6 (5) |
+| DEL | 4 | Phase 6 (4) |
+| KEY | 3 | Phase 6 (3) |
+| UX | 4 | Phase 7 (4) |
+| **Total** | **16** | **100% mapped** |
+
+**Coverage Status:** All 16 v1.1 requirements mapped to exactly one phase. No orphans. No duplicates.
 
 | Category | Count | Phases |
 |----------|-------|--------|
@@ -306,19 +400,29 @@ Phase 4 (Memory System)
     |
     v
 Phase 5 (Polish & PWA)
+    |
+    v
+Phase 6 (Search, Delete & Shortcuts) [v1.1]
+    |
+    v
+Phase 7 (UI/UX Polish) [v1.1]
 ```
 
 **Key Dependency Rationale:**
 
 - **Phase 1 before all:** Web Worker architecture and GPU detection must be established first.
 - **Phase 2/2.1 before 2.2:** Must have working code before stabilizing it.
-- **Phase 2.2 before 3/4/5:** Model Management, Memory, and Polish need a stable, bug-free foundation. Building on shaky ground creates unfixable bugs.
+- **Phase 2.2 before 3/4/5:** Model Management, Memory, and Polish need a stable, bug-free foundation.
+- **Phase 5 before 6:** Search and delete UI should build on polished foundation.
+- **Phase 6 before 7:** UI polish audit covers search/delete features added in Phase 6.
 
 ---
 
 ## Research Flags
 
 Phases needing deeper research during planning:
+
+### v1.0 Phases
 
 | Phase | Flag | Reason |
 |-------|------|--------|
@@ -328,6 +432,13 @@ Phases needing deeper research during planning:
 | Phase 1 | LOW | Well-documented WebLLM worker patterns |
 | Phase 2 | LOW | Standard React + streaming patterns |
 | Phase 5 | LOW | Established vite-plugin-pwa patterns |
+
+### v1.1 Phases
+
+| Phase | Flag | Reason |
+|-------|------|--------|
+| Phase 6 | MEDIUM | Search indexing strategies (MiniSearch), index sync with Dexie, main thread blocking pitfalls |
+| Phase 7 | LOW | Standard design system patterns, Tailwind consistency audit |
 
 ---
 
@@ -342,4 +453,4 @@ Phases needing deeper research during planning:
 
 ---
 
-*Last updated: 2026-02-19*
+*Last updated: 2026-02-23 after v1.1 roadmap creation*
