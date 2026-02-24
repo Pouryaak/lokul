@@ -163,8 +163,8 @@ function ChatLayoutContent({
       return;
     }
 
+    // When mobilePanel is "none", don't close the download panel
     setMobileSidebarOpen(false);
-    closeDownloadPanel();
   }, [
     closeDownloadPanel,
     isMobile,

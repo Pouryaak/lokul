@@ -13,7 +13,7 @@ interface ModelRow {
   id: string;
   name: string;
   sizeMB: number;
-  status: DownloadLifecycle;
+  status: DownloadLifecycle | "Ready"; // Internal status for display
   displayStatus: DownloadLifecycle | "Not downloaded";
   progress: number | null;
   etaSeconds: number | null;
@@ -164,7 +164,9 @@ export function DownloadManager() {
 
   const rows = useMemo<ModelRow[]>(() => {
     return MODELS.map((model) => {
-      const status = lifecycleByModel[model.id] ?? "Ready";
+      // IMPORTANT: Don't default to "Ready" - use undefined to indicate no lifecycle state
+      // This prevents hasActivity from becoming false during state transitions
+      const status = lifecycleByModel[model.id];
       const displayStatus = getDisplayStatus(lifecycleByModel[model.id], engineLoadedModelId === model.id);
       const isActiveDownload =
         status === "Downloading" || (status === "Compiling" && downloadProgress?.step === "compiling");
@@ -173,7 +175,7 @@ export function DownloadManager() {
         id: model.id,
         name: model.name,
         sizeMB: model.sizeMB,
-        status,
+        status: status ?? "Ready", // Internal status can default to Ready
         displayStatus,
         progress: isActiveDownload ? (downloadProgress?.percentage ?? 0) : displayStatus === "Ready" ? 100 : null,
         etaSeconds:
@@ -184,8 +186,12 @@ export function DownloadManager() {
     });
   }, [downloadProgress, engineLoadedModelId, lifecycleByModel]);
 
+  // Check for activity using the raw lifecycle state, not the defaulted status
   const hasActivity = rows.some(
-    (row) => row.status === "Queued" || row.status === "Downloading" || row.status === "Compiling"
+    (row) => {
+      const rawLifecycle = lifecycleByModel[row.id];
+      return rawLifecycle === "Queued" || rawLifecycle === "Downloading" || rawLifecycle === "Compiling";
+    }
   );
 
   const activeDownloads = rows.filter((row) => row.status === "Downloading" || row.status === "Compiling");
@@ -205,7 +211,18 @@ export function DownloadManager() {
     <>
       <Popover
         open={isOpen}
-        onOpenChange={(nextOpen) => (nextOpen ? openDownloadManager() : closeDownloadManager())}
+        onOpenChange={(nextOpen) => {
+          // Prevent closing if we have active downloads (Queued, Downloading, or Compiling)
+          if (!nextOpen && hasActivity) {
+            return;
+          }
+
+          if (nextOpen) {
+            openDownloadManager();
+          } else {
+            closeDownloadManager();
+          }
+        }}
       >
         <PopoverTrigger asChild>
           <Button
