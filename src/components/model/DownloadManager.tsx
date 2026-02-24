@@ -49,10 +49,21 @@ function formatTime(seconds: number): string {
   return `${minutes}m ${remainingSeconds}s`;
 }
 
+function getProgressText(status: DownloadLifecycle, progress: number | null): string {
+  if (status === "Compiling") {
+    return "Loading into memory...";
+  }
+  if (status === "Downloading" && progress !== null) {
+    return `Downloading... ${Math.round(progress)}%`;
+  }
+  return "Preparing...";
+}
+
 function StatusBadge({ status }: { status: DownloadLifecycle | "Not downloaded" }) {
   const isReady = status === "Ready";
   const isFailed = status === "Failed";
-  const isDownloading = status === "Downloading" || status === "Compiling";
+  const isDownloading = status === "Downloading";
+  const isCompiling = status === "Compiling";
   const isQueued = status === "Queued";
 
   return (
@@ -61,17 +72,17 @@ function StatusBadge({ status }: { status: DownloadLifecycle | "Not downloaded" 
         "flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide",
         isReady && "bg-emerald-500/10 text-emerald-400",
         isFailed && "bg-red-500/10 text-red-400",
-        isDownloading && "bg-[#FF6B35]/10 text-[#FF6B35]",
+        (isDownloading || isCompiling) && "bg-[#FF6B35]/10 text-[#FF6B35]",
         isQueued && "bg-amber-500/10 text-amber-400",
         status === "Not downloaded" && "bg-muted text-muted-foreground"
       )}
     >
-      {isDownloading && <Loader2 className="h-3 w-3 animate-spin" />}
+      {(isDownloading || isCompiling) && <Loader2 className="h-3 w-3 animate-spin" />}
       {isReady && <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />}
       {isFailed && <div className="h-1.5 w-1.5 rounded-full bg-red-400" />}
       {isQueued && <div className="h-1.5 w-1.5 rounded-full bg-amber-400" />}
       {status === "Not downloaded" && <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />}
-      {status}
+      {status === "Compiling" ? "Loading" : status}
     </div>
   );
 }
@@ -196,6 +207,7 @@ export function DownloadManager() {
 
   const activeDownloads = rows.filter((row) => row.status === "Downloading" || row.status === "Compiling");
   const completedDownloads = rows.filter((row) => row.status === "Ready");
+  const queuedDownloads = rows.filter((row) => row.status === "Queued");
 
   useEffect(() => {
     const hadActivityBefore = previousHasActivityRef.current;
@@ -256,7 +268,9 @@ export function DownloadManager() {
               <div>
                 <h3 className="text-sm font-semibold text-[var(--chat-text-primary)]">Models</h3>
                 <p className="text-[10px] text-muted-foreground">
-                  {completedDownloads.length} ready · {activeDownloads.length} downloading
+                  {completedDownloads.length} ready
+                  {activeDownloads.length > 0 && ` · ${activeDownloads.length} loading`}
+                  {queuedDownloads.length > 0 && ` · ${queuedDownloads.length} queued`}
                 </p>
               </div>
             </div>
@@ -300,9 +314,10 @@ export function DownloadManager() {
                       <p className="text-[11px] text-muted-foreground">{row.sizeMB} MB</p>
 
                       {/* Progress details for active downloads */}
-                      {isActive && row.progress !== null && (
+                      {isActive && (
                         <p className="mt-0.5 text-[10px] text-[#FF6B35]">
-                          {Math.round(row.progress)}% · {row.etaSeconds !== null ? formatTime(row.etaSeconds) : "calculating..."}
+                          {getProgressText(row.status, row.progress)}
+                          {row.status === "Downloading" && row.etaSeconds !== null && ` · ${formatTime(row.etaSeconds)} left`}
                         </p>
                       )}
 
